@@ -2,7 +2,11 @@ package edu.udmercy.accesspointlocater.features.session.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -20,7 +24,16 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
     
     private val viewModel by viewModels<SessionViewModel>()
     private val adapter by lazy {
-        SessionRecyclerAdapter()
+        SessionRecyclerAdapter().apply {
+            onItemClicked = {
+                if(!it.isFinished) {
+                    val bundle = bundleOf("uuid" to it.uid)
+                    findNavController().navigate(R.id.action_sessionList_to_viewSession, bundle)
+                } else {
+
+                }
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -29,6 +42,16 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
             adapter.submitList(list)
             adapter.notifyDataSetChanged()
         }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = getString(R.string.app_name)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

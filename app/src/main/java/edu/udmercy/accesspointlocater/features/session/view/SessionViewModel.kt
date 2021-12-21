@@ -20,13 +20,9 @@ class SessionViewModel: ViewModel(), KoinComponent {
         viewModelScope.launch(Dispatchers.IO) {
             sessionRepo.getAllSessions().collect { list ->
                 sessionList.postValue(list.map {
-                    SessionUI(it.uuid, it.sessionLabel, it.building + " - " +it.timestamp )
+                    SessionUI(it.uuid, it.sessionLabel, it.building + " - " +it.timestamp, it.isFinished)
                 } as MutableList<SessionUI>)
             }
         }
-    }
-
-    fun getSessions() {
-
     }
 }

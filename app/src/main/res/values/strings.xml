@@ -2,10 +2,13 @@
     <string name="app_name">Access Point Locator</string>
     <string name="fragmentSessionLabel">Sessions</string>
     <string name="fragmentCreateSessionLabel">Create New Session</string>
+    <string name="fragmentViewSessionLabel">View Session</string>
 
     <string name="sessionLabelHint">Session Name</string>
     <string name="buildingLabelHint">Building Name</string>
     <string name="imageLabelHint">Select the Building Layout Image</string>
     <string name="doneLabelHint">Done</string>
+
+    <string name="imageSaved">Image Added!</string>
 
 </resources>

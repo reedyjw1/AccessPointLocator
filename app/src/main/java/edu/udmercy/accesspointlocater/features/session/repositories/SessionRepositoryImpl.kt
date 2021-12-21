@@ -1,6 +1,7 @@
 package edu.udmercy.accesspointlocater.features.session.repositories
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.room.Room
 import edu.udmercy.accesspointlocater.AppDatabase
 import edu.udmercy.accesspointlocater.features.session.room.Session
@@ -16,13 +17,13 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
         timestamp: String,
         sessionLabel: String,
         buildingName: String,
-        path: String
+        image: Bitmap
     ) {
         sessionDb.insertAll(
             Session(
                 sessionLabel = sessionLabel,
                 timestamp = timestamp,
-                path = path,
+                image = image,
                 building = buildingName
             )
         )
@@ -30,5 +31,9 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
 
     override fun getAllSessions(): Flow<List<Session>> {
         return sessionDb.getAll()
+    }
+
+    override fun getCurrentSession(uuid: String): Session {
+        return sessionDb.getCurrentSession(uuid)
     }
 }
