@@ -26,6 +26,8 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
     private val paint = Paint()
     private var touchPoints = mutableListOf<PointF>()
     var threshold = 50f
+    var listener: CircleViewPointListener? = null
+    var numberOfPoints = 1
 
     private fun initialise() {
         val density = resources.displayMetrics.densityDpi.toFloat()
@@ -69,24 +71,24 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
                 if (isReady) {
                     val coordinate: PointF = viewToSourceCoord(e.x, e.y) ?: return true
                     val source = sourceToViewCoord(coordinate) ?: return true
-                    var flag = false
                     var closestPoint: Pair<PointF, Float> = Pair(PointF(-1f,-1f), Float.MAX_VALUE)
                     touchPoints.forEach {
                         val tempSource = sourceToViewCoord(it) ?: return true
                         val distancePair = euclideanDistance(source, tempSource, threshold)
-                        if (distancePair.first && distancePair.second < closestPoint.second) {
+                        if (distancePair.first && distancePair.second < closestPoint.second && it == touchPoints.last()) {
                             closestPoint = Pair(it, distancePair.second)
                         }
                     }
                     // If there is no close point, add the new point
-                    if (closestPoint.second == Float.MAX_VALUE) {
+                    if (closestPoint.second == Float.MAX_VALUE && touchPoints.size < numberOfPoints) {
                         touchPoints.add(coordinate)
                         invalidate()
-                    } else {
+                    } else if(closestPoint.second != Float.MAX_VALUE){
                         // Remove the closes point to the touch event
                         touchPoints.remove(closestPoint.first)
                         invalidate()
                     }
+                    listener?.onPointsChanged(touchPoints)
                 }
                 return true
             }
