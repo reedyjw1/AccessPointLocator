@@ -17,5 +17,7 @@ data class Session(
     @ColumnInfo
     val building: String,
     @ColumnInfo
-    val image: Bitmap
+    val image: Bitmap,
+    @ColumnInfo
+    var isFinished: Boolean = false
 )

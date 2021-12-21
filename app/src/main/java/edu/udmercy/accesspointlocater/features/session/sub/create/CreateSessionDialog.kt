@@ -1,5 +1,6 @@
 package edu.udmercy.accesspointlocater.features.session.sub.create
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -58,6 +59,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         startActivityForResult(Intent.createChooser(intent, "Select the Building Image"), SELECT_PICTURE)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == SELECT_PICTURE) {

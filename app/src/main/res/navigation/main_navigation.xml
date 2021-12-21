@@ -13,6 +13,21 @@
         <action
             android:id="@+id/action_sessionList_to_createSession"
             app:destination="@id/createSession" />
+        <action
+            android:id="@+id/action_sessionList_to_viewSession"
+            app:destination="@id/viewSession">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/viewSession"
+        android:name="edu.udmercy.accesspointlocater.features.session.sub.viewSession.ViewSessionFragment"
+        android:label="@string/fragmentViewSessionLabel"
+        tools:layout="@layout/fragment_view_session">
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
     <dialog

@@ -32,4 +32,8 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
     override fun getAllSessions(): Flow<List<Session>> {
         return sessionDb.getAll()
     }
+
+    override fun getCurrentSession(uuid: String): Session {
+        return sessionDb.getCurrentSession(uuid)
+    }
 }

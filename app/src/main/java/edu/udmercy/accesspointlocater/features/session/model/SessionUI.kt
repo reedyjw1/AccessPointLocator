@@ -6,6 +6,7 @@ data class SessionUI (
     val uid: String,
     val name: String,
     val desc: String,
+    val isFinished: Boolean
 ){
     companion object{
         val DIFFER = object: DiffUtil.ItemCallback<SessionUI>(){

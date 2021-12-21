@@ -3,6 +3,7 @@ package edu.udmercy.accesspointlocater.features.session.view
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -20,7 +21,16 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
     
     private val viewModel by viewModels<SessionViewModel>()
     private val adapter by lazy {
-        SessionRecyclerAdapter()
+        SessionRecyclerAdapter().apply {
+            onItemClicked = {
+                if(it.isFinished) {
+                    val bundle = bundleOf("uuid" to it.uid)
+                    findNavController().navigate(R.id.action_sessionList_to_viewSession, bundle)
+                } else {
+
+                }
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

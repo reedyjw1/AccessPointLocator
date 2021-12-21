@@ -8,6 +8,9 @@ interface SessionDAO {
     @Query("SELECT * FROM Session")
     fun getAll(): Flow<List<Session>>
 
+    @Query("SELECT * FROM Session where uuid==(:uuid)")
+    fun getCurrentSession(uuid: String): Session
+
     @Insert
     fun insertAll(vararg users: Session)
 
