@@ -9,7 +9,16 @@
         android:id="@+id/session"
         android:name="edu.udmercy.accesspointlocater.features.session.view.SessionFragment"
         android:label="@string/fragmentSessionLabel"
-        tools:layout="@layout/fragment_session"
-        />
+        tools:layout="@layout/fragment_session">
+        <action
+            android:id="@+id/action_sessionList_to_createSession"
+            app:destination="@id/createSession" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/createSession"
+        android:name="edu.udmercy.accesspointlocater.features.session.sub.create.CreateSessionDialog"
+        android:label="@string/fragmentCreateSessionLabel"
+        tools:layout="@layout/dialog_create_session"/>
 
 </navigation>

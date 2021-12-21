@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Access Point Locator</string>
     <string name="fragmentSessionLabel">Sessions</string>
+    <string name="fragmentCreateSessionLabel">Create New Session</string>
 </resources>
