@@ -41,23 +41,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session) {
         super.onViewCreated(view, savedInstanceState)
         showUpNavigation()
         val uuid = arguments?.getString("uuid") ?: return
-
-        /*val gestureDetector: GestureDetector =
-            GestureDetector(requireContext(), object : SimpleOnGestureListener() {
-                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                    if (executeImageView.isReady) {
-                        val sCoord: PointF? = executeImageView.viewToSourceCoord(e.x, e.y)
-                        Log.i(TAG, "onSingleTapConfirmed: $sCoord ")
-
-                    }
-                    return true
-                }
-            })*/
-
-       /* executeImageView.setOnTouchListener { subView, motionEvent ->
-            subView.performClick()
-            return@setOnTouchListener gestureDetector.onTouchEvent(motionEvent)
-        }*/
         viewModel.getCurrentSession(uuid)
     }
 

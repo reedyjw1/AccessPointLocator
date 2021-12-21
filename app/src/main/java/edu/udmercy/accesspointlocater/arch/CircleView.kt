@@ -12,13 +12,20 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import kotlinx.android.synthetic.main.fragment_execute_session.*
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 class CircleView(context: Context?, attr: AttributeSet? = null) :
     SubsamplingScaleImageView(context, attr) {
+
+    companion object {
+        private const val TAG = "CircleView"
+    }
     private var strokeWidth = 0
     private val paint = Paint()
     private var touchPoints = mutableListOf<PointF>()
+    var threshold = 50f
 
     private fun initialise() {
         val density = resources.displayMetrics.densityDpi.toFloat()
@@ -61,11 +68,30 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 if (isReady) {
                     val coordinate: PointF = viewToSourceCoord(e.x, e.y) ?: return true
-                    Log.i("TEST", "onSingleTapConfirmed: ")
-                    touchPoints.add(coordinate)
-                    invalidate()
+                    val source = sourceToViewCoord(coordinate) ?: return true
+                    var flag = false
+                    touchPoints.forEach {
+                        val tempSource = sourceToViewCoord(it) ?: return true
+                        if (euclideanDistance(source, tempSource, threshold)) {
+                            flag = true
+                            touchPoints.remove(it)
+                            invalidate()
+                            return true
+                        }
+                    }
+                    if (!flag) {
+                        touchPoints.add(coordinate)
+                        invalidate()
+                    }
                 }
                 return true
             }
         })
+
+    private fun euclideanDistance(point1: PointF, point2: PointF, threshold: Float): Boolean {
+        val x = (point1.x - point2.x).pow(2)
+        val y = (point1.y - point2.y).pow(2)
+        val dist = sqrt(x + y)
+        return dist <= threshold
+    }
 }
