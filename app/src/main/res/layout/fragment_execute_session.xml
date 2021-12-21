@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+    <edu.udmercy.accesspointlocater.arch.CircleView
         android:id="@+id/executeImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
