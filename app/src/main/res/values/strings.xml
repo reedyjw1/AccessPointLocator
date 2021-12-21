@@ -11,4 +11,5 @@
     <string name="doneLabelHint">Done</string>
 
     <string name="imageSaved">Image Added!</string>
+    <string name="startScanLabel">Start Scan</string>
 </resources>
