@@ -3,6 +3,7 @@ package edu.udmercy.accesspointlocater
 import android.os.Bundle
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import edu.udmercy.accesspointlocater.arch.BaseActivity
 
 class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

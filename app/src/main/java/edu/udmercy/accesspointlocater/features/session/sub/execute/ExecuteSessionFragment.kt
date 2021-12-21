@@ -19,9 +19,10 @@ import android.view.MotionEvent
 
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
+import edu.udmercy.accesspointlocater.arch.BaseFragment
 
 
-class ExecuteSessionFragment: Fragment(R.layout.fragment_execute_session) {
+class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session) {
 
     private val viewModel by viewModels<ExecuteSessionViewModel>()
 
@@ -36,25 +37,9 @@ class ExecuteSessionFragment: Fragment(R.layout.fragment_execute_session) {
             }
         }
 
-    private val titleObserver =
-        Observer { title: String? ->
-            if(title != null) {
-                (requireActivity() as AppCompatActivity).supportActionBar?.title = title
-            }
-        }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = ""
-        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        showUpNavigation()
         val uuid = arguments?.getString("uuid") ?: return
 
         val gestureDetector: GestureDetector =
@@ -79,12 +64,10 @@ class ExecuteSessionFragment: Fragment(R.layout.fragment_execute_session) {
     override fun onResume() {
         super.onResume()
         viewModel.currentBitmap.observe(this, imageObserver)
-        viewModel.sessionName.observe(this, titleObserver)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.currentBitmap.removeObserver(imageObserver)
-        viewModel.sessionName.removeObserver(titleObserver)
     }
 }

@@ -1,4 +1,4 @@
-package edu.udmercy.accesspointlocater
+package edu.udmercy.accesspointlocater.arch
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import edu.udmercy.accesspointlocater.R
 
 open class BaseActivity: AppCompatActivity() {
 

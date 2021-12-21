@@ -12,11 +12,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import edu.udmercy.accesspointlocater.R
+import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.features.session.model.SessionUI
 import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.android.synthetic.main.fragment_session.*
 
-class SessionFragment: Fragment(R.layout.fragment_session) {
+class SessionFragment: BaseFragment(R.layout.fragment_session) {
 
     private companion object {
         private const val TAG = "SessionFragment"
@@ -42,16 +43,6 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
             adapter.submitList(list)
             adapter.notifyDataSetChanged()
         }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = getString(R.string.app_name)
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
