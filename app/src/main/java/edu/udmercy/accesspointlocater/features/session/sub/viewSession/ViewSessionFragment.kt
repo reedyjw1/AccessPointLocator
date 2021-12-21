@@ -36,6 +36,7 @@ class ViewSessionFragment: Fragment(R.layout.fragment_view_session) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = ""
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
