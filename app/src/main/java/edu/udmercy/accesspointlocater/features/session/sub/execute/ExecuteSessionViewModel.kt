@@ -6,7 +6,9 @@ import android.net.wifi.ScanResult
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
+import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
@@ -17,9 +19,12 @@ import kotlin.math.pow
 
 class ExecuteSessionViewModel: ViewModel(), KoinComponent {
     private val sessionRepo: SessionRepository by inject()
+    private val accessPointRepo: AccessPointRepository by inject()
+
     val currentBitmap: MutableLiveData<Bitmap> = MutableLiveData<Bitmap>()
     val sessionName: MutableLiveData<String> = MutableLiveData()
     var currentPosition: PointF? = null
+    var floor: Int? = null
     val allowedNumberOfPoints = MutableLiveData<Int>(1)
 
     fun getCurrentSession(uuid: String) {
@@ -36,6 +41,19 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
             list.forEach {
                 val distance = calculateDistanceInMeters(it.level, it.frequency)
                 val session = sessionRepo.getCurrentSession(uuid)
+                val x = currentPosition?.x ?: return@launch
+                val y = currentPosition?.y ?: return@launch
+                val floorLevel = floor ?: return@launch
+
+                accessPointRepo.saveAccessPointScan(list.map {
+                    AccessPoint(
+                        uuid = session.uuid,
+                        currentLocationX = x,
+                        currentLocationY =  y,
+                        floor = floorLevel,
+                        distance = distance
+                    )
+                })
             }
         }
     }

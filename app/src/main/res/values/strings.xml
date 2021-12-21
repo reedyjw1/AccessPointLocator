@@ -12,4 +12,6 @@
 
     <string name="imageSaved">Image Added!</string>
     <string name="startScanLabel">Start Scan</string>
+    <string name="previousFloorLabel">&lt;</string>
+    <string name="nextFloorLabel">&gt;</string>
 </resources>

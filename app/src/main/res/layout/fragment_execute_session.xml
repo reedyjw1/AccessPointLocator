@@ -17,16 +17,64 @@
         android:id="@+id/executeImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toBottomOf="@id/appbar"
-        app:layout_constraintBottom_toTopOf="@id/startScanBtn"/>
+        app:layout_constraintBottom_toTopOf="@id/buttonFrame"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/startScanBtn"
+    <FrameLayout
+        android:id="@+id/buttonFrame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_margin="10dp"
-        android:text="@string/startScanLabel"/>
+        android:paddingTop="10dp"
+        android:background="@color/white">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/startScanBtn"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="Floor 1"
+                android:gravity="center"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16sp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/startScanBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_margin="10dp"
+                app:layout_constraintStart_toEndOf="@id/previousFloorBtn"
+                app:layout_constraintEnd_toStartOf="@id/nextFloorBtn"
+                android:text="@string/startScanLabel"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/previousFloorBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_margin="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/previousFloorLabel"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/nextFloorBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_margin="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/nextFloorLabel"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
