@@ -26,11 +26,11 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
     private val adapter by lazy {
         SessionRecyclerAdapter().apply {
             onItemClicked = {
-                if(!it.isFinished) {
-                    val bundle = bundleOf("uuid" to it.uid)
+                val bundle = bundleOf("uuid" to it.uid)
+                if(it.isFinished) {
                     findNavController().navigate(R.id.action_sessionList_to_viewSession, bundle)
                 } else {
-
+                    findNavController().navigate(R.id.action_sessionList_to_executeSession, bundle)
                 }
             }
         }
