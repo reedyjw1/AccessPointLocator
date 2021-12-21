@@ -70,17 +70,21 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
                     val coordinate: PointF = viewToSourceCoord(e.x, e.y) ?: return true
                     val source = sourceToViewCoord(coordinate) ?: return true
                     var flag = false
+                    var closestPoint: Pair<PointF, Float> = Pair(PointF(-1f,-1f), Float.MAX_VALUE)
                     touchPoints.forEach {
                         val tempSource = sourceToViewCoord(it) ?: return true
-                        if (euclideanDistance(source, tempSource, threshold)) {
-                            flag = true
-                            touchPoints.remove(it)
-                            invalidate()
-                            return true
+                        val distancePair = euclideanDistance(source, tempSource, threshold)
+                        if (distancePair.first && distancePair.second < closestPoint.second) {
+                            closestPoint = Pair(it, distancePair.second)
                         }
                     }
-                    if (!flag) {
+                    // If there is no close point, add the new point
+                    if (closestPoint.second == Float.MAX_VALUE) {
                         touchPoints.add(coordinate)
+                        invalidate()
+                    } else {
+                        // Remove the closes point to the touch event
+                        touchPoints.remove(closestPoint.first)
                         invalidate()
                     }
                 }
@@ -88,10 +92,10 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
             }
         })
 
-    private fun euclideanDistance(point1: PointF, point2: PointF, threshold: Float): Boolean {
+    private fun euclideanDistance(point1: PointF, point2: PointF, threshold: Float): Pair<Boolean, Float> {
         val x = (point1.x - point2.x).pow(2)
         val y = (point1.y - point2.y).pow(2)
         val dist = sqrt(x + y)
-        return dist <= threshold
+        return Pair(dist <= threshold, dist)
     }
 }
