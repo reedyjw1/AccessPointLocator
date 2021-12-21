@@ -1,8 +1,8 @@
 package edu.udmercy.accesspointlocater.features.session.room
 
 import androidx.room.*
-import java.util.*
 
+@Dao
 interface SessionDAO {
     @Query("SELECT * FROM Session")
     fun getAll(): List<Session>
