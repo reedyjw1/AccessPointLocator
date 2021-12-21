@@ -24,6 +24,13 @@ class ViewSessionFragment: Fragment(R.layout.fragment_view_session) {
             }
         }
 
+    private val titleObserver =
+        Observer { title: String? ->
+            if(title != null) {
+                (requireActivity() as AppCompatActivity).supportActionBar?.title = title
+            }
+        }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,10 +49,12 @@ class ViewSessionFragment: Fragment(R.layout.fragment_view_session) {
     override fun onResume() {
         super.onResume()
         viewModel.currentBitmap.observe(this, imageObserver)
+        viewModel.sessionName.observe(this, titleObserver)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.currentBitmap.removeObserver(imageObserver)
+        viewModel.sessionName.removeObserver(titleObserver)
     }
 }

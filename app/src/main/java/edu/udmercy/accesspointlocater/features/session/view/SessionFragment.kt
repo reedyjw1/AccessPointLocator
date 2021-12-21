@@ -49,6 +49,7 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
         savedInstanceState: Bundle?
     ): View? {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = getString(R.string.app_name)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

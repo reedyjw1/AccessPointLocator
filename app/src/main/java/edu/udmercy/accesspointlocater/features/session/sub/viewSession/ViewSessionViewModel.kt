@@ -14,10 +14,14 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
 
     private val sessionRepo: SessionRepository by inject()
     val currentBitmap: MutableLiveData<Bitmap> = MutableLiveData<Bitmap>()
+    val sessionName: MutableLiveData<String> = MutableLiveData()
 
     fun getCurrentSession(uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            currentBitmap.postValue(sessionRepo.getCurrentSession(uuid).image)
+            val session =sessionRepo.getCurrentSession(uuid)
+            currentBitmap.postValue(session.image)
+            sessionName.postValue(session.sessionLabel)
+
         }
     }
 }
