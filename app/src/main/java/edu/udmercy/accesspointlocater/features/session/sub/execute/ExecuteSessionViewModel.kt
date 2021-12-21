@@ -7,8 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
+import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
+import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
@@ -20,8 +22,9 @@ import kotlin.math.pow
 class ExecuteSessionViewModel: ViewModel(), KoinComponent {
     private val sessionRepo: SessionRepository by inject()
     private val accessPointRepo: AccessPointRepository by inject()
+    private val buildingImageRepo: BuildingImageRepository by inject()
 
-    val currentBitmap: MutableLiveData<Bitmap> = MutableLiveData<Bitmap>()
+    val currentBitmap: MutableLiveData<MutableList<BuildingImage>> = MutableLiveData()
     val sessionName: MutableLiveData<String> = MutableLiveData()
     var currentPosition: PointF? = null
     var floor: Int? = null
@@ -30,7 +33,8 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
     fun getCurrentSession(uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val session =sessionRepo.getCurrentSession(uuid)
-            currentBitmap.postValue(session.image)
+            val images = buildingImageRepo.getAllBitmapsFromSession(session.uuid)
+            currentBitmap.postValue(images.toMutableList())
             sessionName.postValue(session.sessionLabel)
 
         }

@@ -26,6 +26,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
+import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -53,9 +54,9 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private val imageObserver =
-        Observer { bitmap: Bitmap? ->
-            if(bitmap != null) {
-                executeImageView.setImage(ImageSource.bitmap(bitmap))
+        Observer { bitmaps: List<BuildingImage>? ->
+            if(bitmaps != null && bitmaps.isNotEmpty()) {
+                executeImageView.setImage(ImageSource.bitmap(bitmaps.first().image))
             }
         }
 

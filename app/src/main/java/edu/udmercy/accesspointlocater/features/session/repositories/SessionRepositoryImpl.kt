@@ -14,16 +14,16 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
     ).build().sessionDao()
 
     override fun createNewSession(
+        uuid: String,
         timestamp: String,
         sessionLabel: String,
         buildingName: String,
-        image: Bitmap
     ) {
         sessionDb.insertAll(
             Session(
+                uuid = uuid,
                 sessionLabel = sessionLabel,
                 timestamp = timestamp,
-                image = image,
                 building = buildingName
             )
         )

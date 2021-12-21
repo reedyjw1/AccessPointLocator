@@ -1,20 +1,20 @@
 package edu.udmercy.accesspointlocater.features.session.room
 
+import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity
-data class Session(
-    @PrimaryKey
-    val uuid: String = UUID.randomUUID().toString(),
+data class BuildingImage(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     @ColumnInfo
-    val sessionLabel: String,
+    val uuid: String,
     @ColumnInfo
-    val timestamp: String,
+    val image: Bitmap,
     @ColumnInfo
-    val building: String,
-    @ColumnInfo
-    var isFinished: Boolean = false
+    val floor: Int
+
 )

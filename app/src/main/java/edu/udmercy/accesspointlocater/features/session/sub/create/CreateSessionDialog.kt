@@ -40,10 +40,10 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         doneBtn.setOnClickListener {
             val sessionLabel = sessionEditText.editText?.text.toString()
             val buildingName = buildingEditText.editText?.text.toString()
-            val bitmap = viewModel.buildingImage
+            val bitmaps = viewModel.buildingImages
 
-            if(sessionLabel != "" && buildingName != "" && bitmap != null) {
-                viewModel.addNewSession(sessionLabel, buildingName, bitmap)
+            if(sessionLabel != "" && buildingName != "" && bitmaps.isNotEmpty()) {
+                viewModel.addNewSession(sessionLabel, buildingName, bitmaps)
             } else {
                 Toast.makeText(requireContext(), "Please enter a valid Session Name, Building Name, or Picture!", Toast.LENGTH_LONG).show()
             }
@@ -56,6 +56,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         val intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         startActivityForResult(Intent.createChooser(intent, "Select the Building Image"), SELECT_PICTURE)
     }
 
@@ -63,11 +64,24 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == SELECT_PICTURE) {
-            val uri = data?.data ?: return
-            requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
-                viewModel.buildingImage = BitmapFactory.decodeByteArray(it,0, it.size)
+            Log.i(TAG, "onActivityResult: ${data?.data}")
+            if(data?.clipData != null) {
+                val count = data.clipData?.itemCount ?: return
+                for (item in 0 until count) {
+                    val uri = data.clipData?.getItemAt(item)?.uri ?: return
+                    requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
+                        viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
+                    }
+                }
                 selectImageBtn.text = requireContext().getText(R.string.imageSaved)
                 selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
+            } else {
+                val uri = data?.data ?: return
+                requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
+                    viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
+                    selectImageBtn.text = requireContext().getText(R.string.imageSaved)
+                    selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
+                }
             }
         }
     }
