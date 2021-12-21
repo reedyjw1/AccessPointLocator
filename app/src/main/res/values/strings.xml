@@ -8,4 +8,6 @@
     <string name="imageLabelHint">Select the Building Layout Image</string>
     <string name="doneLabelHint">Done</string>
 
+    <string name="imageSaved">Image Added!</string>
+
 </resources>

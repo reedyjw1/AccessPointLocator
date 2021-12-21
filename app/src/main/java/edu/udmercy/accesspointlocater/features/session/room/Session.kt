@@ -1,5 +1,6 @@
 package edu.udmercy.accesspointlocater.features.session.room
 
+import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -16,5 +17,5 @@ data class Session(
     @ColumnInfo
     val building: String,
     @ColumnInfo
-    val path: String
+    val image: Bitmap
 )

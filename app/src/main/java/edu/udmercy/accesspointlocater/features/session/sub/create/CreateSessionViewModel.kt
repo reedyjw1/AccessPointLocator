@@ -1,5 +1,6 @@
 package edu.udmercy.accesspointlocater.features.session.sub.create
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,14 +16,15 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
 
     private val dbRepository: SessionRepository by inject()
     val saved = MutableLiveData<Event<Boolean>>()
+    var buildingImage: Bitmap? = null
 
-    fun addNewSession(sessionName: String, buildingName: String, imagePath: String = "Test") {
+    fun addNewSession(sessionName: String, buildingName: String, image: Bitmap) {
         viewModelScope.launch(Dispatchers.IO) {
             dbRepository.createNewSession(
                 Calendar.getInstance().time.toString(),
                 sessionName,
                 buildingName,
-                imagePath
+                image
             )
             saved.postValue(Event(true))
         }
