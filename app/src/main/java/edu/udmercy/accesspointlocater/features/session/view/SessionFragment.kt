@@ -2,7 +2,10 @@ package edu.udmercy.accesspointlocater.features.session.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,7 +26,7 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
     private val adapter by lazy {
         SessionRecyclerAdapter().apply {
             onItemClicked = {
-                if(it.isFinished) {
+                if(!it.isFinished) {
                     val bundle = bundleOf("uuid" to it.uid)
                     findNavController().navigate(R.id.action_sessionList_to_viewSession, bundle)
                 } else {
@@ -39,6 +42,15 @@ class SessionFragment: Fragment(R.layout.fragment_session) {
             adapter.submitList(list)
             adapter.notifyDataSetChanged()
         }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
