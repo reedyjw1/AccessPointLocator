@@ -69,7 +69,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     @SuppressLint("SetTextI18n")
     private val floorObserver =
         Observer { number: Int ->
-            floorTextView.text = "Floor ${number+1}"
+            floorInvalidBtn.text = "Floor ${number+1}"
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

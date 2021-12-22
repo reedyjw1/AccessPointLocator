@@ -7,11 +7,11 @@
 
     <string name="sessionLabelHint">Session Name</string>
     <string name="buildingLabelHint">Building Name</string>
-    <string name="imageLabelHint">Select the Building Layout Images</string>
+    <string name="imageLabelHint">Select Images</string>
     <string name="doneLabelHint">Done</string>
 
     <string name="imageSaved">Images Added!</string>
     <string name="startScanLabel">Start Scan</string>
-    <string name="previousFloorLabel">&lt;</string>
-    <string name="nextFloorLabel">&gt;</string>
+    <string name="previousFloorLabel">Prev.</string>
+    <string name="nextFloorLabel">Next</string>
 </resources>

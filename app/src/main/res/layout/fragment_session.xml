@@ -24,6 +24,7 @@ tools:context=".MainActivity">
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="12"
+        android:layout_marginTop="5dp"
         tools:listitem="@layout/cell_session"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -34,6 +35,6 @@ tools:context=".MainActivity">
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="18dp"
         android:layout_marginBottom="18dp"
-        android:src="@drawable/ic_baseline_add_24"/>
+        android:src="@drawable/ic_baseline_add_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

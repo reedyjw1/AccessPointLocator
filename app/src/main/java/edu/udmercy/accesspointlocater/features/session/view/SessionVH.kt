@@ -18,6 +18,7 @@ class SessionVH(itemView: View): RecyclerView.ViewHolder(itemView) {
             value?.let { session ->
                 itemView.titleTextView.text = session.name
                 itemView.descriptionTextView.text = session.desc
+                itemView.dateTextView.text = session.date
                 itemView.setOnClickListener { itemClicked?.invoke(session) }
             }
         }
