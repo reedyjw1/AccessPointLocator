@@ -1,5 +1,6 @@
 package edu.udmercy.accesspointlocater.features.session.sub.execute
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -54,15 +55,21 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private val imageObserver =
-        Observer { bitmaps: List<BuildingImage>? ->
-            if(bitmaps != null && bitmaps.isNotEmpty()) {
-                executeImageView.setImage(ImageSource.bitmap(bitmaps.first().image))
+        Observer { bitmap: BuildingImage? ->
+            if(bitmap != null) {
+                executeImageView.setImage(ImageSource.bitmap(bitmap.image))
             }
         }
 
     private val numberOfPointsObserver =
         Observer { number: Int ->
             executeImageView.numberOfPoints = number
+        }
+
+    @SuppressLint("SetTextI18n")
+    private val floorObserver =
+        Observer { number: Int ->
+            floorTextView.text = "Floor ${number+1}"
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,6 +81,8 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         startScanBtn.setOnClickListener {
             startScan()
         }
+        previousFloorBtn.setOnClickListener { viewModel.moveImage(-1, uuid) }
+        nextFloorBtn.setOnClickListener { viewModel.moveImage(1, uuid) }
 
     }
 
@@ -104,16 +113,18 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     override fun onResume() {
         super.onResume()
-        val uuid = arguments?.getString("uuid") ?: return
-        viewModel.getCurrentSession(uuid)
+        //val uuid = arguments?.getString("uuid") ?: return
+        //viewModel.getCurrentSession(uuid)
         viewModel.currentBitmap.observe(this, imageObserver)
         viewModel.allowedNumberOfPoints.observe(this, numberOfPointsObserver)
+        viewModel.floor.observe(this, floorObserver)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.currentBitmap.removeObserver(imageObserver)
         viewModel.allowedNumberOfPoints.removeObserver(numberOfPointsObserver)
+        viewModel.floor.removeObserver(floorObserver)
         viewModel.currentBitmap.postValue(null)
     }
 
@@ -121,5 +132,10 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         if(list.isNotEmpty()) {
             viewModel.currentPosition = list.last()
         }
+    }
+
+    override fun onNavigationClick() {
+        super.onNavigationClick()
+        viewModel.onPause()
     }
 }

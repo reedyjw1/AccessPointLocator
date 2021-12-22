@@ -21,4 +21,12 @@ class BuildingImageRepositoryImpl(private val appContext: Context): BuildingImag
     override fun getAllBitmapsFromSession(uuid: String): List<BuildingImage> {
         return buildingImageRepo.getAll(uuid)
     }
+
+    override fun getFloorImage(uuid: String, floor: Int): BuildingImage {
+        return buildingImageRepo.getFloorImage(uuid, floor)
+    }
+
+    override fun getFloorCount(uuid: String): Int {
+        return buildingImageRepo.getFloorCount(uuid)
+    }
 }

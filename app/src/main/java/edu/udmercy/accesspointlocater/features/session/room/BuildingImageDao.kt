@@ -11,6 +11,12 @@ interface BuildingImageDao {
     @Query("SELECT * FROM BuildingImage where uuid == (:uuid)")
     fun getAll(uuid: String): List<BuildingImage>
 
+    @Query("SELECT * FROM BuildingImage where uuid == (:uuid) and floor == (:floor)")
+    fun getFloorImage(uuid: String, floor: Int): BuildingImage
+
+    @Query("SELECT COUNT(id) FROM BuildingImage where uuid == (:uuid)")
+    fun getFloorCount(uuid: String): Int
+
     @Insert
     fun insertAll(vararg images: BuildingImage)
 
@@ -19,4 +25,5 @@ interface BuildingImageDao {
 
     @Query("DELETE FROM BuildingImage where uuid==(:uuid)")
     fun deleteAllImages(uuid: String)
+
 }

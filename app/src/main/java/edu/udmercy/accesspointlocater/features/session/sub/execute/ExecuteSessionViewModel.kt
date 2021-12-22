@@ -3,6 +3,7 @@ package edu.udmercy.accesspointlocater.features.session.sub.execute
 import android.graphics.Bitmap
 import android.graphics.PointF
 import android.net.wifi.ScanResult
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,17 +25,25 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
     private val accessPointRepo: AccessPointRepository by inject()
     private val buildingImageRepo: BuildingImageRepository by inject()
 
-    val currentBitmap: MutableLiveData<MutableList<BuildingImage>> = MutableLiveData()
+    private var floorCount = -1
+    val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     val sessionName: MutableLiveData<String> = MutableLiveData()
     var currentPosition: PointF? = null
-    var floor: Int? = null
-    val allowedNumberOfPoints = MutableLiveData<Int>(1)
+    var floor: MutableLiveData<Int> = MutableLiveData(0)
+    val allowedNumberOfPoints = MutableLiveData(1)
+
+    companion object {
+        private const val TAG = "ExecuteSessionViewModel"
+    }
 
     fun getCurrentSession(uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            val floorValue = floor.value ?: return@launch
             val session =sessionRepo.getCurrentSession(uuid)
-            val images = buildingImageRepo.getAllBitmapsFromSession(session.uuid)
-            currentBitmap.postValue(images.toMutableList())
+            val image = buildingImageRepo.getFloorImage(uuid, floorValue)
+            floorCount = buildingImageRepo.getFloorCount(uuid)
+            currentBitmap.postValue(null)
+            currentBitmap.postValue(image)
             sessionName.postValue(session.sessionLabel)
 
         }
@@ -47,19 +56,36 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
                 val session = sessionRepo.getCurrentSession(uuid)
                 val x = currentPosition?.x ?: return@launch
                 val y = currentPosition?.y ?: return@launch
-                val floorLevel = floor ?: return@launch
+                val floorVal = floor.value ?: return@launch
 
                 accessPointRepo.saveAccessPointScan(list.map {
                     AccessPoint(
                         uuid = session.uuid,
                         currentLocationX = x,
                         currentLocationY =  y,
-                        floor = floorLevel,
+                        floor = floorVal,
                         distance = distance
                     )
                 })
             }
         }
+    }
+
+    fun moveImage(number: Int, uuid: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (number == 1 || number == -1) {
+                if ((floor.value == floorCount-1 && number == 1) || (floor.value == 0 && number == -1)) return@launch
+                val floorVal = floor.value ?: return@launch
+                floor.postValue(floorVal+number)
+                currentBitmap.postValue(null)
+                val buildingImage = buildingImageRepo.getFloorImage(uuid, floorVal+number)
+                currentBitmap.postValue(buildingImage)
+            }
+        }
+    }
+
+    fun onPause() {
+        currentBitmap.value?.image?.recycle()
     }
 
     private fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {
