@@ -61,11 +61,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             }
         }
 
-    private val numberOfPointsObserver =
-        Observer { number: Int ->
-            executeImageView.numberOfPoints = number
-        }
-
     @SuppressLint("SetTextI18n")
     private val floorObserver =
         Observer { number: Int ->
@@ -117,22 +112,18 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         //val uuid = arguments?.getString("uuid") ?: return
         //viewModel.getCurrentSession(uuid)
         viewModel.currentBitmap.observe(this, imageObserver)
-        viewModel.allowedNumberOfPoints.observe(this, numberOfPointsObserver)
         viewModel.floor.observe(this, floorObserver)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.currentBitmap.removeObserver(imageObserver)
-        viewModel.allowedNumberOfPoints.removeObserver(numberOfPointsObserver)
         viewModel.floor.removeObserver(floorObserver)
         viewModel.currentBitmap.postValue(null)
     }
 
-    override fun onPointsChanged(list: List<PointF>) {
-        if(list.isNotEmpty()) {
-            viewModel.currentPosition = list.last()
-        }
+    override fun onPointsChanged(currentPoint: PointF?) {
+        viewModel.currentPosition = currentPoint
     }
 
     override fun onNavigationClick() {

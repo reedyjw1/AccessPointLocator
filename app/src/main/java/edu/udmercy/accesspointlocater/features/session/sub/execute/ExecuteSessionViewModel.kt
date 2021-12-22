@@ -29,11 +29,15 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     val sessionName: MutableLiveData<String> = MutableLiveData()
     var currentPosition: PointF? = null
+    var savedPoints: MutableLiveData<MutableList<PointF>> = MutableLiveData(mutableListOf())
     var floor: MutableLiveData<Int> = MutableLiveData(0)
-    val allowedNumberOfPoints = MutableLiveData(1)
 
     companion object {
         private const val TAG = "ExecuteSessionViewModel"
+    }
+
+    init {
+
     }
 
     fun getCurrentSession(uuid: String) {
@@ -46,6 +50,7 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
             currentBitmap.postValue(image)
             sessionName.postValue(session.sessionLabel)
 
+
         }
     }
 
@@ -54,18 +59,18 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
             list.forEach {
                 val distance = calculateDistanceInMeters(it.level, it.frequency)
                 val session = sessionRepo.getCurrentSession(uuid)
-                val x = currentPosition?.x ?: return@launch
-                val y = currentPosition?.y ?: return@launch
+                val position = currentPosition ?: return@launch
                 val floorVal = floor.value ?: return@launch
 
                 accessPointRepo.saveAccessPointScan(AccessPoint(
                     uuid = session.uuid,
-                    currentLocationX = x,
-                    currentLocationY =  y,
+                    currentLocationX = position.x,
+                    currentLocationY =  position.y,
                     floor = floorVal,
                     distance = distance,
                     ssid = it.BSSID
                 ))
+
             }
         }
     }

@@ -24,10 +24,10 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
     }
     private var strokeWidth = 0
     private val paint = Paint()
-    private var touchPoints = mutableListOf<PointF>()
+    private var touchedPoint: PointF? = null
+    var completedPointScans = mutableListOf<PointF>()
     var threshold = 50f
     var listener: CircleViewPointListener? = null
-    var numberOfPoints = 1
 
     private fun initialise() {
         val density = resources.displayMetrics.densityDpi.toFloat()
@@ -45,10 +45,13 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
         if (!isReady) {
             return
         }
-        touchPoints.forEach {
+        val radius = 25f
+        val strokeRadius = 32f
+
+        // Currently Selected Points
+        touchedPoint?.let {
             sourceToViewCoord(it)?.let { source ->
-                val radius = 25f
-                val strokeRadius = 32f
+                Log.i(TAG, "onDraw: Drawing point...")
                 paint.isAntiAlias = true
                 paint.style = Paint.Style.FILL_AND_STROKE
                 paint.strokeCap = Cap.ROUND
@@ -56,6 +59,20 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
                 canvas.drawCircle(source.x, source.y, strokeRadius, paint)
                 paint.strokeCap = Cap.ROUND
                 paint.color = Color.WHITE
+                canvas.drawCircle(source.x, source.y, radius, paint)
+            }
+        }
+
+        // Previously clicked points
+        completedPointScans.forEach {
+            sourceToViewCoord(it)?.let { source ->
+                paint.isAntiAlias = true
+                paint.style = Paint.Style.FILL_AND_STROKE
+                paint.strokeCap = Cap.ROUND
+                paint.color = Color.BLACK
+                canvas.drawCircle(source.x, source.y, strokeRadius, paint)
+                paint.strokeCap = Cap.ROUND
+                paint.color = Color.GREEN
                 canvas.drawCircle(source.x, source.y, radius, paint)
             }
         }
@@ -71,7 +88,25 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
                 if (isReady) {
                     val coordinate: PointF = viewToSourceCoord(e.x, e.y) ?: return true
                     val source = sourceToViewCoord(coordinate) ?: return true
-                    var closestPoint: Pair<PointF, Float> = Pair(PointF(-1f,-1f), Float.MAX_VALUE)
+
+                    touchedPoint?.let { it ->
+                        val touched = sourceToViewCoord(it) ?: return true
+                        if (euclideanDistance(source, touched, threshold).first) {
+                            touchedPoint = null
+                            invalidate()
+                        }
+                        listener?.onPointsChanged(null)
+                        return true
+                    }
+                    Log.i(TAG, "onSingleTapConfirmed: touched=$coordinate")
+                    touchedPoint = coordinate
+                    listener?.onPointsChanged(coordinate)
+                    invalidate()
+
+
+
+                    // Use again when Touching Completed Points is implemented
+                    /*var closestPoint: Pair<PointF, Float> = Pair(PointF(-1f,-1f), Float.MAX_VALUE)
                     touchPoints.forEach {
                         val tempSource = sourceToViewCoord(it) ?: return true
                         val distancePair = euclideanDistance(source, tempSource, threshold)
@@ -88,7 +123,7 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
                         touchPoints.remove(closestPoint.first)
                         invalidate()
                     }
-                    listener?.onPointsChanged(touchPoints)
+                    listener?.onPointsChanged(touchPoints)*/
                 }
                 return true
             }

@@ -4,11 +4,12 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccessPointDao {
     @Query("SELECT * FROM AccessPoint where uuid == (:uuid)")
-    fun getAllFromSession(uuid: String): List<AccessPoint>
+    fun getAllFromSession(uuid: String): Flow<List<AccessPoint>>
 
     @Insert
     fun insertAll(vararg accessPoints: AccessPoint)
