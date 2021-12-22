@@ -5,6 +5,7 @@ import android.graphics.PointF
 import android.net.wifi.ScanResult
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
@@ -12,7 +13,9 @@ import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImag
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.session.room.Session
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -20,16 +23,22 @@ import kotlin.math.abs
 import kotlin.math.log10
 import kotlin.math.pow
 
-class ExecuteSessionViewModel: ViewModel(), KoinComponent {
+class ExecuteSessionViewModel(
+    private val savedStateHandle: SavedStateHandle
+): ViewModel(), KoinComponent {
     private val sessionRepo: SessionRepository by inject()
     private val accessPointRepo: AccessPointRepository by inject()
     private val buildingImageRepo: BuildingImageRepository by inject()
 
-    private var floorCount = -1
+    private var session: Session? = null
+    private var image: BuildingImage?= null
+    private var floorCount: Int? = null
+    var _savedPoints: List<AccessPoint> = emptyList()
+    var savedPoints: MutableLiveData<List<AccessPoint>> = MutableLiveData(listOf())
+
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
-    val sessionName: MutableLiveData<String> = MutableLiveData()
     var currentPosition: PointF? = null
-    var savedPoints: MutableLiveData<MutableList<PointF>> = MutableLiveData(mutableListOf())
+
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 
     companion object {
@@ -37,20 +46,18 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
     }
 
     init {
-
-    }
-
-    fun getCurrentSession(uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val floorValue = floor.value ?: return@launch
-            val session =sessionRepo.getCurrentSession(uuid)
-            val image = buildingImageRepo.getFloorImage(uuid, floorValue)
-            floorCount = buildingImageRepo.getFloorCount(uuid)
-            currentBitmap.postValue(null)
-            currentBitmap.postValue(image)
-            sessionName.postValue(session.sessionLabel)
-
-
+            savedStateHandle.getLiveData<String>("uuid").value?.let {
+                session = sessionRepo.getCurrentSession(it)
+                image = buildingImageRepo.getFloorImage(it, 0)
+                floorCount = buildingImageRepo.getFloorCount(it)
+                currentBitmap.postValue(null)
+                currentBitmap.postValue(image)
+                accessPointRepo.getAllScans(it).collect { list ->
+                    _savedPoints = list
+                    savedPoints.postValue(list.filter { pred -> pred.floor == floor.value })
+                }
+            }
         }
     }
 
@@ -58,12 +65,12 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
         viewModelScope.launch(Dispatchers.IO) {
             list.forEach {
                 val distance = calculateDistanceInMeters(it.level, it.frequency)
-                val session = sessionRepo.getCurrentSession(uuid)
+                val sessionSafe = session ?: return@launch
                 val position = currentPosition ?: return@launch
                 val floorVal = floor.value ?: return@launch
 
                 accessPointRepo.saveAccessPointScan(AccessPoint(
-                    uuid = session.uuid,
+                    uuid = sessionSafe.uuid,
                     currentLocationX = position.x,
                     currentLocationY =  position.y,
                     floor = floorVal,
@@ -78,14 +85,20 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
     fun moveImage(number: Int, uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
             if (number == 1 || number == -1) {
-                if ((floor.value == floorCount-1 && number == 1) || (floor.value == 0 && number == -1)) return@launch
+                val count = floorCount ?: return@launch
+                if ((floor.value == count-1 && number == 1) || (floor.value == 0 && number == -1)) return@launch
                 val floorVal = floor.value ?: return@launch
                 floor.postValue(floorVal+number)
                 currentBitmap.postValue(null)
+                getAccessPoints(floorVal+number)
                 val buildingImage = buildingImageRepo.getFloorImage(uuid, floorVal+number)
                 currentBitmap.postValue(buildingImage)
             }
         }
+    }
+
+    private suspend fun getAccessPoints(floor: Int) {
+        savedPoints.postValue(_savedPoints.filter { pred -> pred.floor == floor })
     }
 
     fun onPause() {

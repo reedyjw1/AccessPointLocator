@@ -27,6 +27,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
+import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -61,6 +62,17 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             }
         }
 
+    private val savedPointsObserver =
+        Observer { points: List<AccessPoint> ->
+            if(points.isNotEmpty()) {
+                executeImageView.completedPointScans = points
+            } else {
+                executeImageView.completedPointScans = emptyList()
+            }
+            executeImageView.touchedPoint = null
+            executeImageView.invalidate()
+        }
+
     @SuppressLint("SetTextI18n")
     private val floorObserver =
         Observer { number: Int ->
@@ -71,7 +83,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         super.onViewCreated(view, savedInstanceState)
         showUpNavigation()
         val uuid = arguments?.getString("uuid") ?: return
-        viewModel.getCurrentSession(uuid)
         executeImageView.listener = this
         startScanBtn.setOnClickListener {
             startScan()
@@ -113,12 +124,14 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         //viewModel.getCurrentSession(uuid)
         viewModel.currentBitmap.observe(this, imageObserver)
         viewModel.floor.observe(this, floorObserver)
+        viewModel.savedPoints.observe(this, savedPointsObserver)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.currentBitmap.removeObserver(imageObserver)
         viewModel.floor.removeObserver(floorObserver)
+        viewModel.savedPoints.removeObserver(savedPointsObserver)
         viewModel.currentBitmap.postValue(null)
     }
 

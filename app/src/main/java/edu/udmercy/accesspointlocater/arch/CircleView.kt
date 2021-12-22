@@ -1,5 +1,6 @@
 package edu.udmercy.accesspointlocater.arch
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -24,8 +26,8 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
     }
     private var strokeWidth = 0
     private val paint = Paint()
-    private var touchedPoint: PointF? = null
-    var completedPointScans = mutableListOf<PointF>()
+    var touchedPoint: PointF? = null
+    var completedPointScans: List<AccessPoint> = listOf()
     var threshold = 50f
     var listener: CircleViewPointListener? = null
 
@@ -38,6 +40,7 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
         }
     }
 
+    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -65,7 +68,8 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
 
         // Previously clicked points
         completedPointScans.forEach {
-            sourceToViewCoord(it)?.let { source ->
+            val tempPoint = PointF(it.currentLocationX, it.currentLocationY)
+            sourceToViewCoord(tempPoint)?.let { source ->
                 paint.isAntiAlias = true
                 paint.style = Paint.Style.FILL_AND_STROKE
                 paint.strokeCap = Cap.ROUND
