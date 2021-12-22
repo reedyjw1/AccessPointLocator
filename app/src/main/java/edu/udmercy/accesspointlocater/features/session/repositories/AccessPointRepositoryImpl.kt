@@ -9,9 +9,9 @@ class AccessPointRepositoryImpl(private val appContext: Context): AccessPointRep
     private val accessPointRepo = Room.databaseBuilder(
         appContext,
         AppDatabase::class.java, "FingerPrintingDb"
-    ).build().accessPointDao()
+    ).fallbackToDestructiveMigration().build().accessPointDao()
 
-    override fun saveAccessPointScan(list: List<AccessPoint>) {
-        accessPointRepo.insertAll(*list.toTypedArray())
+    override fun saveAccessPointScan(ap: AccessPoint) {
+        accessPointRepo.insertAll(ap)
     }
 }

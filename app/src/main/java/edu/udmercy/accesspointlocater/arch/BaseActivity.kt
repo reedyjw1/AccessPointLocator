@@ -28,21 +28,9 @@ open class BaseActivity: AppCompatActivity() {
         Manifest.permission.CHANGE_WIFI_STATE,
         Manifest.permission.ACCESS_WIFI_STATE,
         Manifest.permission.ACCESS_NETWORK_STATE,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
     )
-
-    private val permissions =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            )
-        } else {
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            )
-        }
 
     private val missingPermissions = mutableListOf<String>()
 
@@ -66,28 +54,6 @@ open class BaseActivity: AppCompatActivity() {
                 arrayPermissions, FOREGROUND_REQUEST_CODE
             )
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                checkBackgroundPermission()
-            } else {
-                startFunction()
-            }
-        }
-    }
-
-    private fun checkBackgroundPermission(){
-        for(permission in permissions){
-            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
-                Log.i(TAG, "checkPermission: Missing permission: $permission")
-                missingPermissions.add(permission)
-            }
-        }
-        if(missingPermissions.isNotEmpty()){
-            val arrayPermissions = missingPermissions.toTypedArray()
-            Log.i(TAG, "checkPermission: Requesting Permissions")
-            ActivityCompat.requestPermissions(this,
-                arrayPermissions, BACKGROUND_REQUEST_CODE
-            )
-        } else {
             startFunction()
         }
     }
@@ -102,11 +68,7 @@ open class BaseActivity: AppCompatActivity() {
             FOREGROUND_REQUEST_CODE -> {
                 // Checking whether user granted the permission or not.
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        checkBackgroundPermission()
-                    } else {
-                        startFunction()
-                    }
+                    startFunction()
                 }
                 else {
                     Toast.makeText(this,"Denied", Toast.LENGTH_SHORT).show()

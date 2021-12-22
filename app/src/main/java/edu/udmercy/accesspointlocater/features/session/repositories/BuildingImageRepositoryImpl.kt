@@ -12,7 +12,7 @@ class BuildingImageRepositoryImpl(private val appContext: Context): BuildingImag
     private val buildingImageRepo = Room.databaseBuilder(
         appContext,
         AppDatabase::class.java, "FingerPrintingDb"
-    ).build().buildingImageDao()
+    ).fallbackToDestructiveMigration().build().buildingImageDao()
 
     override fun addImagesToSession(buildingImageList: List<BuildingImage>) {
         buildingImageRepo.insertAll(*buildingImageList.toTypedArray())

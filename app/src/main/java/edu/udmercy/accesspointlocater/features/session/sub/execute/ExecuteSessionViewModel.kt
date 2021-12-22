@@ -58,15 +58,14 @@ class ExecuteSessionViewModel: ViewModel(), KoinComponent {
                 val y = currentPosition?.y ?: return@launch
                 val floorVal = floor.value ?: return@launch
 
-                accessPointRepo.saveAccessPointScan(list.map {
-                    AccessPoint(
-                        uuid = session.uuid,
-                        currentLocationX = x,
-                        currentLocationY =  y,
-                        floor = floorVal,
-                        distance = distance
-                    )
-                })
+                accessPointRepo.saveAccessPointScan(AccessPoint(
+                    uuid = session.uuid,
+                    currentLocationX = x,
+                    currentLocationY =  y,
+                    floor = floorVal,
+                    distance = distance,
+                    ssid = it.BSSID
+                ))
             }
         }
     }

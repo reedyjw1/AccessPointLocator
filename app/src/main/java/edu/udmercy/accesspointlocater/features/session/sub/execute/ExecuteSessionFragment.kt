@@ -104,6 +104,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         val wifiName = wifiManager.connectionInfo.ssid.toString()
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
         val uuid = arguments?.getString("uuid") ?: return
+        Log.i(TAG, "scanSuccess: $filteredResults")
         viewModel.saveResults(filteredResults, uuid)
     }
 

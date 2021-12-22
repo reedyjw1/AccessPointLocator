@@ -20,4 +20,6 @@ data class AccessPoint(
     val floor: Int,
     @ColumnInfo
     val distance: Double,
+    @ColumnInfo
+    val ssid: String
 )

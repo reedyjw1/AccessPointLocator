@@ -11,7 +11,7 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
     private val sessionDb = Room.databaseBuilder(
         appContext,
         AppDatabase::class.java, "FingerPrintingDb"
-    ).build().sessionDao()
+    ).fallbackToDestructiveMigration().build().sessionDao()
 
     override fun createNewSession(
         uuid: String,
