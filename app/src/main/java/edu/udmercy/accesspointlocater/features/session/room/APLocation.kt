@@ -5,19 +5,17 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class AccessPoint(
+data class APLocation(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     @ColumnInfo
     val uuid: String,
     @ColumnInfo
-    val currentLocationX: Float,
+    val xCoordinate: Float,
     @ColumnInfo
-    val currentLocationY: Float,
+    val yCoordinate: Float,
     @ColumnInfo
     val floor: Int,
     @ColumnInfo
-    val distance: Double,
-    @ColumnInfo
-    val ssid: String
+    val ssid: String,
 )
