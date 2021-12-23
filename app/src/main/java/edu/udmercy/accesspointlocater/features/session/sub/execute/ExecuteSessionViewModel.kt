@@ -14,6 +14,7 @@ import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepos
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.session.room.Session
+import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -29,6 +30,8 @@ class ExecuteSessionViewModel(
     private val sessionRepo: SessionRepository by inject()
     private val accessPointRepo: AccessPointRepository by inject()
     private val buildingImageRepo: BuildingImageRepository by inject()
+    var _isScanning = false
+    var isScanning = MutableLiveData<Event<Boolean>>()
 
     private var session: Session? = null
     private var image: BuildingImage?= null

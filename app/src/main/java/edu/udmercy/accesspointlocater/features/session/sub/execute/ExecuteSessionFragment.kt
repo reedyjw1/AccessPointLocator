@@ -25,10 +25,13 @@ import android.view.MotionEvent
 
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
+import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
+import edu.udmercy.accesspointlocater.utils.Event
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -52,6 +55,8 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             } else {
                 scanFailure()
             }
+            viewModel._isScanning = false
+            viewModel.isScanning.postValue(Event(false))
         }
     }
 
@@ -71,6 +76,18 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             }
             executeImageView.touchedPoint = null
             executeImageView.invalidate()
+        }
+
+    private val isScanningObserver =
+        Observer { scanning: Event<Boolean> ->
+            scanning.getContentIfNotHandledOrReturnNull()?.let {
+                if(it) {
+                    scanningContainer.visibility = View.VISIBLE
+                } else {
+                    scanningContainer.visibility = View.GONE
+                    toast("Scan Complete!")
+                }
+            }
         }
 
     @SuppressLint("SetTextI18n")
@@ -93,6 +110,8 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private fun startScan() {
+        viewModel._isScanning = true
+        viewModel.isScanning.postValue(Event(true))
         wifiManager = requireActivity().getSystemService(Context.WIFI_SERVICE) as WifiManager
         val intentFilter = IntentFilter()
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
@@ -125,6 +144,12 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         viewModel.currentBitmap.observe(this, imageObserver)
         viewModel.floor.observe(this, floorObserver)
         viewModel.savedPoints.observe(this, savedPointsObserver)
+        viewModel.isScanning.observe(this, isScanningObserver)
+    }
+
+    private fun toast(msg: String) {
+        val safeView = view ?: return
+        Snackbar.make(safeView, msg, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onPause() {
@@ -132,6 +157,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         viewModel.currentBitmap.removeObserver(imageObserver)
         viewModel.floor.removeObserver(floorObserver)
         viewModel.savedPoints.removeObserver(savedPointsObserver)
+        viewModel.isScanning.removeObserver(isScanningObserver)
         viewModel.currentBitmap.postValue(null)
     }
 
@@ -140,7 +166,11 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     override fun onNavigationClick() {
-        super.onNavigationClick()
-        viewModel.onPause()
+        if(!viewModel._isScanning) {
+            super.onNavigationClick()
+            viewModel.onPause()
+        } else {
+            toast("Please wait until scanning is complete.")
+        }
     }
 }
