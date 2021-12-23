@@ -7,9 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,12 +17,14 @@ import kotlinx.android.synthetic.main.fragment_execute_session.*
 import android.graphics.PointF
 import android.net.wifi.WifiManager
 import android.util.Log
+import android.view.*
 
-import android.view.MotionEvent
-
-import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.google.android.material.snackbar.Snackbar
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
@@ -34,6 +33,10 @@ import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import androidx.navigation.NavController
+
+
+
 
 
 class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener {
@@ -96,6 +99,15 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             floorInvalidBtn.text = "Floor ${number+1}"
         }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        setHasOptionsMenu(true)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showUpNavigation()
@@ -107,6 +119,27 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         previousFloorBtn.setOnClickListener { viewModel.moveImage(-1, uuid) }
         nextFloorBtn.setOnClickListener { viewModel.moveImage(1, uuid) }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.execute_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.finished -> {
+                viewModel.calculateResults()
+                val bundle = bundleOf("uuid" to arguments?.getString("uuid"))
+                findNavController().navigate(R.id.action_executeSession_to_viewSession, bundle)
+                return true
+            }
+            R.id.delete -> {
+
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun startScan() {
@@ -134,13 +167,11 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private fun scanFailure() {
-
+        toast("Scan Failed!")
     }
 
     override fun onResume() {
         super.onResume()
-        //val uuid = arguments?.getString("uuid") ?: return
-        //viewModel.getCurrentSession(uuid)
         viewModel.currentBitmap.observe(this, imageObserver)
         viewModel.floor.observe(this, floorObserver)
         viewModel.savedPoints.observe(this, savedPointsObserver)

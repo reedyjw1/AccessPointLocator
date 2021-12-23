@@ -36,4 +36,8 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
     override fun getCurrentSession(uuid: String): Session {
         return sessionDb.getCurrentSession(uuid)
     }
+
+    override fun updateSession(session: Session) {
+        sessionDb.insertAll(session)
+    }
 }

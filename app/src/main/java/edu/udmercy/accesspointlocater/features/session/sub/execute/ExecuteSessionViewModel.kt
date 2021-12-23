@@ -85,6 +85,23 @@ class ExecuteSessionViewModel(
         }
     }
 
+    fun calculateResults() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val sessionTemp = session ?: return@launch
+            sessionRepo.updateSession(
+                Session(
+                    uuid = sessionTemp.uuid,
+                    sessionLabel = sessionTemp.sessionLabel,
+                    timestamp = sessionTemp.timestamp,
+                    building = sessionTemp.building,
+                    true
+                )
+            )
+
+        }
+
+    }
+
     fun moveImage(number: Int, uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
             if (number == 1 || number == -1) {

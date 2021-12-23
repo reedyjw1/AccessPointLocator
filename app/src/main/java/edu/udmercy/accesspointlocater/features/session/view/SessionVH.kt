@@ -19,6 +19,11 @@ class SessionVH(itemView: View): RecyclerView.ViewHolder(itemView) {
                 itemView.titleTextView.text = session.name
                 itemView.descriptionTextView.text = session.desc
                 itemView.dateTextView.text = session.date
+                if (session.isFinished) {
+                    itemView.checkmarkImageView.visibility = View.VISIBLE
+                } else {
+                    itemView.checkmarkImageView.visibility = View.INVISIBLE
+                }
                 itemView.setOnClickListener { itemClicked?.invoke(session) }
             }
         }

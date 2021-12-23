@@ -8,4 +8,5 @@ interface SessionRepository {
     fun createNewSession(uuid: String, timestamp: String, sessionLabel: String, buildingName: String)
     fun getAllSessions(): Flow<List<Session>>
     fun getCurrentSession(uuid: String): Session
+    fun updateSession(session: Session)
 }

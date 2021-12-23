@@ -38,6 +38,9 @@
         android:name="edu.udmercy.accesspointlocater.features.session.sub.execute.ExecuteSessionFragment"
         android:label="@string/fragmentExecuteSessionLabel"
         tools:layout="@layout/fragment_execute_session">
+        <action
+            android:id="@+id/action_executeSession_to_viewSession"
+            app:destination="@id/viewSession"/>
         <argument
             android:name="uuid"
             app:argType="string"

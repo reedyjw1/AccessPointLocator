@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.features.session.model.SessionUI
@@ -30,6 +31,11 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
         showUpNavigation()
         val uuid = arguments?.getString("uuid") ?: return
         viewModel.getCurrentSession(uuid)
+    }
+
+    override fun onNavigationClick() {
+        findNavController().popBackStack(R.id.executeSession, false)
+        super.onNavigationClick()
     }
 
     override fun onResume() {

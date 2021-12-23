@@ -15,4 +15,7 @@
     <string name="previousFloorLabel">Prev.</string>
     <string name="nextFloorLabel">Next</string>
     <string name="scanningLabel">Scanning…</string>
+
+    <string name="menuDone">End Session</string>
+    <string name="menuDelete">Delete a Scan</string>
 </resources>
