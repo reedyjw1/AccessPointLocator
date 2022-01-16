@@ -3,6 +3,7 @@ package edu.udmercy.accesspointlocater.features.session.sub.create
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -13,8 +14,16 @@ import android.view.WindowManager.LayoutParams
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.davemorrissey.labs.subscaleview.ImageSource
+import edu.udmercy.accesspointlocater.arch.ScaleCircleView
+import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.android.synthetic.main.dialog_create_session.*
+import android.view.ViewGroup
+
+
+
+
 
 
 class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
@@ -32,6 +41,16 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
                 if(it) {
                     dismiss()
                 }
+            }
+        }
+
+    private val presentedBitmapObserver =
+        Observer { bitmap: Bitmap? ->
+            if(bitmap != null) {
+                val params: ViewGroup.LayoutParams = scaleViewContainer.layoutParams
+                params.height = LayoutParams.WRAP_CONTENT
+                scaleViewContainer.requestLayout()
+                scaleImageView.setImage(ImageSource.bitmap(bitmap))
             }
         }
 
@@ -73,12 +92,17 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
                         viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
                     }
                 }
+                val uri = data.clipData?.getItemAt(0)?.uri ?: return
+                requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
+                    viewModel.presentedBitmap.postValue(BitmapFactory.decodeByteArray(it, 0, it.size))
+                }
                 selectImageBtn.text = requireContext().getText(R.string.imageSaved)
                 selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
             } else {
                 val uri = data?.data ?: return
                 requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
                     viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
+                    viewModel.presentedBitmap.postValue(BitmapFactory.decodeByteArray(it, 0, it.size))
                     selectImageBtn.text = requireContext().getText(R.string.imageSaved)
                     selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
                 }
@@ -94,10 +118,12 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         dialog?.window?.attributes = params as LayoutParams
 
         viewModel.saved.observe(this, databaseSavedObserver)
+        viewModel.presentedBitmap.observe(this, presentedBitmapObserver)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.saved.removeObserver(databaseSavedObserver)
+        viewModel.presentedBitmap.removeObserver(presentedBitmapObserver)
     }
 }

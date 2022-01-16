@@ -6,84 +6,168 @@
     android:paddingBottom="10dp"
     android:paddingTop="10dp">
 
-    <TextView
-        android:id="@+id/title"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fragmentCreateSessionLabel"
-        android:fontFamily="@font/inter_semi_bold"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="24sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:padding="5dp"/>
+        android:layout_height="match_parent">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/sessionEditText"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/title"
-        android:hint="@string/sessionLabelHint"
-        app:layout_constraintWidth_percent="0.8"
-        android:layout_marginVertical="8dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp">
-
-        <com.google.android.material.textfield.TextInputEditText
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="match_parent">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/buildingEditText"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/buildingLabelHint"
-        app:layout_constraintWidth_percent="0.8"
-        app:layout_constraintTop_toBottomOf="@+id/sessionEditText"
-        android:layout_marginVertical="8dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp">
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/fragmentCreateSessionLabel"
+                android:fontFamily="@font/inter_semi_bold"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="24sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:padding="5dp"/>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/sessionEditText"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                android:hint="@string/sessionLabelHint"
+                app:layout_constraintWidth_percent="0.8"
+                android:layout_marginVertical="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/selectImageBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/buildingEditText"
-        app:icon="@drawable/ic_baseline_add_24"
-        android:text="@string/imageLabelHint"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:fontFamily="@font/inter_semi_bold"
-        android:textSize="12sp"
-        app:iconGravity="textStart"
-        app:iconPadding="10dp"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/doneBtn"
-        android:layout_width="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/selectImageBtn"
-        android:layout_height="wrap_content"
-        android:text="@string/doneLabelHint"
-        android:layout_margin="10dp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:fontFamily="@font/inter_semi_bold"
-        android:textSize="12sp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/buildingEditText"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/buildingLabelHint"
+                app:layout_constraintWidth_percent="0.8"
+                app:layout_constraintTop_toBottomOf="@+id/sessionEditText"
+                android:layout_marginVertical="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/selectImageBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/buildingEditText"
+                app:icon="@drawable/ic_baseline_add_24"
+                android:text="@string/imageLabelHint"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:fontFamily="@font/inter_semi_bold"
+                android:textSize="12sp"
+                app:iconGravity="textStart"
+                app:iconPadding="10dp"/>
+
+            <TextView
+                android:id="@+id/scaleTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/selectImageBtn"
+                android:text="@string/scaleTitleLabel"
+                android:fontFamily="@font/inter_semi_bold"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="24sp"
+                android:layout_margin="10dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/scaleViewContainer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:elevation="4dp"
+                app:cardCornerRadius="5dp"
+                app:layout_constraintTop_toBottomOf="@id/scaleTitle"
+                app:layout_constraintBottom_toTopOf="@id/scaleTextView">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <edu.udmercy.accesspointlocater.arch.ScaleCircleView
+                        android:id="@+id/scaleImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/scaleTextView"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/scaleSpinner"
+                app:layout_constraintTop_toBottomOf="@id/scaleViewContainer"
+                android:hint="@string/scaleTextLabel"
+                app:layout_constraintWidth_percent="0.8"
+                android:layout_marginVertical="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Spinner
+                android:id="@+id/scaleSpinner"
+                android:layout_width="0dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scaleTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/doneBtn"
+                android:entries="@array/scales"
+                android:backgroundTint="@color/primary"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/doneBtn"
+                android:layout_width="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_height="wrap_content"
+                android:text="@string/doneLabelHint"
+                android:layout_margin="10dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:fontFamily="@font/inter_semi_bold"
+                android:textSize="12sp"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

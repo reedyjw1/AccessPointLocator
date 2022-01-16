@@ -18,4 +18,14 @@
 
     <string name="menuDone">End Session</string>
     <string name="menuDelete">Delete a Scan</string>
+
+    <string name="scaleBtnLabel">Done</string>
+    <string name="scaleTextLabel">Point Distance</string>
+    <string name="scaleTitleLabel">Set the Scale of the Image</string>
+
+    <string-array name="scales">
+        <item>Meters</item>
+        <item>Feet</item>
+        <item>Inches</item>
+    </string-array>
 </resources>

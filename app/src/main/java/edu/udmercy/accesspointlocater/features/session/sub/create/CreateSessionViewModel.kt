@@ -20,6 +20,7 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
     private val buildingImageRepo: BuildingImageRepository by inject()
     val saved = MutableLiveData<Event<Boolean>>()
     val buildingImages: MutableList<Bitmap> = mutableListOf()
+    val presentedBitmap: MutableLiveData<Bitmap> = MutableLiveData()
 
     fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>) {
         viewModelScope.launch(Dispatchers.IO) {
