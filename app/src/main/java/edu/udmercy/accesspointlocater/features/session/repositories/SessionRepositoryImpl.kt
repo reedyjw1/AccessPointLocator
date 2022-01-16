@@ -11,19 +11,19 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
     private val sessionDb = Room.databaseBuilder(
         appContext,
         AppDatabase::class.java, "FingerPrintingDb"
-    ).build().sessionDao()
+    ).fallbackToDestructiveMigration().build().sessionDao()
 
     override fun createNewSession(
+        uuid: String,
         timestamp: String,
         sessionLabel: String,
         buildingName: String,
-        image: Bitmap
     ) {
         sessionDb.insertAll(
             Session(
+                uuid = uuid,
                 sessionLabel = sessionLabel,
                 timestamp = timestamp,
-                image = image,
                 building = buildingName
             )
         )
@@ -35,5 +35,9 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
 
     override fun getCurrentSession(uuid: String): Session {
         return sessionDb.getCurrentSession(uuid)
+    }
+
+    override fun updateSession(session: Session) {
+        sessionDb.insertAll(session)
     }
 }

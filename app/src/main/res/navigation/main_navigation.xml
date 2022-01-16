@@ -15,7 +15,10 @@
             app:destination="@id/createSession" />
         <action
             android:id="@+id/action_sessionList_to_viewSession"
-            app:destination="@id/viewSession">
+            app:destination="@id/viewSession"/>
+        <action
+            android:id="@+id/action_sessionList_to_executeSession"
+            app:destination="@id/executeSession">
         </action>
     </fragment>
 
@@ -24,6 +27,20 @@
         android:name="edu.udmercy.accesspointlocater.features.session.sub.viewSession.ViewSessionFragment"
         android:label="@string/fragmentViewSessionLabel"
         tools:layout="@layout/fragment_view_session">
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/executeSession"
+        android:name="edu.udmercy.accesspointlocater.features.session.sub.execute.ExecuteSessionFragment"
+        android:label="@string/fragmentExecuteSessionLabel"
+        tools:layout="@layout/fragment_execute_session">
+        <action
+            android:id="@+id/action_executeSession_to_viewSession"
+            app:destination="@id/viewSession"/>
         <argument
             android:name="uuid"
             app:argType="string"

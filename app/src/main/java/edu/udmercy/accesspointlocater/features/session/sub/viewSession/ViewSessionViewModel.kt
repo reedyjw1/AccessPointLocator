@@ -19,7 +19,7 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
     fun getCurrentSession(uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val session =sessionRepo.getCurrentSession(uuid)
-            currentBitmap.postValue(session.image)
+            //currentBitmap.postValue(session.images)
             sessionName.postValue(session.sessionLabel)
 
         }

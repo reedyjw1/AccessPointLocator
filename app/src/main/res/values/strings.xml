@@ -3,12 +3,29 @@
     <string name="fragmentSessionLabel">Sessions</string>
     <string name="fragmentCreateSessionLabel">Create New Session</string>
     <string name="fragmentViewSessionLabel">View Session</string>
+    <string name="fragmentExecuteSessionLabel">Execute Session</string>
 
     <string name="sessionLabelHint">Session Name</string>
     <string name="buildingLabelHint">Building Name</string>
-    <string name="imageLabelHint">Select the Building Layout Image</string>
+    <string name="imageLabelHint">Select Images</string>
     <string name="doneLabelHint">Done</string>
 
-    <string name="imageSaved">Image Added!</string>
+    <string name="imageSaved">Images Added!</string>
+    <string name="startScanLabel">Start Scan</string>
+    <string name="previousFloorLabel">Prev.</string>
+    <string name="nextFloorLabel">Next</string>
+    <string name="scanningLabel">Scanning…</string>
 
+    <string name="menuDone">End Session</string>
+    <string name="menuDelete">Delete a Scan</string>
+
+    <string name="scaleBtnLabel">Done</string>
+    <string name="scaleTextLabel">Point Distance</string>
+    <string name="scaleTitleLabel">Set the Scale of the Image</string>
+
+    <string-array name="scales">
+        <item>Meters</item>
+        <item>Feet</item>
+        <item>Inches</item>
+    </string-array>
 </resources>

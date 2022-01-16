@@ -3,6 +3,7 @@ package edu.udmercy.accesspointlocater.features.session.sub.create
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -13,8 +14,16 @@ import android.view.WindowManager.LayoutParams
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.davemorrissey.labs.subscaleview.ImageSource
+import edu.udmercy.accesspointlocater.arch.ScaleCircleView
+import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.android.synthetic.main.dialog_create_session.*
+import android.view.ViewGroup
+
+
+
+
 
 
 class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
@@ -35,15 +44,25 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
             }
         }
 
+    private val presentedBitmapObserver =
+        Observer { bitmap: Bitmap? ->
+            if(bitmap != null) {
+                val params: ViewGroup.LayoutParams = scaleViewContainer.layoutParams
+                params.height = LayoutParams.WRAP_CONTENT
+                scaleViewContainer.requestLayout()
+                scaleImageView.setImage(ImageSource.bitmap(bitmap))
+            }
+        }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         doneBtn.setOnClickListener {
             val sessionLabel = sessionEditText.editText?.text.toString()
             val buildingName = buildingEditText.editText?.text.toString()
-            val bitmap = viewModel.buildingImage
+            val bitmaps = viewModel.buildingImages
 
-            if(sessionLabel != "" && buildingName != "" && bitmap != null) {
-                viewModel.addNewSession(sessionLabel, buildingName, bitmap)
+            if(sessionLabel != "" && buildingName != "" && bitmaps.isNotEmpty()) {
+                viewModel.addNewSession(sessionLabel, buildingName, bitmaps)
             } else {
                 Toast.makeText(requireContext(), "Please enter a valid Session Name, Building Name, or Picture!", Toast.LENGTH_LONG).show()
             }
@@ -56,6 +75,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         val intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         startActivityForResult(Intent.createChooser(intent, "Select the Building Image"), SELECT_PICTURE)
     }
 
@@ -63,11 +83,29 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == SELECT_PICTURE) {
-            val uri = data?.data ?: return
-            requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
-                viewModel.buildingImage = BitmapFactory.decodeByteArray(it,0, it.size)
+            Log.i(TAG, "onActivityResult: ${data?.data}")
+            if(data?.clipData != null) {
+                val count = data.clipData?.itemCount ?: return
+                for (item in 0 until count) {
+                    val uri = data.clipData?.getItemAt(item)?.uri ?: return
+                    requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
+                        viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
+                    }
+                }
+                val uri = data.clipData?.getItemAt(0)?.uri ?: return
+                requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
+                    viewModel.presentedBitmap.postValue(BitmapFactory.decodeByteArray(it, 0, it.size))
+                }
                 selectImageBtn.text = requireContext().getText(R.string.imageSaved)
                 selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
+            } else {
+                val uri = data?.data ?: return
+                requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
+                    viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
+                    viewModel.presentedBitmap.postValue(BitmapFactory.decodeByteArray(it, 0, it.size))
+                    selectImageBtn.text = requireContext().getText(R.string.imageSaved)
+                    selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
+                }
             }
         }
     }
@@ -80,10 +118,12 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         dialog?.window?.attributes = params as LayoutParams
 
         viewModel.saved.observe(this, databaseSavedObserver)
+        viewModel.presentedBitmap.observe(this, presentedBitmapObserver)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.saved.removeObserver(databaseSavedObserver)
+        viewModel.presentedBitmap.removeObserver(presentedBitmapObserver)
     }
 }

@@ -11,7 +11,7 @@ interface SessionDAO {
     @Query("SELECT * FROM Session where uuid==(:uuid)")
     fun getCurrentSession(uuid: String): Session
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg users: Session)
 
     @Delete

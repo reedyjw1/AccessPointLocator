@@ -3,18 +3,19 @@ package edu.udmercy.accesspointlocater.features.session.room
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
 
 @Entity
-data class Session(
-    @PrimaryKey
-    val uuid: String = UUID.randomUUID().toString(),
+data class APLocation(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     @ColumnInfo
-    val sessionLabel: String,
+    val uuid: String,
     @ColumnInfo
-    val timestamp: String,
+    val xCoordinate: Float,
     @ColumnInfo
-    val building: String,
+    val yCoordinate: Float,
     @ColumnInfo
-    var isFinished: Boolean = false
+    val floor: Int,
+    @ColumnInfo
+    val ssid: String,
 )
