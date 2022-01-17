@@ -10,9 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
 import com.lemmingapex.trilateration.TrilaterationFunction
+import edu.udmercy.accesspointlocater.features.session.repositories.APLocationRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
+import edu.udmercy.accesspointlocater.features.session.room.APLocation
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.session.room.Session
@@ -34,6 +36,8 @@ class ExecuteSessionViewModel(
     private val sessionRepo: SessionRepository by inject()
     private val accessPointRepo: AccessPointRepository by inject()
     private val buildingImageRepo: BuildingImageRepository by inject()
+    private val apLocationRepo: APLocationRepository by inject()
+
     var _isScanning = false
     var isScanning = MutableLiveData<Event<Boolean>>()
 
@@ -101,7 +105,9 @@ class ExecuteSessionViewModel(
                     true
                 )
             )
-            calculateTrilateration(_savedPoints)
+            val apLocations = calculateTrilateration(_savedPoints, sessionTemp.uuid)
+            apLocationRepo.saveAccessPointLocations(apLocations)
+
             withContext(Dispatchers.Main) {
                 completion()
             }
@@ -139,17 +145,31 @@ class ExecuteSessionViewModel(
         return (dist *100.0 ) / 1000.0
     }
 
-    private fun calculateTrilateration(list: List<AccessPoint>) {
-        val positions = mutableListOf<DoubleArray>()
-        for(item in list) {
-            positions.add(doubleArrayOf(item.currentLocationX.toDouble(), item.currentLocationY.toDouble()))
+    private fun calculateTrilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
+        val apLocationList = mutableListOf<APLocation>()
+        val ssidList = list.map { it.ssid }.distinct()
+        for (ssid in ssidList) {
+            val positions = mutableListOf<DoubleArray>()
+            for (item in list.filter { it.ssid == ssid }) {
+                positions.add(
+                    doubleArrayOf(
+                        item.currentLocationX.toDouble(),
+                        item.currentLocationY.toDouble()
+                    )
+                )
+            }
+            val distances = list.filter{ it.ssid == ssid }.map { it.distance }.toDoubleArray()
+
+            val solver = NonLinearLeastSquaresSolver(
+                TrilaterationFunction(
+                    positions.toTypedArray(),
+                    distances
+                ), LevenbergMarquardtOptimizer()
+            )
+            val optimum = solver.solve()
+            val centroid = optimum.point.toArray().toList()
+            apLocationList.add(APLocation(0, uuid, centroid[0].toFloat(), centroid[1].toFloat(), 0, ssid))
         }
-        val distances = list.map { it.distance }.toDoubleArray()
-
-        val solver = NonLinearLeastSquaresSolver(TrilaterationFunction(positions.toTypedArray(), distances), LevenbergMarquardtOptimizer())
-        val optimum = solver.solve()
-        val centroid = optimum.point.toArray().toList()
-        Log.i(TAG, "calculateTrilateration: $centroid")
-
+        return apLocationList
     }
 }

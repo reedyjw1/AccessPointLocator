@@ -9,5 +9,6 @@ val appDependencies = module {
     single<SessionRepository> { SessionRepositoryImpl(get()) }
     single<AccessPointRepository> { AccessPointRepositoryImpl(get()) }
     single<BuildingImageRepository> { BuildingImageRepositoryImpl(get()) }
+    single<APLocationRepository> { APLocationRepositoryImpl(get()) }
 
 }
