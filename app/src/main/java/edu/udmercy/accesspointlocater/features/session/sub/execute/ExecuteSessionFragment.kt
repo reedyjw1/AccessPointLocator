@@ -34,9 +34,8 @@ import edu.udmercy.accesspointlocater.utils.Event
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import androidx.navigation.NavController
-
-
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener {
@@ -129,9 +128,13 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.finished -> {
-                viewModel.calculateResults()
-                val bundle = bundleOf("uuid" to arguments?.getString("uuid"))
-                findNavController().navigate(R.id.action_executeSession_to_viewSession, bundle)
+                // TODO Make scanning view load
+                viewModel.calculateResults {
+                    // TODO Hide scanning view
+                    val bundle = bundleOf("uuid" to arguments?.getString("uuid"))
+                    findNavController().navigate(R.id.action_executeSession_to_viewSession, bundle)
+
+                }
                 return true
             }
             R.id.delete -> {

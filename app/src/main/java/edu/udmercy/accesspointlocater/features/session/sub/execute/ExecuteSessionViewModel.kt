@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
+import com.lemmingapex.trilateration.TrilaterationFunction
 import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
@@ -18,6 +20,8 @@ import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import kotlin.math.abs
@@ -85,7 +89,7 @@ class ExecuteSessionViewModel(
         }
     }
 
-    fun calculateResults() {
+    fun calculateResults(completion: ()->Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val sessionTemp = session ?: return@launch
             sessionRepo.updateSession(
@@ -97,6 +101,10 @@ class ExecuteSessionViewModel(
                     true
                 )
             )
+            calculateTrilateration(_savedPoints)
+            withContext(Dispatchers.Main) {
+                completion()
+            }
 
         }
 
@@ -129,5 +137,19 @@ class ExecuteSessionViewModel(
         val exp = (27.55 - 20 * log10(freqInMHz.toDouble()) + abs(signalLevelInDb)) / 20.0
         val dist = 10.0.pow(exp)
         return (dist *100.0 ) / 1000.0
+    }
+
+    private fun calculateTrilateration(list: List<AccessPoint>) {
+        val positions = mutableListOf<DoubleArray>()
+        for(item in list) {
+            positions.add(doubleArrayOf(item.currentLocationX.toDouble(), item.currentLocationY.toDouble()))
+        }
+        val distances = list.map { it.distance }.toDoubleArray()
+
+        val solver = NonLinearLeastSquaresSolver(TrilaterationFunction(positions.toTypedArray(), distances), LevenbergMarquardtOptimizer())
+        val optimum = solver.solve()
+        val centroid = optimum.point.toArray().toList()
+        Log.i(TAG, "calculateTrilateration: $centroid")
+
     }
 }
