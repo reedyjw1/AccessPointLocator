@@ -8,23 +8,38 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
+import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.features.session.model.SessionUI
+import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
+import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.session.view.SessionRecyclerAdapter
 import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
+import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlinx.android.synthetic.main.fragment_view_session.*
+import kotlin.math.floor
+
 
 class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
 
     private val viewModel by viewModels<ViewSessionViewModel>()
 
     private val imageObserver =
-        Observer { bitmap: Bitmap? ->
+        Observer { bitmap: BuildingImage? ->
             if(bitmap != null) {
-                //buildingImageView.setImageBitmap(bitmap)
+                accessPointImage.setImage(ImageSource.bitmap(bitmap.image))
             }
         }
+
+    @SuppressLint("SetTextI18n")
+    private val floorObserver =
+        Observer { number: Int ->
+            accessViewerFloor.text = "Floor ${number+1}"
+        }
+
     private val adapter by lazy {
         AccessPointInfoRecycler()
     }
@@ -42,23 +57,31 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
         val uuid = arguments?.getString("uuid") ?: return
         viewModel.getCurrentSession(uuid)
         accessPointInformationRecycler.adapter = adapter
+        val decor = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        accessPointInformationRecycler.addItemDecoration(decor)
+        accessViewerPreviousFloorBtn.setOnClickListener { viewModel.moveImage(-1, uuid) }
+        accessViewerNextFloorBtn.setOnClickListener { viewModel.moveImage(1, uuid) }
     }
 
     override fun onNavigationClick() {
-        findNavController().popBackStack(R.id.executeSession, false)
         super.onNavigationClick()
+        viewModel.onPause()
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.currentBitmap.observe(this, imageObserver)
         viewModel.accessPointInfoList.observe(this, accessPointInfoListObserver)
+        viewModel.currentFloor.observe(this, floorObserver)
+
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.currentBitmap.removeObserver(imageObserver)
         viewModel.accessPointInfoList.removeObserver(accessPointInfoListObserver)
+        viewModel.currentFloor.removeObserver(floorObserver)
+        viewModel.currentBitmap.postValue(null)
     }
 
 }

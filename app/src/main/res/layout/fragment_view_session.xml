@@ -32,7 +32,7 @@
             android:layout_height="match_parent">
 
             <edu.udmercy.accesspointlocater.arch.AccessPointImageView
-                android:id="@+id/executeImageView"
+                android:id="@+id/accessPointImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

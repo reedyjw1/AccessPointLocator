@@ -3,9 +3,10 @@ package edu.udmercy.accesspointlocater.features.viewSession.model
 import androidx.recyclerview.widget.DiffUtil
 
 data class AccessPointInfo(
-    val floorNumber: String,
+    val floorNumber: Int,
     val ssid: String,
-    val uuid: String
+    val uuid: String,
+    val apNumber: Int
 ) {
 
     companion object{

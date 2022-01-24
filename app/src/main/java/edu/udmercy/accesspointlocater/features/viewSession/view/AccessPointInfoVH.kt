@@ -15,7 +15,7 @@ class AccessPointInfoVH(itemView: View): RecyclerView.ViewHolder(itemView) {
         set(value) {
             field = value
             value?.let { info ->
-                itemView.accessPointNumber.text = info.floorNumber
+                itemView.accessPointNumber.text = info.floorNumber.toString()
                 itemView.accessPointSSID.text = info.ssid
             }
         }
