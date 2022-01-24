@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/viewSession"
-        android:name="edu.udmercy.accesspointlocater.features.session.sub.viewSession.ViewSessionFragment"
+        android:name="edu.udmercy.accesspointlocater.features.viewSession.view.ViewSessionFragment"
         android:label="@string/fragmentViewSessionLabel"
         tools:layout="@layout/fragment_view_session">
         <argument

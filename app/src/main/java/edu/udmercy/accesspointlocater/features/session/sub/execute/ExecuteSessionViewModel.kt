@@ -1,9 +1,7 @@
 package edu.udmercy.accesspointlocater.features.session.sub.execute
 
-import android.graphics.Bitmap
 import android.graphics.PointF
 import android.net.wifi.ScanResult
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -72,14 +70,16 @@ class ExecuteSessionViewModel(
                 val position = currentPosition ?: return@launch
                 val floorVal = floor.value ?: return@launch
 
-                accessPointRepo.saveAccessPointScan(AccessPoint(
+                accessPointRepo.saveAccessPointScan(
+                    AccessPoint(
                     uuid = sessionSafe.uuid,
                     currentLocationX = position.x,
                     currentLocationY =  position.y,
                     floor = floorVal,
                     distance = distance,
                     ssid = it.BSSID
-                ))
+                )
+                )
 
             }
         }

@@ -8,11 +8,9 @@ import android.graphics.Paint
 import android.graphics.Paint.Cap
 import android.graphics.PointF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt

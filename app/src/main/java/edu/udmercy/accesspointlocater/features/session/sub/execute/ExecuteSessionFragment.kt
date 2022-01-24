@@ -5,10 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.davemorrissey.labs.subscaleview.ImageSource
@@ -19,24 +16,14 @@ import android.net.wifi.WifiManager
 import android.util.Log
 import android.view.*
 
-import android.view.GestureDetector.SimpleOnGestureListener
-import android.widget.Toast
 import androidx.core.os.bundleOf
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import com.google.android.material.snackbar.Snackbar
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import androidx.navigation.NavController
-
-
-
 
 
 class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener {

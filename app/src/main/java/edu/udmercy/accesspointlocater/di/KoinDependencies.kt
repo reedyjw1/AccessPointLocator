@@ -1,6 +1,8 @@
 package edu.udmercy.accesspointlocater.di
 
 import edu.udmercy.accesspointlocater.features.session.repositories.*
+import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
+import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepositoryImpl
 import org.koin.dsl.module
 
 val appDependencies = module {
@@ -9,5 +11,6 @@ val appDependencies = module {
     single<SessionRepository> { SessionRepositoryImpl(get()) }
     single<AccessPointRepository> { AccessPointRepositoryImpl(get()) }
     single<BuildingImageRepository> { BuildingImageRepositoryImpl(get()) }
+    single<APLocationRepository> { APLocationRepositoryImpl(get()) }
 
 }
