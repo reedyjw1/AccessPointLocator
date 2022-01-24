@@ -53,8 +53,10 @@ class ExecuteSessionViewModel(
 
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     var currentPosition: PointF? = null
+
     private var scaleValue = 0.0
     private var scaleUnit = "Meters"
+    private var pointDistance = 0.0
 
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -66,8 +68,11 @@ class ExecuteSessionViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             savedStateHandle.getLiveData<String>("uuid").value?.let {
                 session = sessionRepo.getCurrentSession(it)
+
                 scaleValue = session?.scaleNumber ?: 0.0
                 scaleUnit = session?.scaleUnits ?: "Meters"
+                pointDistance = session?.pixelDistance ?: 0.0
+
                 image = buildingImageRepo.getFloorImage(it, 0)
                 floorCount = buildingImageRepo.getFloorCount(it)
                 currentBitmap.postValue(null)
@@ -185,18 +190,37 @@ class ExecuteSessionViewModel(
     private fun calculateMultilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
         val apLocationList = mutableListOf<APLocation>()
         val ssidList = list.map { it.ssid }.distinct()
+        val scale = calculateScale(pointDistance, scaleValue, scaleUnit)
         for (ssid in ssidList) {
             val positions = mutableListOf<ReferencePoint>()
             for (item in list.filter { it.ssid == ssid }) {
                 positions.add(
-                    ReferencePoint(item.currentLocationX,item.currentLocationY,item.currentLocationZ,item.distance, Units.METERS)
+                    ReferencePoint(item.currentLocationX / scale, item.currentLocationY / scale, item.currentLocationZ,item.distance, Units.METERS)
                 )
             }
             val solution = Multilateration.calculate(positions)?.array
             if (solution != null) {
-                apLocationList.add(APLocation(0, uuid, solution[1][0], solution[2][0], solution[3][0], 0, ssid))
+                apLocationList.add(APLocation(0, uuid, solution[1][0] * scale, solution[2][0] * scale, solution[3][0], 0, ssid))
             }
         }
         return apLocationList
+    }
+
+    // Returns scale in pixels/meter
+    private fun calculateScale(distance: Double, scale: Double, scaleUnit: String): Double {
+        return when(scaleUnit) {
+            "Meters" -> {
+                distance/scale
+            }
+            "Feet" -> {
+                distance / (scale * 0.3048)
+            }
+            "Inches" -> {
+                distance / (scale * 0.0254)
+            }
+            else -> {
+                -1.0
+            }
+        }
     }
 }
