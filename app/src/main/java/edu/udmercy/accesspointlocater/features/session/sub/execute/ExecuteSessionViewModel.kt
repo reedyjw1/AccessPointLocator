@@ -1,23 +1,23 @@
 package edu.udmercy.accesspointlocater.features.session.sub.execute
 
-import android.graphics.Bitmap
 import android.graphics.PointF
 import android.net.wifi.ScanResult
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
 import com.lemmingapex.trilateration.TrilaterationFunction
-import edu.udmercy.accesspointlocater.features.session.repositories.APLocationRepository
+
 import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
-import edu.udmercy.accesspointlocater.features.session.room.APLocation
+
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.session.room.Session
+import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
+import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import edu.udmercy.accesspointlocater.utils.Event
 import edu.udmercy.accesspointlocater.utils.Multilateration
 import edu.udmercy.accesspointlocater.utils.ReferencePoint
@@ -93,7 +93,8 @@ class ExecuteSessionViewModel(
                 val position = currentPosition ?: return@launch
                 val floorVal = floor.value ?: return@launch
 
-                accessPointRepo.saveAccessPointScan(AccessPoint(
+                accessPointRepo.saveAccessPointScan(
+                    AccessPoint(
                     uuid = sessionSafe.uuid,
                     currentLocationX = position.x.toDouble(),
                     currentLocationY =  position.y.toDouble(),
@@ -101,7 +102,8 @@ class ExecuteSessionViewModel(
                     floor = floorVal,
                     distance = distance,
                     ssid = it.BSSID
-                ))
+                )
+                )
 
             }
         }

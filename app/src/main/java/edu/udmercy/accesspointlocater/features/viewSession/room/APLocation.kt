@@ -1,4 +1,4 @@
-package edu.udmercy.accesspointlocater.features.session.room
+package edu.udmercy.accesspointlocater.features.viewSession.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

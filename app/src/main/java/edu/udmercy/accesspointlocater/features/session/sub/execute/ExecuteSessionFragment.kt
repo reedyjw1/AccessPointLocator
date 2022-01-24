@@ -19,6 +19,7 @@ import android.net.wifi.WifiManager
 import android.os.Looper
 import android.util.Log
 import android.view.*
+
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,7 @@ import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
+
 import com.google.android.gms.location.*
 import java.util.concurrent.TimeUnit
 
