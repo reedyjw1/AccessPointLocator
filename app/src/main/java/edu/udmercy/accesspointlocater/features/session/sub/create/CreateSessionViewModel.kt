@@ -22,7 +22,7 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
     val buildingImages: MutableList<Bitmap> = mutableListOf()
     val presentedBitmap: MutableLiveData<Bitmap> = MutableLiveData()
 
-    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>) {
+    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>, scaleNumber: Double, scaleUnit: String, pixelDistance: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             val uuid = UUID.randomUUID().toString()
             sessionRepo.createNewSession(
@@ -30,6 +30,9 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
                 Calendar.getInstance().time.toString(),
                 sessionName,
                 buildingName,
+                scaleNumber,
+                scaleUnit,
+                pixelDistance
             )
             buildingImageRepo.addImagesToSession(images.mapIndexed { index, bitmap ->
                 BuildingImage(uuid = uuid, image = bitmap, floor = index)

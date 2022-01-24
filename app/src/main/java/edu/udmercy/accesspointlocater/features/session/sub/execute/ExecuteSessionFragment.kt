@@ -84,7 +84,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
                     scanningContainer.visibility = View.VISIBLE
                 } else {
                     scanningContainer.visibility = View.GONE
-                    toast("Scan Complete!")
                 }
             }
         }
@@ -161,12 +160,18 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     private fun scanSuccess() {
         requireActivity().unregisterReceiver(wifiScanReceiver)
         val results = wifiManager.scanResults
+
+        if (results.isEmpty()) {
+            toast("Scan Failed!")
+        } else {
+            toast("Scan Complete!")
+        }
+
         val wifiName = wifiManager.connectionInfo.ssid.toString()
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
         val uuid = arguments?.getString("uuid") ?: return
         Log.i(TAG, "scanSuccess: $filteredResults")
         viewModel.saveResults(filteredResults, uuid, viewModel.altitude)
-        toast("altitude=${viewModel.altitude}")
     }
 
     private fun setupCallbacks() {
@@ -174,17 +179,17 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             // Sets the desired interval for
             // active location updates.
             // This interval is inexact.
-            interval = TimeUnit.SECONDS.toMillis(20)
+            interval = TimeUnit.SECONDS.toMillis(5)
 
             // Sets the fastest rate for active location updates.
             // This interval is exact, and your application will never
             // receive updates more frequently than this value
-            fastestInterval = TimeUnit.SECONDS.toMillis(20)
+            fastestInterval = TimeUnit.SECONDS.toMillis(5)
 
             // Sets the maximum time when batched location
             // updates are delivered. Updates may be
             // delivered sooner than this interval
-            maxWaitTime = TimeUnit.SECONDS.toMillis(20)
+            maxWaitTime = TimeUnit.SECONDS.toMillis(10)
 
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
@@ -193,7 +198,10 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             override fun onLocationResult(p0: LocationResult) {
                 super.onLocationResult(p0)
                 Log.i(TAG, "onLocationResult: got Location")
-                viewModel.altitude = p0.lastLocation.altitude
+                val locations = p0.locations
+                locations.sortBy { it.time }
+                val lastLocation = locations.lastOrNull()?.altitude ?: 0.0
+                viewModel.altitude = locations.lastOrNull()?.altitude ?: 0.0
 
             }
         }
@@ -206,13 +214,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
         Looper.myLooper()?.let {

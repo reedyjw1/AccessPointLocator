@@ -53,6 +53,8 @@ class ExecuteSessionViewModel(
 
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     var currentPosition: PointF? = null
+    private var scaleValue = 0.0
+    private var scaleUnit = "Meters"
 
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -64,6 +66,8 @@ class ExecuteSessionViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             savedStateHandle.getLiveData<String>("uuid").value?.let {
                 session = sessionRepo.getCurrentSession(it)
+                scaleValue = session?.scaleNumber ?: 0.0
+                scaleUnit = session?.scaleUnits ?: "Meters"
                 image = buildingImageRepo.getFloorImage(it, 0)
                 floorCount = buildingImageRepo.getFloorCount(it)
                 currentBitmap.postValue(null)
@@ -136,7 +140,7 @@ class ExecuteSessionViewModel(
         }
     }
 
-    private suspend fun getAccessPoints(floor: Int) {
+    private fun getAccessPoints(floor: Int) {
         savedPoints.postValue(_savedPoints.filter { pred -> pred.floor == floor })
     }
 

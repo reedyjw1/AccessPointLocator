@@ -20,10 +20,7 @@ import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.android.synthetic.main.dialog_create_session.*
 import android.view.ViewGroup
-
-
-
-
+import edu.udmercy.accesspointlocater.utils.MathUtils
 
 
 class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
@@ -59,10 +56,18 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         doneBtn.setOnClickListener {
             val sessionLabel = sessionEditText.editText?.text.toString()
             val buildingName = buildingEditText.editText?.text.toString()
+            val scaleValue = scaleTextView.editText?.text.toString().toDouble()
+            val scaleUnit = scaleSpinner.selectedItem.toString()
+
+            val point1 = scaleImageView.touchPoints[0]
+            val point2 = scaleImageView.touchPoints[1]
+
+            val pixelDistance = MathUtils.euclideanDistance(point1, point2).toDouble()
+
             val bitmaps = viewModel.buildingImages
 
             if(sessionLabel != "" && buildingName != "" && bitmaps.isNotEmpty()) {
-                viewModel.addNewSession(sessionLabel, buildingName, bitmaps)
+                viewModel.addNewSession(sessionLabel, buildingName, bitmaps, scaleValue, scaleUnit, pixelDistance)
             } else {
                 Toast.makeText(requireContext(), "Please enter a valid Session Name, Building Name, or Picture!", Toast.LENGTH_LONG).show()
             }
