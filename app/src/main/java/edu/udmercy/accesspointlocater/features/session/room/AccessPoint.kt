@@ -11,9 +11,11 @@ data class AccessPoint(
     @ColumnInfo
     val uuid: String,
     @ColumnInfo
-    val currentLocationX: Float,
+    val currentLocationX: Double,
     @ColumnInfo
-    val currentLocationY: Float,
+    val currentLocationY: Double,
+    @ColumnInfo
+    val currentLocationZ: Double,
     @ColumnInfo
     val floor: Int,
     @ColumnInfo

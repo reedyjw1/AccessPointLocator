@@ -68,7 +68,7 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
 
         // Previously clicked points
         completedPointScans.forEach {
-            val tempPoint = PointF(it.currentLocationX, it.currentLocationY)
+            val tempPoint = PointF(it.currentLocationX.toFloat(), it.currentLocationY.toFloat())
             sourceToViewCoord(tempPoint)?.let { source ->
                 paint.isAntiAlias = true
                 paint.style = Paint.Style.FILL_AND_STROKE

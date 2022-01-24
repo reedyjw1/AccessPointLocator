@@ -19,6 +19,9 @@ import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.session.room.Session
 import edu.udmercy.accesspointlocater.utils.Event
+import edu.udmercy.accesspointlocater.utils.Multilateration
+import edu.udmercy.accesspointlocater.utils.ReferencePoint
+import edu.udmercy.accesspointlocater.utils.Units
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -46,6 +49,7 @@ class ExecuteSessionViewModel(
     private var floorCount: Int? = null
     var _savedPoints: List<AccessPoint> = emptyList()
     var savedPoints: MutableLiveData<List<AccessPoint>> = MutableLiveData(listOf())
+    var altitude: Double = 0.0
 
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     var currentPosition: PointF? = null
@@ -72,7 +76,7 @@ class ExecuteSessionViewModel(
         }
     }
 
-    fun saveResults(list: List<ScanResult>, uuid: String) {
+    fun saveResults(list: List<ScanResult>, uuid: String, altitude: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             list.forEach {
                 val distance = calculateDistanceInMeters(it.level, it.frequency)
@@ -82,8 +86,9 @@ class ExecuteSessionViewModel(
 
                 accessPointRepo.saveAccessPointScan(AccessPoint(
                     uuid = sessionSafe.uuid,
-                    currentLocationX = position.x,
-                    currentLocationY =  position.y,
+                    currentLocationX = position.x.toDouble(),
+                    currentLocationY =  position.y.toDouble(),
+                    currentLocationZ = altitude,
                     floor = floorVal,
                     distance = distance,
                     ssid = it.BSSID
@@ -105,7 +110,7 @@ class ExecuteSessionViewModel(
                     true
                 )
             )
-            val apLocations = calculateTrilateration(_savedPoints, sessionTemp.uuid)
+            val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid)
             apLocationRepo.saveAccessPointLocations(apLocations)
 
             withContext(Dispatchers.Main) {
@@ -153,8 +158,8 @@ class ExecuteSessionViewModel(
             for (item in list.filter { it.ssid == ssid }) {
                 positions.add(
                     doubleArrayOf(
-                        item.currentLocationX.toDouble(),
-                        item.currentLocationY.toDouble()
+                        item.currentLocationX,
+                        item.currentLocationY
                     )
                 )
             }
@@ -168,7 +173,25 @@ class ExecuteSessionViewModel(
             )
             val optimum = solver.solve()
             val centroid = optimum.point.toArray().toList()
-            apLocationList.add(APLocation(0, uuid, centroid[0].toFloat(), centroid[1].toFloat(), 0, ssid))
+            apLocationList.add(APLocation(0, uuid, centroid[0], centroid[1], 0.0,0, ssid))
+        }
+        return apLocationList
+    }
+
+    private fun calculateMultilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
+        val apLocationList = mutableListOf<APLocation>()
+        val ssidList = list.map { it.ssid }.distinct()
+        for (ssid in ssidList) {
+            val positions = mutableListOf<ReferencePoint>()
+            for (item in list.filter { it.ssid == ssid }) {
+                positions.add(
+                    ReferencePoint(item.currentLocationX,item.currentLocationY,item.currentLocationZ,item.distance, Units.METERS)
+                )
+            }
+            val solution = Multilateration.calculate(positions)?.array
+            if (solution != null) {
+                apLocationList.add(APLocation(0, uuid, solution[1][0], solution[2][0], solution[3][0], 0, ssid))
+            }
         }
         return apLocationList
     }

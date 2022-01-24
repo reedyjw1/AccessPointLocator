@@ -1,42 +1,35 @@
 package edu.udmercy.accesspointlocater.features.session.sub.execute
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
+import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import android.graphics.PointF
+import android.location.Location
 import android.net.wifi.WifiManager
+import android.os.Looper
 import android.util.Log
 import android.view.*
-
-import android.view.GestureDetector.SimpleOnGestureListener
-import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import com.google.android.material.snackbar.Snackbar
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
 import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import androidx.navigation.NavController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
+import com.google.android.gms.location.*
+import java.util.concurrent.TimeUnit
 
 class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener {
 
@@ -47,6 +40,10 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private lateinit var wifiManager: WifiManager
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var locationCallback: LocationCallback
+    private var currentLocation: Location? = null
 
     private val wifiScanReceiver = object : BroadcastReceiver() {
 
@@ -104,6 +101,8 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        setupCallbacks()
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -166,7 +165,62 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
         val uuid = arguments?.getString("uuid") ?: return
         Log.i(TAG, "scanSuccess: $filteredResults")
-        viewModel.saveResults(filteredResults, uuid)
+        viewModel.saveResults(filteredResults, uuid, viewModel.altitude)
+        toast("altitude=${viewModel.altitude}")
+    }
+
+    private fun setupCallbacks() {
+        locationRequest = LocationRequest().apply {
+            // Sets the desired interval for
+            // active location updates.
+            // This interval is inexact.
+            interval = TimeUnit.SECONDS.toMillis(20)
+
+            // Sets the fastest rate for active location updates.
+            // This interval is exact, and your application will never
+            // receive updates more frequently than this value
+            fastestInterval = TimeUnit.SECONDS.toMillis(20)
+
+            // Sets the maximum time when batched location
+            // updates are delivered. Updates may be
+            // delivered sooner than this interval
+            maxWaitTime = TimeUnit.SECONDS.toMillis(20)
+
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                super.onLocationResult(p0)
+                Log.i(TAG, "onLocationResult: got Location")
+                viewModel.altitude = p0.lastLocation.altitude
+
+            }
+        }
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        Looper.myLooper()?.let {
+            Log.i(TAG, "onReceive: getting location")
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback,
+                it
+            )
+        }
     }
 
     private fun scanFailure() {
@@ -193,6 +247,15 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         viewModel.savedPoints.removeObserver(savedPointsObserver)
         viewModel.isScanning.removeObserver(isScanningObserver)
         viewModel.currentBitmap.postValue(null)
+
+        val removeTask = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+        removeTask.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "Location Callback removed.")
+            } else {
+                Log.d(TAG, "Failed to remove Location Callback.")
+            }
+        }
     }
 
     override fun onPointsChanged(currentPoint: PointF?) {
