@@ -1,4 +1,4 @@
-package edu.udmercy.accesspointlocater.features.session.room
+package edu.udmercy.accesspointlocater.features.viewSession.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -11,9 +11,11 @@ data class APLocation(
     @ColumnInfo
     val uuid: String,
     @ColumnInfo
-    val xCoordinate: Float,
+    val xCoordinate: Double,
     @ColumnInfo
-    val yCoordinate: Float,
+    val yCoordinate: Double,
+    @ColumnInfo
+    val zCoordinate: Double,
     @ColumnInfo
     val floor: Int,
     @ColumnInfo

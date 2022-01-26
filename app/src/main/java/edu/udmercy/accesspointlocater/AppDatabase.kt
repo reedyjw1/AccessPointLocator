@@ -4,6 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import edu.udmercy.accesspointlocater.features.session.room.*
+import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
+import edu.udmercy.accesspointlocater.features.session.room.AccessPointDao
+import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
+import edu.udmercy.accesspointlocater.features.viewSession.room.APLocationDao
 
 @Database(entities = [Session::class, AccessPoint::class, BuildingImage::class, APLocation::class], version = 3)
 @TypeConverters(Converters::class)

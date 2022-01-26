@@ -18,13 +18,19 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
         timestamp: String,
         sessionLabel: String,
         buildingName: String,
+        scaleNumber: Double,
+        scaleUnits: String,
+        pixelDistance: Double
     ) {
         sessionDb.insertAll(
             Session(
                 uuid = uuid,
                 sessionLabel = sessionLabel,
                 timestamp = timestamp,
-                building = buildingName
+                building = buildingName,
+                scaleNumber = scaleNumber,
+                scaleUnits = scaleUnits,
+                pixelDistance = pixelDistance,
             )
         )
     }

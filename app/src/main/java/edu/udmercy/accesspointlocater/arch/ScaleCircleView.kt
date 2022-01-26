@@ -8,11 +8,9 @@ import android.graphics.Paint
 import android.graphics.Paint.Cap
 import android.graphics.PointF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -27,7 +25,7 @@ class ScaleCircleView(context: Context?, attr: AttributeSet? = null) :
     private var strokeWidth = 0
     private val paint = Paint()
     var touchPoints: MutableList<PointF> = mutableListOf()
-    var maxPoints = 2
+    var maxPoints = 1
     var threshold = 50f
     var listener: CircleViewPointListener? = null
 
@@ -50,6 +48,21 @@ class ScaleCircleView(context: Context?, attr: AttributeSet? = null) :
         }
         val radius = 25f
         val strokeRadius = 32f
+
+        paint.strokeCap = Cap.ROUND
+        paint.color = Color.GREEN
+
+        // Draws the line between the two points (if they both exist)
+        if (touchPoints.size == 2) {
+            sourceToViewCoord(touchPoints[0])?.let { point1 ->
+                sourceToViewCoord(touchPoints[1])?.let { point2 ->
+                    paint.strokeCap = Cap.ROUND
+                    paint.color = Color.BLACK
+                    paint.strokeWidth = strokeWidth.toFloat()
+                    canvas.drawLine(point1.x, point1.y, point2.x, point2.y, paint)
+                }
+            }
+        }
 
         // Previously clicked points
         touchPoints.forEach {
