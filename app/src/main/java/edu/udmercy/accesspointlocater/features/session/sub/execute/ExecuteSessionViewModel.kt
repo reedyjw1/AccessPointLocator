@@ -92,13 +92,13 @@ class ExecuteSessionViewModel(
 
                 accessPointRepo.saveAccessPointScan(
                     AccessPoint(
-                    uuid = sessionSafe.uuid,
-                    currentLocationX = position.x.toDouble(),
-                    currentLocationY =  position.y.toDouble(),
-                    currentLocationZ = altitude,
-                    floor = floorVal,
-                    distance = distance,
-                    ssid = it.BSSID
+                        uuid = sessionSafe.uuid,
+                        currentLocationX = position.x.toDouble(),
+                        currentLocationY =  position.y.toDouble(),
+                        currentLocationZ = altitude,
+                        floor = floorVal,
+                        distance = distance,
+                        ssid = it.BSSID
                     )
                 )
 
