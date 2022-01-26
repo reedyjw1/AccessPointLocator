@@ -51,6 +51,9 @@ class AccessPointImageView(context: Context?, attr: AttributeSet? = null) :
                 paint.strokeCap = Paint.Cap.ROUND
                 paint.color = Color.CYAN
                 canvas.drawCircle(source.x, source.y, radius, paint)
+                paint.color = Color.BLACK
+                paint.textSize = 30f
+                canvas.drawText(touchPoints.indexOf(it).toString(), source.x-(radius/4f), source.y+(radius/4f), paint)
             }
         }
     }
