@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
-import com.lemmingapex.trilateration.TrilaterationFunction
 
 import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
@@ -26,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import kotlin.math.abs
@@ -102,7 +99,7 @@ class ExecuteSessionViewModel(
                     floor = floorVal,
                     distance = distance,
                     ssid = it.BSSID
-                )
+                    )
                 )
 
             }
@@ -161,7 +158,7 @@ class ExecuteSessionViewModel(
         return (dist *100.0 ) / 1000.0
     }
 
-    private fun calculateTrilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
+    /*private fun calculateTrilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
         val apLocationList = mutableListOf<APLocation>()
         val ssidList = list.map { it.ssid }.distinct()
         for (ssid in ssidList) {
@@ -187,7 +184,7 @@ class ExecuteSessionViewModel(
             apLocationList.add(APLocation(0, uuid, centroid[0], centroid[1], 0.0,0, ssid))
         }
         return apLocationList
-    }
+    }*/
 
     private fun calculateMultilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
         val apLocationList = mutableListOf<APLocation>()
