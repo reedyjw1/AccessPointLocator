@@ -1,19 +1,15 @@
 package edu.udmercy.accesspointlocater.features.viewSession.view
 
-import android.graphics.Bitmap
 import android.graphics.PointF
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.udmercy.accesspointlocater.features.session.model.SessionUI
-import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
-import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
