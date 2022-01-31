@@ -46,8 +46,8 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fab.setOnClickListener { findNavController().navigate(R.id.action_sessionList_to_createSession) }
         recyclerView.adapter = adapter
+        fab.setOnClickListener { findNavController().navigate(R.id.action_sessionList_to_createSession) }
     }
 
     override fun onResume() {

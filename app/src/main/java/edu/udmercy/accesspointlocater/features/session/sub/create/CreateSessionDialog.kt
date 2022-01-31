@@ -56,20 +56,19 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         doneBtn.setOnClickListener {
             val sessionLabel = sessionEditText.editText?.text.toString()
             val buildingName = buildingEditText.editText?.text.toString()
-            val scaleValue = scaleTextView.editText?.text.toString().toDouble()
+            val scaleValue = scaleTextView.editText?.text.toString()
             val scaleUnit = scaleSpinner.selectedItem.toString()
-
-            val point1 = scaleImageView.touchPoints[0]
-            val point2 = scaleImageView.touchPoints[1]
-
-            val pixelDistance = MathUtils.euclideanDistance(point1, point2).toDouble()
 
             val bitmaps = viewModel.buildingImages
 
-            if(sessionLabel != "" && buildingName != "" && bitmaps.isNotEmpty()) {
-                viewModel.addNewSession(sessionLabel, buildingName, bitmaps, scaleValue, scaleUnit, pixelDistance)
+            if(sessionLabel != "" && buildingName != "" && bitmaps.isNotEmpty() && scaleImageView.touchPoints.size == 2 && scaleValue.isNotEmpty()) {
+                val point1 = scaleImageView.touchPoints[0]
+                val point2 = scaleImageView.touchPoints[1]
+                val pixelDistance = MathUtils.euclideanDistance(point1, point2).toDouble()
+
+                viewModel.addNewSession(sessionLabel, buildingName, bitmaps, scaleValue.toDouble(), scaleUnit, pixelDistance)
             } else {
-                Toast.makeText(requireContext(), "Please enter a valid Session Name, Building Name, or Picture!", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Please fill in every field.", Toast.LENGTH_LONG).show()
             }
         }
 
