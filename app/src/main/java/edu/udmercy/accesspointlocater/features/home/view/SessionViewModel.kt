@@ -1,10 +1,10 @@
-package edu.udmercy.accesspointlocater.features.session.view
+package edu.udmercy.accesspointlocater.features.home.view
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.udmercy.accesspointlocater.features.session.model.SessionUI
-import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
+import edu.udmercy.accesspointlocater.features.home.model.SessionUI
+import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

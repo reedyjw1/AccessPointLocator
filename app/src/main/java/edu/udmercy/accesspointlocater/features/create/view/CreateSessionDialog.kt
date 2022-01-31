@@ -1,4 +1,4 @@
-package edu.udmercy.accesspointlocater.features.session.sub.create
+package edu.udmercy.accesspointlocater.features.create.view
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
@@ -15,8 +15,6 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.davemorrissey.labs.subscaleview.ImageSource
-import edu.udmercy.accesspointlocater.arch.ScaleCircleView
-import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.android.synthetic.main.dialog_create_session.*
 import android.view.ViewGroup

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/session"
-        android:name="edu.udmercy.accesspointlocater.features.session.view.SessionFragment"
+        android:name="edu.udmercy.accesspointlocater.features.home.view.SessionFragment"
         android:label="@string/fragmentSessionLabel"
         tools:layout="@layout/fragment_session">
         <action
@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/executeSession"
-        android:name="edu.udmercy.accesspointlocater.features.session.sub.execute.ExecuteSessionFragment"
+        android:name="edu.udmercy.accesspointlocater.features.execute.view.ExecuteSessionFragment"
         android:label="@string/fragmentExecuteSessionLabel"
         tools:layout="@layout/fragment_execute_session">
         <action
@@ -49,7 +49,7 @@
 
     <dialog
         android:id="@+id/createSession"
-        android:name="edu.udmercy.accesspointlocater.features.session.sub.create.CreateSessionDialog"
+        android:name="edu.udmercy.accesspointlocater.features.create.view.CreateSessionDialog"
         android:label="@string/fragmentCreateSessionLabel"
         tools:layout="@layout/dialog_create_session"/>
 

@@ -1,12 +1,12 @@
-package edu.udmercy.accesspointlocater.features.session.sub.create
+package edu.udmercy.accesspointlocater.features.create.view
 
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
-import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
-import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

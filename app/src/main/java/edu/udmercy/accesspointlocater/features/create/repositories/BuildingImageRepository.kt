@@ -1,7 +1,6 @@
-package edu.udmercy.accesspointlocater.features.session.repositories
+package edu.udmercy.accesspointlocater.features.create.repositories
 
-import android.graphics.Bitmap
-import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 
 interface BuildingImageRepository {
     fun addImagesToSession(buildingImageList: List<BuildingImage>)

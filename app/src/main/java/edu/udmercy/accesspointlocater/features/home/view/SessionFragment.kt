@@ -1,20 +1,15 @@
-package edu.udmercy.accesspointlocater.features.session.view
+package edu.udmercy.accesspointlocater.features.home.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
-import edu.udmercy.accesspointlocater.features.session.model.SessionUI
-import edu.udmercy.accesspointlocater.utils.Event
+import edu.udmercy.accesspointlocater.features.home.model.SessionUI
 import kotlinx.android.synthetic.main.fragment_session.*
 
 class SessionFragment: BaseFragment(R.layout.fragment_session) {

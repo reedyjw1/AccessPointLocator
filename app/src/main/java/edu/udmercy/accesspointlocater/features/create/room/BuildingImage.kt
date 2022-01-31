@@ -1,10 +1,9 @@
-package edu.udmercy.accesspointlocater.features.session.room
+package edu.udmercy.accesspointlocater.features.create.room
 
 import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
 
 @Entity
 data class BuildingImage(

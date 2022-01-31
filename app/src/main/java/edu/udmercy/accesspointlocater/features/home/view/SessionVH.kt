@@ -1,11 +1,11 @@
-package edu.udmercy.accesspointlocater.features.session.view
+package edu.udmercy.accesspointlocater.features.home.view
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import edu.udmercy.accesspointlocater.R
-import edu.udmercy.accesspointlocater.features.session.model.SessionUI
+import edu.udmercy.accesspointlocater.features.home.model.SessionUI
 import kotlinx.android.synthetic.main.cell_session.view.*
 
 class SessionVH(itemView: View): RecyclerView.ViewHolder(itemView) {

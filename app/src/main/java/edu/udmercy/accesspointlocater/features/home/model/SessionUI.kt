@@ -1,4 +1,4 @@
-package edu.udmercy.accesspointlocater.features.session.model
+package edu.udmercy.accesspointlocater.features.home.model
 
 import androidx.recyclerview.widget.DiffUtil
 

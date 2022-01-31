@@ -1,4 +1,4 @@
-package edu.udmercy.accesspointlocater.features.session.sub.execute
+package edu.udmercy.accesspointlocater.features.execute.view
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,7 +14,6 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import android.graphics.PointF
-import android.location.Location
 import android.net.wifi.WifiManager
 import android.os.Looper
 import android.util.Log
@@ -26,11 +25,11 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
-import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
-import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
 
 import com.google.android.gms.location.*
+import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
 import java.util.concurrent.TimeUnit
 
 class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener {
@@ -67,7 +66,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         }
 
     private val savedPointsObserver =
-        Observer { points: List<AccessPoint> ->
+        Observer { points: List<WifiScans> ->
             if(points.isNotEmpty()) {
                 executeImageView.completedPointScans = points
             } else {

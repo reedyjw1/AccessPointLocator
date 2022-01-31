@@ -1,4 +1,4 @@
-package edu.udmercy.accesspointlocater.features.session.sub.execute
+package edu.udmercy.accesspointlocater.features.execute.view
 
 import android.graphics.PointF
 import android.net.wifi.ScanResult
@@ -7,13 +7,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
-import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
-import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
+import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
+import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 
-import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
-import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
-import edu.udmercy.accesspointlocater.features.session.room.Session
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.execute.repositories.WifiScansRepository
+import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
+import edu.udmercy.accesspointlocater.features.home.room.Session
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import edu.udmercy.accesspointlocater.utils.Event
@@ -34,7 +34,7 @@ class ExecuteSessionViewModel(
     private val savedStateHandle: SavedStateHandle
 ): ViewModel(), KoinComponent {
     private val sessionRepo: SessionRepository by inject()
-    private val accessPointRepo: AccessPointRepository by inject()
+    private val wifiScansRepo: WifiScansRepository by inject()
     private val buildingImageRepo: BuildingImageRepository by inject()
     private val apLocationRepo: APLocationRepository by inject()
 
@@ -44,8 +44,8 @@ class ExecuteSessionViewModel(
     private var session: Session? = null
     private var image: BuildingImage?= null
     private var floorCount: Int? = null
-    var _savedPoints: List<AccessPoint> = emptyList()
-    var savedPoints: MutableLiveData<List<AccessPoint>> = MutableLiveData(listOf())
+    var _savedPoints: List<WifiScans> = emptyList()
+    var savedPoints: MutableLiveData<List<WifiScans>> = MutableLiveData(listOf())
     var altitude: Double = 0.0
 
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
@@ -74,7 +74,7 @@ class ExecuteSessionViewModel(
                 floorCount = buildingImageRepo.getFloorCount(it)
                 currentBitmap.postValue(null)
                 currentBitmap.postValue(image)
-                accessPointRepo.getAllScans(it).collect { list ->
+                wifiScansRepo.getAllScans(it).collect { list ->
                     _savedPoints = list
                     savedPoints.postValue(list.filter { pred -> pred.floor == floor.value })
                 }
@@ -90,8 +90,8 @@ class ExecuteSessionViewModel(
                 val position = currentPosition ?: return@launch
                 val floorVal = floor.value ?: return@launch
 
-                accessPointRepo.saveAccessPointScan(
-                    AccessPoint(
+                wifiScansRepo.saveAccessPointScan(
+                    WifiScans(
                         uuid = sessionSafe.uuid,
                         currentLocationX = position.x.toDouble(),
                         currentLocationY =  position.y.toDouble(),
@@ -118,7 +118,8 @@ class ExecuteSessionViewModel(
                     true
                 )
             )
-            val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid)
+            val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
+            val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans)
             apLocationRepo.saveAccessPointLocations(apLocations)
 
             withContext(Dispatchers.Main) {
@@ -186,7 +187,7 @@ class ExecuteSessionViewModel(
         return apLocationList
     }*/
 
-    private fun calculateMultilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
+    private fun calculateMultilateration(list: List<WifiScans>, uuid: String, refPoints: List<WifiScans>): List<APLocation> {
         val apLocationList = mutableListOf<APLocation>()
         val ssidList = list.map { it.ssid }.distinct()
         val scale = calculateScale(pointDistance, scaleValue, scaleUnit)

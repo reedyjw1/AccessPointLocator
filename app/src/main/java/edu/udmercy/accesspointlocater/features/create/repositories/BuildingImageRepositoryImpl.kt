@@ -1,12 +1,9 @@
-package edu.udmercy.accesspointlocater.features.session.repositories
+package edu.udmercy.accesspointlocater.features.create.repositories
 
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.room.Room
 import edu.udmercy.accesspointlocater.AppDatabase
-import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
-import edu.udmercy.accesspointlocater.features.session.room.Session
-import kotlinx.coroutines.flow.Flow
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 
 class BuildingImageRepositoryImpl(private val appContext: Context): BuildingImageRepository {
     private val buildingImageRepo = Room.databaseBuilder(

@@ -1,8 +1,8 @@
-package edu.udmercy.accesspointlocater.features.session.view
+package edu.udmercy.accesspointlocater.features.home.view
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import edu.udmercy.accesspointlocater.features.session.model.SessionUI
+import edu.udmercy.accesspointlocater.features.home.model.SessionUI
 
 typealias OnItemClicked = (SessionUI) -> Unit
 

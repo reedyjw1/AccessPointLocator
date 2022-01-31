@@ -1,7 +1,6 @@
-package edu.udmercy.accesspointlocater.features.session.repositories
+package edu.udmercy.accesspointlocater.features.home.repositories
 
-import android.graphics.Bitmap
-import edu.udmercy.accesspointlocater.features.session.room.Session
+import edu.udmercy.accesspointlocater.features.home.room.Session
 import kotlinx.coroutines.flow.Flow
 
 interface SessionRepository {

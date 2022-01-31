@@ -1,11 +1,11 @@
-package edu.udmercy.accesspointlocater.features.session.room
+package edu.udmercy.accesspointlocater.features.execute.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class AccessPoint(
+data class WifiScans(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     @ColumnInfo
