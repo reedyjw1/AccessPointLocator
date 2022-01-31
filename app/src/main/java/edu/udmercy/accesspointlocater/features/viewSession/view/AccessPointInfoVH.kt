@@ -8,6 +8,7 @@ import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
 import kotlinx.android.synthetic.main.cell_ap_data.view.*
 import kotlinx.android.synthetic.main.cell_session.view.*
+import kotlin.coroutines.coroutineContext
 
 class AccessPointInfoVH(itemView: View): RecyclerView.ViewHolder(itemView) {
 
@@ -15,7 +16,7 @@ class AccessPointInfoVH(itemView: View): RecyclerView.ViewHolder(itemView) {
         set(value) {
             field = value
             value?.let { info ->
-                itemView.accessPointNumber.text = info.floorNumber.toString()
+                itemView.accessPointNumber.text = itemView.resources.getString(R.string.apTitleLabel, info.apNumber)
                 itemView.accessPointSSID.text = info.ssid
             }
         }

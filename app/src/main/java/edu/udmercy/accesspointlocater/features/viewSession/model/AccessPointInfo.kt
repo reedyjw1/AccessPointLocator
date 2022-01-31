@@ -6,7 +6,10 @@ data class AccessPointInfo(
     val floorNumber: Int,
     val ssid: String,
     val uuid: String,
-    val apNumber: Int
+    val apNumber: Int,
+    val xCoordinate: Double,
+    val yCoordinate: Double,
+    val zCoordinate: Double
 ) {
 
     companion object{

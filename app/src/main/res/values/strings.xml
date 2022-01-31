@@ -28,4 +28,6 @@
         <item>Feet</item>
         <item>Inches</item>
     </string-array>
+
+    <string name="apTitleLabel">Access Point: %1$d</string>
 </resources>

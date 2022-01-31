@@ -18,7 +18,7 @@
         android:textSize="24sp"
         android:textColor="#263238"
         android:fontFamily="@font/inter_semi_bold"
-        tools:text="Access Point: 1"/>
+        tools:text="@string/apTitleLabel"/>
 
     <TextView
         android:id="@+id/accessPointSSID"

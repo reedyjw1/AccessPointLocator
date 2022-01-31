@@ -1,18 +1,15 @@
 package edu.udmercy.accesspointlocater.features.viewSession.view
 
-import android.graphics.Bitmap
+import android.graphics.PointF
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.udmercy.accesspointlocater.features.session.model.SessionUI
-import edu.udmercy.accesspointlocater.features.session.repositories.AccessPointRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.session.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
-import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -30,6 +27,7 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
     val sessionName: MutableLiveData<String> = MutableLiveData()
     val accessPointInfoList = MutableLiveData<MutableList<AccessPointInfo>>()
     private var _accessPointInfoList = mutableListOf<AccessPointInfo>()
+    val accessPointLocations = MutableLiveData<MutableList<PointF>>()
     val currentFloor = MutableLiveData<Int>(0)
     private var floorCount: Int? = null
     private var image: BuildingImage?= null
@@ -45,12 +43,15 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
             floorCount = buildingImageRepo.getFloorCount(uuid)
             currentBitmap.postValue(null)
             currentBitmap.postValue(image)
+
             accessPointRepo.getAllAccessPoints(uuid).collect { list ->
                 _accessPointInfoList = list.mapIndexed { index, apLocation ->
-                    AccessPointInfo(apLocation.floor, apLocation.ssid, apLocation.uuid, index)
+                    AccessPointInfo(apLocation.floor, apLocation.ssid, apLocation.uuid, index, apLocation.xCoordinate, apLocation.yCoordinate, apLocation.zCoordinate)
                 } as MutableList<AccessPointInfo>
+                getAccessPoints(0)
                 accessPointInfoList.postValue(_accessPointInfoList.filter { it.floorNumber == currentFloor.value }.toMutableList())
             }
+
         }
     }
 
@@ -70,8 +71,14 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
     }
 
     private fun getAccessPoints(floor: Int) {
-        accessPointInfoList.postValue(_accessPointInfoList.filter { pred -> pred.floorNumber == floor }.toMutableList())
+        val aps = _accessPointInfoList.filter { pred -> pred.floorNumber == floor }
+        accessPointInfoList.postValue(aps.toMutableList())
+        val apPointFs = aps.map { PointF(it.xCoordinate.toFloat(), it.yCoordinate.toFloat()) }.toMutableList()
+        Log.d(TAG, "getAccessPoints: apPoints: $apPointFs")
+        accessPointLocations.postValue(apPointFs)
     }
+
+
 
     fun onPause() {
         currentBitmap.value?.image?.recycle()

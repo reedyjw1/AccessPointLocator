@@ -45,7 +45,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
-    private var currentLocation: Location? = null
 
     private val wifiScanReceiver = object : BroadcastReceiver() {
 
@@ -56,8 +55,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             } else {
                 scanFailure()
             }
-            viewModel._isScanning = false
-            viewModel.isScanning.postValue(Event(false))
+            showProgressBar(false)
         }
     }
 
@@ -128,12 +126,16 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.finished -> {
-                // TODO Make scanning view load
-                viewModel.calculateResults {
-                    // TODO Hide scanning view
-                    val bundle = bundleOf("uuid" to arguments?.getString("uuid"))
-                    findNavController().navigate(R.id.action_executeSession_to_viewSession, bundle)
+                if(viewModel._isScanning) {
+                    toast("Please wait until scanning is complete.")
+                } else {
+                    showProgressBar(true, "Saving...")
+                    viewModel.calculateResults {
+                        showProgressBar(false)
+                        val bundle = bundleOf("uuid" to arguments?.getString("uuid"))
+                        findNavController().navigate(R.id.action_executeSession_to_viewSession, bundle)
 
+                    }
                 }
                 return true
             }
@@ -146,8 +148,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private fun startScan() {
-        viewModel._isScanning = true
-        viewModel.isScanning.postValue(Event(true))
+        showProgressBar(true, "Scanning...")
         wifiManager = requireActivity().getSystemService(Context.WIFI_SERVICE) as WifiManager
         val intentFilter = IntentFilter()
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
@@ -202,7 +203,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
                 Log.i(TAG, "onLocationResult: got Location")
                 val locations = p0.locations
                 locations.sortBy { it.time }
-                val lastLocation = locations.lastOrNull()?.altitude ?: 0.0
                 viewModel.altitude = locations.lastOrNull()?.altitude ?: 0.0
 
             }
@@ -240,7 +240,13 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     private fun toast(msg: String) {
         val safeView = view ?: return
-        Snackbar.make(safeView, msg, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(safeView, msg, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun showProgressBar(show: Boolean, text: String = "") {
+        viewModel._isScanning = show
+        viewModel.isScanning.postValue(Event(show))
+        progressBarText.text = text
     }
 
     override fun onPause() {

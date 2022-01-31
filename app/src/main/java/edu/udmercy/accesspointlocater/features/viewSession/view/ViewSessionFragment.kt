@@ -2,7 +2,9 @@ package edu.udmercy.accesspointlocater.features.viewSession.view
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.PointF
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -24,7 +26,9 @@ import kotlin.math.floor
 
 
 class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
-
+    companion object {
+        private const val TAG = "ViewSessionFragment"
+    }
     private val viewModel by viewModels<ViewSessionViewModel>()
 
     private val imageObserver =
@@ -32,6 +36,14 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
             if(bitmap != null) {
                 accessPointImage.setImage(ImageSource.bitmap(bitmap.image))
             }
+        }
+
+    private val apLocationObserever =
+        Observer { points: MutableList<PointF> ->
+            Log.d(TAG, "Points: $points")
+            accessPointImage.touchPoints = points
+            accessPointImage.invalidate()
+
         }
 
     @SuppressLint("SetTextI18n")
@@ -73,6 +85,7 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
         viewModel.currentBitmap.observe(this, imageObserver)
         viewModel.accessPointInfoList.observe(this, accessPointInfoListObserver)
         viewModel.currentFloor.observe(this, floorObserver)
+        viewModel.accessPointLocations.observe(this, apLocationObserever)
 
     }
 
@@ -82,6 +95,7 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
         viewModel.accessPointInfoList.removeObserver(accessPointInfoListObserver)
         viewModel.currentFloor.removeObserver(floorObserver)
         viewModel.currentBitmap.postValue(null)
+        viewModel.accessPointLocations.removeObserver(apLocationObserever)
     }
 
 }
