@@ -40,6 +40,8 @@
         tools:layout="@layout/fragment_execute_session">
         <action
             android:id="@+id/action_executeSession_to_viewSession"
+            app:popUpTo="@+id/session"
+            app:popUpToInclusive="true"
             app:destination="@id/viewSession"/>
         <argument
             android:name="uuid"
