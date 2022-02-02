@@ -23,3 +23,11 @@ data class WifiScans(
     @ColumnInfo
     val ssid: String
 )
+
+fun List<WifiScans>.average(): Double {
+    var total = 0.0
+    this.forEach {
+        total += it.currentLocationZ
+    }
+    return  total/this.size
+}

@@ -18,6 +18,7 @@ import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocati
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import edu.udmercy.accesspointlocater.utils.Event
 import edu.udmercy.accesspointlocater.utils.Multilateration
+import edu.udmercy.accesspointlocater.utils.Multilateration.calculateMultilateration
 import edu.udmercy.accesspointlocater.utils.ReferencePoint
 import edu.udmercy.accesspointlocater.utils.Units
 import kotlinx.coroutines.Dispatchers
@@ -119,7 +120,7 @@ class ExecuteSessionViewModel(
                 )
             )
             val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
-            val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans)
+            val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans, pointDistance, scaleValue, scaleUnit)
             apLocationRepo.saveAccessPointLocations(apLocations)
 
             withContext(Dispatchers.Main) {
@@ -159,68 +160,5 @@ class ExecuteSessionViewModel(
         return (dist *100.0 ) / 1000.0
     }
 
-    /*private fun calculateTrilateration(list: List<AccessPoint>, uuid: String): List<APLocation> {
-        val apLocationList = mutableListOf<APLocation>()
-        val ssidList = list.map { it.ssid }.distinct()
-        for (ssid in ssidList) {
-            val positions = mutableListOf<DoubleArray>()
-            for (item in list.filter { it.ssid == ssid }) {
-                positions.add(
-                    doubleArrayOf(
-                        item.currentLocationX,
-                        item.currentLocationY
-                    )
-                )
-            }
-            val distances = list.filter{ it.ssid == ssid }.map { it.distance }.toDoubleArray()
 
-            val solver = NonLinearLeastSquaresSolver(
-                TrilaterationFunction(
-                    positions.toTypedArray(),
-                    distances
-                ), LevenbergMarquardtOptimizer()
-            )
-            val optimum = solver.solve()
-            val centroid = optimum.point.toArray().toList()
-            apLocationList.add(APLocation(0, uuid, centroid[0], centroid[1], 0.0,0, ssid))
-        }
-        return apLocationList
-    }*/
-
-    private fun calculateMultilateration(list: List<WifiScans>, uuid: String, refPoints: List<WifiScans>): List<APLocation> {
-        val apLocationList = mutableListOf<APLocation>()
-        val ssidList = list.map { it.ssid }.distinct()
-        val scale = calculateScale(pointDistance, scaleValue, scaleUnit)
-        for (ssid in ssidList) {
-            val positions = mutableListOf<ReferencePoint>()
-            for (item in list.filter { it.ssid == ssid }) {
-                positions.add(
-                    ReferencePoint(item.currentLocationX / scale, item.currentLocationY / scale, item.currentLocationZ,item.distance, Units.METERS)
-                )
-            }
-            val solution = Multilateration.calculate(positions)?.array
-            if (solution != null) {
-                apLocationList.add(APLocation(0, uuid, solution[1][0] * scale, solution[2][0] * scale, solution[3][0], 0, ssid))
-            }
-        }
-        return apLocationList
-    }
-
-    // Returns scale in pixels/meter
-    private fun calculateScale(distance: Double, scale: Double, scaleUnit: String): Double {
-        return when(scaleUnit) {
-            "Meters" -> {
-                distance/scale
-            }
-            "Feet" -> {
-                distance / (scale * 0.3048)
-            }
-            "Inches" -> {
-                distance / (scale * 0.0254)
-            }
-            else -> {
-                -1.0
-            }
-        }
-    }
 }
