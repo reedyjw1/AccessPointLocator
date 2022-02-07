@@ -83,11 +83,46 @@
                 app:iconGravity="textStart"
                 app:iconPadding="10dp"/>
 
+            <LinearLayout
+                android:id="@+id/floorHeightLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/selectImageBtn"
+                android:layout_marginVertical="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
+
+                <Spinner
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/floorHeightEditText"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Height"
+                    android:layout_weight="3"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+
+
             <TextView
                 android:id="@+id/scaleTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/selectImageBtn"
+                app:layout_constraintTop_toBottomOf="@id/floorHeightLayout"
                 android:text="@string/scaleTitleLabel"
                 android:fontFamily="@font/inter_semi_bold"
                 style="@style/TextAppearance.AppCompat.Body1"
