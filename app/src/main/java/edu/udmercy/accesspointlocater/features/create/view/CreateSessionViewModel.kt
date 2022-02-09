@@ -21,6 +21,8 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
     val saved = MutableLiveData<Event<Boolean>>()
     val buildingImages: MutableList<Bitmap> = mutableListOf()
     val presentedBitmap: MutableLiveData<Bitmap> = MutableLiveData()
+    var numberOfFloors: MutableLiveData<Int> = MutableLiveData()
+    var floorToHeight: MutableLiveData<MutableMap<Int, Int>> = MutableLiveData()
 
     fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>, scaleNumber: Double, scaleUnit: String, pixelDistance: Double) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -40,4 +42,6 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
             saved.postValue(Event(true))
         }
     }
+
+    fun update
 }
