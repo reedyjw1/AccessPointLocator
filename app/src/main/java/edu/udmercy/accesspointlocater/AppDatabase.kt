@@ -9,7 +9,7 @@ import edu.udmercy.accesspointlocater.features.session.room.AccessPointDao
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocationDao
 
-@Database(entities = [Session::class, AccessPoint::class, BuildingImage::class, APLocation::class], version = 3)
+@Database(entities = [Session::class, AccessPoint::class, BuildingImage::class, APLocation::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionDAO
