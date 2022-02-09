@@ -3,17 +3,19 @@ package edu.udmercy.accesspointlocater
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import edu.udmercy.accesspointlocater.features.session.room.*
-import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
-import edu.udmercy.accesspointlocater.features.session.room.AccessPointDao
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImageDao
+import edu.udmercy.accesspointlocater.features.home.room.*
+import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
+import edu.udmercy.accesspointlocater.features.execute.room.WifiScansDao
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocationDao
 
-@Database(entities = [Session::class, AccessPoint::class, BuildingImage::class, APLocation::class], version = 4)
+@Database(entities = [Session::class, WifiScans::class, BuildingImage::class, APLocation::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionDAO
-    abstract fun accessPointDao(): AccessPointDao
+    abstract fun accessPointDao(): WifiScansDao
     abstract fun buildingImageDao(): BuildingImageDao
     abstract fun apLocationDao(): APLocationDao
 }

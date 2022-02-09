@@ -12,7 +12,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
+import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -27,7 +27,7 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
     private var strokeWidth = 0
     private val paint = Paint()
     var touchedPoint: PointF? = null
-    var completedPointScans: List<AccessPoint> = listOf()
+    var completedPointScans: List<WifiScans> = listOf()
     var threshold = 50f
     var listener: CircleViewPointListener? = null
 
