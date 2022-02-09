@@ -3,8 +3,6 @@ package edu.udmercy.accesspointlocater.features.viewSession.repositories
 import android.content.Context
 import androidx.room.Room
 import edu.udmercy.accesspointlocater.AppDatabase
-import edu.udmercy.accesspointlocater.features.session.room.Session
-import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import kotlinx.coroutines.flow.Flow
 
