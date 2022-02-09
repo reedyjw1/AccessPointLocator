@@ -1,28 +1,19 @@
 package edu.udmercy.accesspointlocater.features.viewSession.view
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
 import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
-import edu.udmercy.accesspointlocater.features.session.model.SessionUI
-import edu.udmercy.accesspointlocater.features.session.room.AccessPoint
-import edu.udmercy.accesspointlocater.features.session.room.BuildingImage
-import edu.udmercy.accesspointlocater.features.session.view.SessionRecyclerAdapter
+import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
-import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlinx.android.synthetic.main.fragment_view_session.*
-import kotlin.math.floor
 
 
 class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
