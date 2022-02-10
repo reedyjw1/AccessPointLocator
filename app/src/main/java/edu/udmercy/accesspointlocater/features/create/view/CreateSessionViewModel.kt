@@ -22,9 +22,9 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
     val buildingImages: MutableList<Bitmap> = mutableListOf()
     val presentedBitmap: MutableLiveData<Bitmap> = MutableLiveData()
     var numberOfFloors: MutableLiveData<Int> = MutableLiveData()
-    var floorToHeight: MutableLiveData<MutableMap<Int, Int>> = MutableLiveData()
+   var selectedFloorHeight: MutableLiveData<Pair<Int,Float>> = MutableLiveData()
 
-    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>, scaleNumber: Double, scaleUnit: String, pixelDistance: Double) {
+    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>, scaleNumber: Double, scaleUnit: String, pixelDistance: Double, floorHeights: List<Float>) {
         viewModelScope.launch(Dispatchers.IO) {
             val uuid = UUID.randomUUID().toString()
             sessionRepo.createNewSession(
@@ -37,11 +37,12 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
                 pixelDistance
             )
             buildingImageRepo.addImagesToSession(images.mapIndexed { index, bitmap ->
-                BuildingImage(uuid = uuid, image = bitmap, floor = index)
+                BuildingImage(uuid = uuid, image = bitmap, floor = index, floorHeight = floorHeights[index])
             })
             saved.postValue(Event(true))
         }
     }
 
-    fun update
+
+
 }
