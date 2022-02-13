@@ -252,7 +252,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             }
             startActivityForResult(intent, CREATE_FILE)
         } else {
-            viewModel.saveFile()
+            viewModel.saveFile(null)
         }
 
     }

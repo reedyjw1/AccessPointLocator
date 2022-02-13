@@ -1,9 +1,6 @@
 package edu.udmercy.accesspointlocater.features.execute.view
 
 import android.app.Application
-import android.content.ContentResolver
-import android.content.ContentValues
-import android.content.Intent
 import android.graphics.PointF
 import android.net.Uri
 import android.net.wifi.ScanResult
@@ -18,12 +15,8 @@ import edu.udmercy.accesspointlocater.features.execute.repositories.WifiScansRep
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
 import edu.udmercy.accesspointlocater.features.home.room.Session
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
-import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import edu.udmercy.accesspointlocater.utils.Event
-import edu.udmercy.accesspointlocater.utils.Multilateration
 import edu.udmercy.accesspointlocater.utils.Multilateration.calculateMultilateration
-import edu.udmercy.accesspointlocater.utils.ReferencePoint
-import edu.udmercy.accesspointlocater.utils.Units
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -34,19 +27,11 @@ import kotlin.math.abs
 import kotlin.math.log10
 import kotlin.math.pow
 import android.os.Environment
-
-import android.os.Build
-import android.provider.DocumentsContract
-import android.provider.MediaStore
-import android.util.Log
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
+import edu.udmercy.accesspointlocater.Converters
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileWriter
-import java.net.URL
 
 
 class ExecuteSessionViewModel(
@@ -150,58 +135,44 @@ class ExecuteSessionViewModel(
 
     }
 
-    fun saveFile(uri: Uri) {
+    fun saveFile(uri: Uri?) {
         viewModelScope.launch(Dispatchers.IO) {
             val sessionTemp = session ?: return@launch
             val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
-            val images = buildingImageRepo.getAllBitmapsFromSession(sessionTemp.uuid)
             val fileName = "${sessionTemp.sessionLabel}.json"
 
             val export = Gson().toJson(
                 SessionExport(
                     sessionTemp,
                     scans,
-                    images
                 )
             )
-            val context = getApplication<Application>().applicationContext
-            val dir = DocumentFile.fromTreeUri(context, uri)
-            val file = dir?.createFile("test/json", fileName)
 
-            file?.let {
-                context.contentResolver.openFileDescriptor(it.uri, "w")
-                    ?.use { parcelFileDescriptor ->
-                        FileOutputStream(parcelFileDescriptor.fileDescriptor).use { output ->
-                            output.write(export.toByteArray())
+            // Called if the SAF is not needed
+            if (uri == null) {
+                val target = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                    fileName
+                )
+                target.delete()
+                target.createNewFile()
+                target.writeText(export)
+
+            } else {
+                val context = getApplication<Application>().applicationContext
+                val dir = DocumentFile.fromTreeUri(context, uri)
+                val file = dir?.createFile("test/json", fileName)
+
+                file?.let {
+                    context.contentResolver.openFileDescriptor(it.uri, "w")
+                        ?.use { parcelFileDescriptor ->
+                            FileOutputStream(parcelFileDescriptor.fileDescriptor).use { output ->
+                                output.write(export.toByteArray())
+                            }
                         }
-                    }
+                }
             }
-        }
-    }
 
-    fun saveFile() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val sessionTemp = session ?: return@launch
-            val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
-            val images = buildingImageRepo.getAllBitmapsFromSession(sessionTemp.uuid)
-
-            val fileName = "${sessionTemp.sessionLabel}.json"
-
-            val export = Gson().toJson(
-                SessionExport(
-                    sessionTemp,
-                    scans,
-                    images
-                )
-            )
-
-            val target = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                fileName
-            )
-            target.delete()
-            target.createNewFile()
-            target.writeText(export)
         }
     }
 
@@ -226,6 +197,10 @@ class ExecuteSessionViewModel(
 
     fun onPause() {
         currentBitmap.value?.image?.recycle()
+    }
+
+    fun onDestroy() {
+        
     }
 
     private fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {

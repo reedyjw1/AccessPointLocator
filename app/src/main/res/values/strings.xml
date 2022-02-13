@@ -18,7 +18,7 @@
 
     <string name="menuDone">End Session</string>
     <string name="menuDelete">Delete a Scan</string>
-    <string name="menuExport">Export a Session</string>
+    <string name="menuExport">Export Session</string>
 
     <string name="scaleBtnLabel">Done</string>
     <string name="scaleTextLabel">Point Distance</string>
