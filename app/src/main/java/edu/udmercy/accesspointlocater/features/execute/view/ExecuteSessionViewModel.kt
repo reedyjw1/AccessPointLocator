@@ -27,6 +27,8 @@ import kotlin.math.abs
 import kotlin.math.log10
 import kotlin.math.pow
 import android.os.Environment
+import android.util.Log
+import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
 import edu.udmercy.accesspointlocater.Converters
@@ -176,6 +178,21 @@ class ExecuteSessionViewModel(
         }
     }
 
+    fun loadFile(uri: Uri) {
+        Log.i(TAG, "loadFile: $uri")
+        try {
+            val bytes = getApplication<Application>().applicationContext.contentResolver.openInputStream(uri)?.readBytes()
+                ?: throw Exception("File was empty")
+            
+            val jsonString = String(bytes)
+            val loadedSession = Gson().fromJson(jsonString, SessionExport::class.java)
+
+            // TODO: 2/13/22 Save the data to the database 
+        } catch (e: Exception) {
+            Log.e(TAG, "loadFile: Could not load uri=$uri because ${e.localizedMessage}")
+        }
+    }
+
     fun moveImage(number: Int, uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
             if (number == 1 || number == -1) {
@@ -199,9 +216,6 @@ class ExecuteSessionViewModel(
         currentBitmap.value?.image?.recycle()
     }
 
-    fun onDestroy() {
-        
-    }
 
     private fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {
         val exp = (27.55 - 20 * log10(freqInMHz.toDouble()) + abs(signalLevelInDb)) / 20.0
