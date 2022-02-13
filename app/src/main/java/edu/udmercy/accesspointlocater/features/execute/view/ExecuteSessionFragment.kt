@@ -2,6 +2,7 @@ package edu.udmercy.accesspointlocater.features.execute.view
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,12 +16,15 @@ import edu.udmercy.accesspointlocater.R
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import android.graphics.PointF
 import android.net.wifi.WifiManager
+import android.os.Build
+import android.os.Environment
 import android.os.Looper
 import android.util.Log
 import android.view.*
 
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import edu.udmercy.accesspointlocater.arch.BaseFragment
@@ -29,7 +33,13 @@ import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 import edu.udmercy.accesspointlocater.utils.Event
 
 import com.google.android.gms.location.*
+import com.google.gson.Gson
+import edu.udmercy.accesspointlocater.features.execute.model.SessionExport
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
+import kotlinx.android.synthetic.main.dialog_create_session.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener {
@@ -38,6 +48,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     companion object {
         private const val TAG = "ExecuteSessionFragment"
+        private const val CREATE_FILE = 5503
     }
 
     private lateinit var wifiManager: WifiManager
@@ -142,6 +153,10 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
                 return true
             }
+            R.id.export -> {
+                exportSession()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -227,6 +242,30 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     private fun scanFailure() {
         toast("Scan Failed!")
+    }
+
+    private fun exportSession() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Scoped Storage
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+
+            }
+            startActivityForResult(intent, CREATE_FILE)
+        } else {
+            viewModel.saveFile()
+        }
+
+    }
+
+    override fun onActivityResult(
+        requestCode: Int, resultCode: Int, resultData: Intent?) {
+        if (requestCode == CREATE_FILE && resultCode == RESULT_OK) {
+            // The result data contains a URI for directory that
+            // the user selected.
+            resultData?.data?.also { uri ->
+                viewModel.saveFile(uri)
+            }
+        }
     }
 
     override fun onResume() {

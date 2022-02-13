@@ -1,16 +1,19 @@
 package edu.udmercy.accesspointlocater.features.execute.view
 
+import android.app.Application
+import android.content.ContentResolver
+import android.content.ContentValues
+import android.content.Intent
 import android.graphics.PointF
+import android.net.Uri
 import android.net.wifi.ScanResult
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 
 import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.execute.model.SessionExport
 import edu.udmercy.accesspointlocater.features.execute.repositories.WifiScansRepository
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
 import edu.udmercy.accesspointlocater.features.home.room.Session
@@ -30,10 +33,26 @@ import org.koin.core.inject
 import kotlin.math.abs
 import kotlin.math.log10
 import kotlin.math.pow
+import android.os.Environment
+
+import android.os.Build
+import android.provider.DocumentsContract
+import android.provider.MediaStore
+import android.util.Log
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.FileWriter
+import java.net.URL
+
 
 class ExecuteSessionViewModel(
+    application: Application,
     private val savedStateHandle: SavedStateHandle
-): ViewModel(), KoinComponent {
+): AndroidViewModel(application), KoinComponent {
     private val sessionRepo: SessionRepository by inject()
     private val wifiScansRepo: WifiScansRepository by inject()
     private val buildingImageRepo: BuildingImageRepository by inject()
@@ -129,6 +148,61 @@ class ExecuteSessionViewModel(
 
         }
 
+    }
+
+    fun saveFile(uri: Uri) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val sessionTemp = session ?: return@launch
+            val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
+            val images = buildingImageRepo.getAllBitmapsFromSession(sessionTemp.uuid)
+            val fileName = "${sessionTemp.sessionLabel}.json"
+
+            val export = Gson().toJson(
+                SessionExport(
+                    sessionTemp,
+                    scans,
+                    images
+                )
+            )
+            val context = getApplication<Application>().applicationContext
+            val dir = DocumentFile.fromTreeUri(context, uri)
+            val file = dir?.createFile("test/json", fileName)
+
+            file?.let {
+                context.contentResolver.openFileDescriptor(it.uri, "w")
+                    ?.use { parcelFileDescriptor ->
+                        FileOutputStream(parcelFileDescriptor.fileDescriptor).use { output ->
+                            output.write(export.toByteArray())
+                        }
+                    }
+            }
+        }
+    }
+
+    fun saveFile() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val sessionTemp = session ?: return@launch
+            val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
+            val images = buildingImageRepo.getAllBitmapsFromSession(sessionTemp.uuid)
+
+            val fileName = "${sessionTemp.sessionLabel}.json"
+
+            val export = Gson().toJson(
+                SessionExport(
+                    sessionTemp,
+                    scans,
+                    images
+                )
+            )
+
+            val target = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                fileName
+            )
+            target.delete()
+            target.createNewFile()
+            target.writeText(export)
+        }
     }
 
     fun moveImage(number: Int, uuid: String) {
