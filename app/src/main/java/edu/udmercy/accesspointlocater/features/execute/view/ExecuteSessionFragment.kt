@@ -41,9 +41,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private lateinit var wifiManager: WifiManager
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
 
     private val wifiScanReceiver = object : BroadcastReceiver() {
 
@@ -99,8 +96,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        setupCallbacks()
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -173,56 +168,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
         val uuid = arguments?.getString("uuid") ?: return
         Log.i(TAG, "scanSuccess: $filteredResults")
-        viewModel.saveResults(filteredResults, uuid, viewModel.altitude)
-    }
-
-    private fun setupCallbacks() {
-        locationRequest = LocationRequest().apply {
-            // Sets the desired interval for
-            // active location updates.
-            // This interval is inexact.
-            interval = TimeUnit.SECONDS.toMillis(5)
-
-            // Sets the fastest rate for active location updates.
-            // This interval is exact, and your application will never
-            // receive updates more frequently than this value
-            fastestInterval = TimeUnit.SECONDS.toMillis(5)
-
-            // Sets the maximum time when batched location
-            // updates are delivered. Updates may be
-            // delivered sooner than this interval
-            maxWaitTime = TimeUnit.SECONDS.toMillis(10)
-
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(p0: LocationResult) {
-                super.onLocationResult(p0)
-                Log.i(TAG, "onLocationResult: got Location")
-                val locations = p0.locations
-                locations.sortBy { it.time }
-                viewModel.altitude = locations.lastOrNull()?.altitude ?: 0.0
-
-            }
-        }
-
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-        Looper.myLooper()?.let {
-            Log.i(TAG, "onReceive: getting location")
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback,
-                it
-            )
-        }
+        viewModel.saveResults(filteredResults)
     }
 
     private fun scanFailure() {
@@ -255,15 +201,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         viewModel.savedPoints.removeObserver(savedPointsObserver)
         viewModel.isScanning.removeObserver(isScanningObserver)
         viewModel.currentBitmap.postValue(null)
-
-        val removeTask = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-        removeTask.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "Location Callback removed.")
-            } else {
-                Log.d(TAG, "Failed to remove Location Callback.")
-            }
-        }
     }
 
     override fun onPointsChanged(currentPoint: PointF?) {
