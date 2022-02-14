@@ -88,7 +88,7 @@
                 android:id="@+id/floorHeightsText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Height per Floor"
+                android:text="@string/floorHeightLabel"
                 android:fontFamily="@font/inter_semi_bold"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:textSize="24sp"
@@ -100,7 +100,7 @@
                 android:padding="5dp"/>
 
             <LinearLayout
-                android:id="@+id/floorHeightLayout"
+                android:id="@+id/floorHeightLinear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -120,18 +120,18 @@
                     android:backgroundTint="@color/primary"/>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/floorHeightEditText"
+                    android:id="@+id/floorHeightLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Height"
                     android:layout_weight="3"
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/floorHeightEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text" />
+                        android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
@@ -140,7 +140,7 @@
                 android:id="@+id/scaleTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/floorHeightLayout"
+                app:layout_constraintTop_toBottomOf="@id/floorHeightLinear"
                 android:text="@string/scaleTitleLabel"
                 android:fontFamily="@font/inter_semi_bold"
                 style="@style/TextAppearance.AppCompat.Body1"

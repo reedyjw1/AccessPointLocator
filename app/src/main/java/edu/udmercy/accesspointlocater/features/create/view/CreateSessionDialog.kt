@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
@@ -25,11 +26,13 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.core.widget.addTextChangedListener
 import edu.udmercy.accesspointlocater.utils.MathUtils
+import kotlin.math.floor
 
 
 class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
 
     private val viewModel by viewModels<CreateSessionViewModel>()
+    var floorHeights = mutableMapOf<Int,Float>()
 
     companion object {
         private const val TAG = "CreateSessionDialog"
@@ -45,46 +48,73 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
             }
         }
 
-    private val floorHeightObserver =
-        Observer { map: MutableMap<Int,Int> ->
-            for (item in map){
-
+    private val spinnerItemSelectListener = object: AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
+            //index is the position in the combo box array of item that was selected
+            //post floor height for selected floor number
+            val height =  floorHeights[index]
+            height?.let { h->
+                val selection = Pair(index, h)
+                viewModel.selectedFloorHeight.postValue(selection)
             }
 
+
         }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+            //do nothing
+        }
+
+    }
+
+    private val heightTextWatcher = object: TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+        }
+
+        override fun onTextChanged(newText: CharSequence?, p1: Int, p2: Int, charCount: Int) {
+            var floorHeight = newText.toString()
+            val selectedFloor = viewModel.selectedFloorHeight.value?.first
+            if (selectedFloor != null && floorHeight.isNotEmpty()){
+                if(floorHeight.first() == '.')
+                {
+                    //checks if period is first character, and if it is append a 0 to the beginning
+                    floorHeight = "0$floorHeight"
+                }
+
+                floorHeights[selectedFloor] = floorHeight.toFloat()
+                Log.d(TAG, "FloorHeightsMap: $floorHeights")
+            }
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+
+        }
+
+    }
+
+    private val floorChanged =
+        Observer { height: Pair<Int,Float> ->
+            floorHeightEditText.setText(height.second.toString())
+        }
+
 
     private val floorNumberObserver =
         Observer { size: Int ->
             Log.d(TAG, "FloorNumberObserver: Size = $size")
             heightSpinner.isEnabled = true
             floorHeightEditText.isEnabled = true
-            val list = mutableListOf<Int>()
-            val initMap = mutableMapOf<Int, Int>()
+            floorHeightEditText.addTextChangedListener(heightTextWatcher)
+            floorHeightEditText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
             for (i in 0 until size){
-                list.add(i+1)
-                initMap[i] = 0
+                floorHeights[i] = 0f
             }
-            viewModel.floorToHeight.postValue(initMap)
             val spinner: Spinner = heightSpinner
             // Create an ArrayAdapter using the string array and a default spinner layout
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, list).also { adapter ->
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, floorHeights.keys.map { it+1 }.toMutableList()).also { adapter ->
                 // Specify the layout to use when the list of choices appears
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        TODO("Not yet implemented")
-                    }
-
-                }
+                spinner.onItemSelectedListener = spinnerItemSelectListener
                 // Apply the adapter to the spinner
                 spinner.adapter = adapter
                 spinner.prompt = "Floor"
@@ -107,25 +137,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         heightSpinner.isEnabled = false
         floorHeightEditText.isEnabled = false
 
-        floorHeightEditText.editText?.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-                TODO("Not yet implemented")
-            }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                //not needed
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                //not needed
-            }
-
-        })
 
         doneBtn.setOnClickListener {
             val sessionLabel = sessionEditText.editText?.text.toString()
@@ -135,14 +147,20 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
 
             val bitmaps = viewModel.buildingImages
 
-            if(sessionLabel != "" && buildingName != "" && bitmaps.isNotEmpty() && scaleImageView.touchPoints.size == 2 && scaleValue.isNotEmpty()) {
+            if(sessionLabel != "" && buildingName != "" && bitmaps.isNotEmpty() && scaleImageView.touchPoints.size == 2 && scaleValue.isNotEmpty() && validateFloorHeights(floorHeights)) {
                 val point1 = scaleImageView.touchPoints[0]
                 val point2 = scaleImageView.touchPoints[1]
                 val pixelDistance = MathUtils.euclideanDistance(point1, point2).toDouble()
 
-                viewModel.addNewSession(sessionLabel, buildingName, bitmaps, scaleValue.toDouble(), scaleUnit, pixelDistance)
+                viewModel.addNewSession(sessionLabel, buildingName, bitmaps, scaleValue.toDouble(), scaleUnit, pixelDistance, floorHeights.values.toList())
             } else {
-                Toast.makeText(requireContext(), "Please fill in every field.", Toast.LENGTH_LONG).show()
+                if(!validateFloorHeights(floorHeights)){
+                    Toast.makeText(requireContext(), "Please fill in a height value for each floor.", Toast.LENGTH_LONG).show()
+                }else{
+                    Toast.makeText(requireContext(), "Please fill in every field.", Toast.LENGTH_LONG).show()
+                }
+
+
             }
         }
 
@@ -155,6 +173,15 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         intent.action = Intent.ACTION_GET_CONTENT
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         startActivityForResult(Intent.createChooser(intent, "Select the Building Image"), SELECT_PICTURE)
+    }
+
+    private fun validateFloorHeights(map: MutableMap<Int, Float>): Boolean{
+        for(floor in map){
+            if(floor.value == 0f){
+                return false
+            }
+        }
+        return true
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -174,10 +201,12 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
                 requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
                     viewModel.presentedBitmap.postValue(BitmapFactory.decodeByteArray(it, 0, it.size))
                 }
+                Log.d(TAG, "onActivityResult: Image Count: $count")
                 viewModel.numberOfFloors.postValue(count)
                 selectImageBtn.text = requireContext().getText(R.string.imageSaved)
                 selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
             } else {
+                viewModel.numberOfFloors.postValue(1)
                 val uri = data?.data ?: return
                 requireContext().contentResolver.openInputStream(uri)?.readBytes()?.let {
                     viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
@@ -191,6 +220,8 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
 
 
 
+
+
     override fun onResume() {
         super.onResume()
         val params: LayoutParams? = dialog?.window?.attributes
@@ -201,6 +232,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         viewModel.saved.observe(this, databaseSavedObserver)
         viewModel.presentedBitmap.observe(this, presentedBitmapObserver)
         viewModel.numberOfFloors.observe(this, floorNumberObserver)
+        viewModel.selectedFloorHeight.observe(this, floorChanged)
     }
 
     override fun onPause() {
@@ -208,5 +240,6 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         viewModel.saved.removeObserver(databaseSavedObserver)
         viewModel.presentedBitmap.removeObserver(presentedBitmapObserver)
         viewModel.numberOfFloors.removeObserver(floorNumberObserver)
+        viewModel.selectedFloorHeight.removeObserver(floorChanged)
     }
 }
