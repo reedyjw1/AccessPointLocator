@@ -118,11 +118,11 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+                //not needed
             }
 
             override fun afterTextChanged(s: Editable?) {
-                TODO()
+                //not needed
             }
 
         })
