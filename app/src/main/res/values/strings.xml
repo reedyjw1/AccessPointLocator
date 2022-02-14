@@ -32,4 +32,6 @@
     </string-array>
 
     <string name="apTitleLabel">Access Point: %1$d</string>
+
+    <string name="floorHeightLabel">Height per Floor (Feet)</string>
 </resources>

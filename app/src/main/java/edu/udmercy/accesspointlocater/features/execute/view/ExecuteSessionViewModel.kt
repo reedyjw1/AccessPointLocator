@@ -48,9 +48,15 @@ class ExecuteSessionViewModel(
     var _isScanning = false
     var isScanning = MutableLiveData<Event<Boolean>>()
 
+    private var floorHeights = listOf<Float>()
+
+    // 4 feet in meters
+    private val phoneHeight = 1.2192
+
     private var session: Session? = null
     private var image: BuildingImage?= null
     private var floorCount: Int? = null
+
     var _savedPoints: List<WifiScans> = emptyList()
     var savedPoints: MutableLiveData<List<WifiScans>> = MutableLiveData(listOf())
     var altitude: Double = 0.0
@@ -78,7 +84,10 @@ class ExecuteSessionViewModel(
                 pointDistance = session?.pixelDistance ?: 0.0
 
                 image = buildingImageRepo.getFloorImage(it, 0)
-                floorCount = buildingImageRepo.getFloorCount(it)
+                val tempCount = buildingImageRepo.getFloorCount(it)
+                floorCount = tempCount
+                floorHeights = buildingImageRepo.getFloorHeights(it, tempCount)
+
                 currentBitmap.postValue(null)
                 currentBitmap.postValue(image)
                 wifiScansRepo.getAllScans(it).collect { list ->
@@ -89,7 +98,7 @@ class ExecuteSessionViewModel(
         }
     }
 
-    fun saveResults(list: List<ScanResult>, uuid: String, altitude: Double) {
+    fun saveResults(list: List<ScanResult>) {
         viewModelScope.launch(Dispatchers.IO) {
             list.forEach {
                 val distance = calculateDistanceInMeters(it.level, it.frequency)
@@ -102,7 +111,7 @@ class ExecuteSessionViewModel(
                         uuid = sessionSafe.uuid,
                         currentLocationX = position.x.toDouble(),
                         currentLocationY =  position.y.toDouble(),
-                        currentLocationZ = altitude,
+                        currentLocationZ = floorHeights[floorVal].toDouble() + phoneHeight,
                         floor = floorVal,
                         distance = distance,
                         ssid = it.BSSID
