@@ -19,9 +19,21 @@ data class WifiScans(
     @ColumnInfo
     val floor: Int,
     @ColumnInfo
-    val distance: Double,
+    val ssid: String,
     @ColumnInfo
-    val ssid: String
+    val capabilities: String,
+    @ColumnInfo
+    val centerFreq0: Int,
+    @ColumnInfo
+    val centerFreq1: Int,
+    @ColumnInfo
+    val channelWidth: Int,
+    @ColumnInfo
+    val frequency: Int,
+    @ColumnInfo
+    val level: Int,
+    @ColumnInfo
+    val timestamp: Long,
 )
 
 fun List<WifiScans>.average(): Double {

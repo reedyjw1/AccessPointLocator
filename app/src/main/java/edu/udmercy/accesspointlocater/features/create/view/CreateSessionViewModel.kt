@@ -8,6 +8,8 @@ import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImage
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.utils.Event
+import edu.udmercy.accesspointlocater.utils.MathUtils
+import edu.udmercy.accesspointlocater.utils.Units
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
@@ -22,9 +24,9 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
     val buildingImages: MutableList<Bitmap> = mutableListOf()
     val presentedBitmap: MutableLiveData<Bitmap> = MutableLiveData()
     var numberOfFloors: MutableLiveData<Int> = MutableLiveData()
-   var selectedFloorHeight: MutableLiveData<Pair<Int,Float>> = MutableLiveData()
+   var selectedFloorHeight: MutableLiveData<Pair<Int,Double>> = MutableLiveData()
 
-    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>, scaleNumber: Double, scaleUnit: String, pixelDistance: Double, floorHeights: List<Float>) {
+    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>, scaleNumber: Double, scaleUnit: String, pixelDistance: Double, floorHeights: List<Double>) {
         viewModelScope.launch(Dispatchers.IO) {
             val uuid = UUID.randomUUID().toString()
             sessionRepo.createNewSession(
@@ -37,7 +39,7 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
                 pixelDistance
             )
             buildingImageRepo.addImagesToSession(images.mapIndexed { index, bitmap ->
-                BuildingImage(uuid = uuid, image = bitmap, floor = index, floorHeight = floorHeights[index])
+                BuildingImage(uuid = uuid, image = bitmap, floor = index, floorHeight = MathUtils.convertUnitToMeters(floorHeights[index], Units.FEET))
             })
             saved.postValue(Event(true))
         }

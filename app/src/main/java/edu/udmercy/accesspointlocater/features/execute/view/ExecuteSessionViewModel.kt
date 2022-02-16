@@ -23,15 +23,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import kotlin.math.abs
-import kotlin.math.log10
-import kotlin.math.pow
 import android.os.Environment
 import android.util.Log
-import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
-import edu.udmercy.accesspointlocater.Converters
 import java.io.File
 import java.io.FileOutputStream
 
@@ -57,9 +52,8 @@ class ExecuteSessionViewModel(
     private var image: BuildingImage?= null
     private var floorCount: Int? = null
 
-    var _savedPoints: List<WifiScans> = emptyList()
+    private var _savedPoints: List<WifiScans> = emptyList()
     var savedPoints: MutableLiveData<List<WifiScans>> = MutableLiveData(listOf())
-    var altitude: Double = 0.0
 
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     var currentPosition: PointF? = null
@@ -101,7 +95,6 @@ class ExecuteSessionViewModel(
     fun saveResults(list: List<ScanResult>) {
         viewModelScope.launch(Dispatchers.IO) {
             list.forEach {
-                val distance = calculateDistanceInMeters(it.level, it.frequency)
                 val sessionSafe = session ?: return@launch
                 val position = currentPosition ?: return@launch
                 val floorVal = floor.value ?: return@launch
@@ -113,14 +106,41 @@ class ExecuteSessionViewModel(
                         currentLocationY =  position.y.toDouble(),
                         currentLocationZ = floorHeights[floorVal].toDouble() + phoneHeight,
                         floor = floorVal,
-                        distance = distance,
-                        ssid = it.BSSID
+                        ssid = it.BSSID,
+                        capabilities = it.capabilities,
+                        centerFreq0 = it.centerFreq0,
+                        centerFreq1 = it.centerFreq1,
+                        channelWidth = it.channelWidth,
+                        frequency = it.frequency,
+                        level = it.level,
+                        timestamp = it.timestamp,
                     )
                 )
 
             }
         }
     }
+
+    // TODO Calculate floor heights from the static inputs
+    // TODO Save normal values of scans to DB instead of calculated values (so scans don't need to be redone)
+    private fun calculateHeightFromFloors(floorHeights: List<Float>, offset: Float, floor: Int): Float {
+        // Converts the inputted floor heights to height calculations and converts them to meters
+        if(floor == 0) {
+            return offset
+        } else {
+            floorHeights.forEachIndexed { index, fl ->
+                var counter = 0.0f
+                if(index < floor) {
+                    counter+=fl
+                } else {
+                    return counter
+                }
+            }
+        }
+        return offset
+    }
+
+    // floorheight[prrvzindex]+offset
 
     fun calculateResults(completion: ()->Unit) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -223,13 +243,6 @@ class ExecuteSessionViewModel(
 
     fun onPause() {
         currentBitmap.value?.image?.recycle()
-    }
-
-
-    private fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {
-        val exp = (27.55 - 20 * log10(freqInMHz.toDouble()) + abs(signalLevelInDb)) / 20.0
-        val dist = 10.0.pow(exp)
-        return (dist *100.0 ) / 1000.0
     }
 
 
