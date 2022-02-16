@@ -43,7 +43,7 @@ class ExecuteSessionViewModel(
     var _isScanning = false
     var isScanning = MutableLiveData<Event<Boolean>>()
 
-    private var floorHeights = listOf<Float>()
+    private var floorHeights = listOf<Double>()
 
     // 4 feet in meters
     private val phoneHeight = 1.2192
@@ -120,27 +120,6 @@ class ExecuteSessionViewModel(
             }
         }
     }
-
-    // TODO Calculate floor heights from the static inputs
-    // TODO Save normal values of scans to DB instead of calculated values (so scans don't need to be redone)
-    private fun calculateHeightFromFloors(floorHeights: List<Float>, offset: Float, floor: Int): Float {
-        // Converts the inputted floor heights to height calculations and converts them to meters
-        if(floor == 0) {
-            return offset
-        } else {
-            floorHeights.forEachIndexed { index, fl ->
-                var counter = 0.0f
-                if(index < floor) {
-                    counter+=fl
-                } else {
-                    return counter
-                }
-            }
-        }
-        return offset
-    }
-
-    // floorheight[prrvzindex]+offset
 
     fun calculateResults(completion: ()->Unit) {
         viewModelScope.launch(Dispatchers.IO) {

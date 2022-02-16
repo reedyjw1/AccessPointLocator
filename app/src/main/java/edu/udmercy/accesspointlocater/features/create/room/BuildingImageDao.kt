@@ -14,7 +14,7 @@ interface BuildingImageDao {
     fun getFloorImage(uuid: String, floor: Int): BuildingImage
 
     @Query("SELECT floorHeight FROM BuildingImage where uuid == (:uuid) and floor=(:floor)")
-    fun getFloorHeight(uuid: String, floor: Int): Float
+    fun getFloorHeight(uuid: String, floor: Int): Double
 
     @Query("SELECT COUNT(id) FROM BuildingImage where uuid == (:uuid)")
     fun getFloorCount(uuid: String): Int
