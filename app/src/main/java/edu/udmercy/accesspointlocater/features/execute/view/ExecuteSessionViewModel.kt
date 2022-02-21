@@ -191,11 +191,33 @@ class ExecuteSessionViewModel(
         try {
             val bytes = getApplication<Application>().applicationContext.contentResolver.openInputStream(uri)?.readBytes()
                 ?: throw Exception("File was empty")
+            val sessionLabel = session?.sessionLabel ?: return
             
             val jsonString = String(bytes)
             val loadedSession = Gson().fromJson(jsonString, SessionExport::class.java)
 
-            // TODO: 2/13/22 Save the data to the database 
+            viewModelScope.launch(Dispatchers.IO) {
+                loadedSession.wifiScans.forEach {
+                    wifiScansRepo.saveAccessPointScan(
+                        WifiScans(
+                            uuid = sessionLabel,
+                            currentLocationX = it.currentLocationX,
+                            currentLocationY = it.currentLocationY,
+                            currentLocationZ = it.currentLocationZ,
+                            floor = it.floor,
+                            ssid = it.ssid,
+                            capabilities = it.capabilities,
+                            centerFreq0 = it.centerFreq0,
+                            centerFreq1 = it.centerFreq1,
+                            channelWidth = it.channelWidth,
+                            frequency = it.frequency,
+                            level = it.level,
+                            timestamp = it.timestamp
+                        )
+                    )
+                }
+            }
+            
         } catch (e: Exception) {
             Log.e(TAG, "loadFile: Could not load uri=$uri because ${e.localizedMessage}")
         }
