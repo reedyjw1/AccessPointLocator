@@ -27,6 +27,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
+import edu.udmercy.accesspointlocater.utils.MathUtils
 import java.io.File
 import java.io.FileOutputStream
 
@@ -104,7 +105,7 @@ class ExecuteSessionViewModel(
                         uuid = sessionSafe.uuid,
                         currentLocationX = position.x.toDouble(),
                         currentLocationY =  position.y.toDouble(),
-                        currentLocationZ = floorHeights[floorVal].toDouble() + phoneHeight,
+                        currentLocationZ = MathUtils.calculateHeightFromFloors(floorHeights, phoneHeight, floorVal),
                         floor = floorVal,
                         ssid = it.BSSID,
                         capabilities = it.capabilities,
@@ -192,7 +193,8 @@ class ExecuteSessionViewModel(
             val bytes = getApplication<Application>().applicationContext.contentResolver.openInputStream(uri)?.readBytes()
                 ?: throw Exception("File was empty")
             val sessionLabel = session?.sessionLabel ?: return
-            
+            val sessionUuid = session?.uuid ?: return
+
             val jsonString = String(bytes)
             val loadedSession = Gson().fromJson(jsonString, SessionExport::class.java)
 
@@ -200,7 +202,7 @@ class ExecuteSessionViewModel(
                 loadedSession.wifiScans.forEach {
                     wifiScansRepo.saveAccessPointScan(
                         WifiScans(
-                            uuid = sessionLabel,
+                            uuid = sessionUuid,
                             currentLocationX = it.currentLocationX,
                             currentLocationY = it.currentLocationY,
                             currentLocationZ = it.currentLocationZ,
@@ -229,6 +231,7 @@ class ExecuteSessionViewModel(
                 val count = floorCount ?: return@launch
                 if ((floor.value == count-1 && number == 1) || (floor.value == 0 && number == -1)) return@launch
                 val floorVal = floor.value ?: return@launch
+                //currentBitmap.value?.image?.recycle()
                 floor.postValue(floorVal+number)
                 currentBitmap.postValue(null)
                 getAccessPoints(floorVal+number)

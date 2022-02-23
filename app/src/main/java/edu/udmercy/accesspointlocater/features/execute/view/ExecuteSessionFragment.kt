@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -70,8 +71,12 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     private val imageObserver =
         Observer { bitmap: BuildingImage? ->
-            if(bitmap != null) {
+            Log.i(TAG, "imageObserver: isRecycled:${bitmap?.image?.isRecycled}")
+            if(bitmap != null && !bitmap.image.isRecycled) {
                 executeImageView.setImage(ImageSource.bitmap(bitmap.image))
+            } else {
+                // Causes Bug
+                //executeImageView.setImage(ImageSource.bitmap(Bitmap.createBitmap(1,1, Bitmap.Config.ARGB_8888)))
             }
         }
 
