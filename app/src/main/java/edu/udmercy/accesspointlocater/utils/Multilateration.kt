@@ -56,7 +56,7 @@ object Multilateration {
             val positions = mutableListOf<ReferencePoint>()
             for (item in list.filter { it.ssid == ssid }) {
                 positions.add(
-                    ReferencePoint(item.currentLocationX / scale, item.currentLocationY / scale, item.currentLocationZ,item.distance, Units.METERS)
+                    ReferencePoint(item.currentLocationX / scale, item.currentLocationY / scale, item.currentLocationZ, MathUtils.calculateDistanceInMeters(item.level, item.frequency), Units.METERS)
                 )
             }
             val solution = calculate(positions)?.array
@@ -122,7 +122,7 @@ object Multilateration {
                     )
                 )
             }
-            val distances = list.filter{ it.ssid == ssid }.map { it.distance }.toDoubleArray()
+            val distances = list.filter{ it.ssid == ssid }.map { MathUtils.calculateDistanceInMeters(it.level, it.frequency) }.toDoubleArray()
 
             val solver = NonLinearLeastSquaresSolver(
                 TrilaterationFunction(

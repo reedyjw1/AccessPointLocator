@@ -2,11 +2,13 @@ package edu.udmercy.accesspointlocater.features.execute.view
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -14,12 +16,15 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import android.graphics.PointF
+import android.net.Uri
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Looper
 import android.util.Log
 import android.view.*
 
 import androidx.core.app.ActivityCompat
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -30,17 +35,26 @@ import edu.udmercy.accesspointlocater.utils.Event
 
 import com.google.android.gms.location.*
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
+import edu.udmercy.accesspointlocater.utils.sp.ISharedPrefsHelper
+import edu.udmercy.accesspointlocater.utils.sp.SharedPrefsKeys
+import org.koin.core.KoinComponent
+import org.koin.core.inject
+import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener {
+class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), CircleViewPointListener, KoinComponent {
 
     private val viewModel by viewModels<ExecuteSessionViewModel>()
 
     companion object {
         private const val TAG = "ExecuteSessionFragment"
+        private const val CREATE_FILE = 5503
+        private const val OPEN_FILE = 4403
     }
 
     private lateinit var wifiManager: WifiManager
+
+    private val sharedProvider: ISharedPrefsHelper by inject()
 
     private val wifiScanReceiver = object : BroadcastReceiver() {
 
@@ -57,8 +71,12 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     private val imageObserver =
         Observer { bitmap: BuildingImage? ->
-            if(bitmap != null) {
+            Log.i(TAG, "imageObserver: isRecycled:${bitmap?.image?.isRecycled}")
+            if(bitmap != null && !bitmap.image.isRecycled) {
                 executeImageView.setImage(ImageSource.bitmap(bitmap.image))
+            } else {
+                // Causes Bug
+                //executeImageView.setImage(ImageSource.bitmap(Bitmap.createBitmap(1,1, Bitmap.Config.ARGB_8888)))
             }
         }
 
@@ -137,6 +155,14 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
                 return true
             }
+            R.id.export -> {
+                exportSession()
+                return true
+            }
+            R.id.load -> {
+                loadSession()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -173,6 +199,72 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     private fun scanFailure() {
         toast("Scan Failed!")
+    }
+
+    private fun exportSession() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Checks if the directory has already been used
+            val uri = sharedProvider.getSharedPrefs(SharedPrefsKeys.DIR_URI)?.toUri()
+            if (uri == null || !uriValid(uri)) {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                startActivityForResult(intent, CREATE_FILE)
+            } else {
+                viewModel.saveFile(uri)
+                toast("Saved Session!")
+            }
+        } else {
+            viewModel.saveFile(null)
+            toast("Saved Session!")
+        }
+
+    }
+
+    private fun loadSession() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Scoped Storage
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                }
+            startActivityForResult(intent, OPEN_FILE)
+        } else {
+            // TODO: 2/13/22 - Load File Old way
+        }
+    }
+
+    private fun uriValid(uri: Uri): Boolean {
+        requireActivity().contentResolver.persistedUriPermissions.forEach {
+            if (it.uri == uri && it.isReadPermission && it.isWritePermission && it.persistedTime <= Date().time) {
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun onActivityResult(
+        requestCode: Int, resultCode: Int, resultData: Intent?) {
+        if (requestCode == CREATE_FILE && resultCode == RESULT_OK) {
+            // The result data contains a URI for directory that
+            // the user selected.
+            resultData?.data?.also { uri ->
+                val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                //this is the uri user has provided us
+                sharedProvider.saveToSharedPrefs(SharedPrefsKeys.DIR_URI, uri.toString())
+                requireActivity().contentResolver.takePersistableUriPermission(
+                    uri,
+                    flags
+                )
+                viewModel.saveFile(uri)
+                toast("Saved Session!")
+            }
+        }
+        if (requestCode == OPEN_FILE && resultCode == RESULT_OK) {
+            resultData?.data?.also { uri ->
+                viewModel.loadFile(uri)
+            }
+        }
     }
 
     override fun onResume() {

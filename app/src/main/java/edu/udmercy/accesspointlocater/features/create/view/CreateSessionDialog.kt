@@ -24,15 +24,13 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import androidx.core.widget.addTextChangedListener
 import edu.udmercy.accesspointlocater.utils.MathUtils
-import kotlin.math.floor
 
 
 class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
 
     private val viewModel by viewModels<CreateSessionViewModel>()
-    var floorHeights = mutableMapOf<Int,Float>()
+    var floorHeights = mutableMapOf<Int,Double>()
 
     companion object {
         private const val TAG = "CreateSessionDialog"
@@ -82,7 +80,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
                     floorHeight = "0$floorHeight"
                 }
 
-                floorHeights[selectedFloor] = floorHeight.toFloat()
+                floorHeights[selectedFloor] = floorHeight.toDouble()
                 Log.d(TAG, "FloorHeightsMap: $floorHeights")
             }
         }
@@ -94,7 +92,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
     }
 
     private val floorChanged =
-        Observer { height: Pair<Int,Float> ->
+        Observer { height: Pair<Int,Double> ->
             floorHeightEditText.setText(height.second.toString())
         }
 
@@ -105,9 +103,10 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
             heightSpinner.isEnabled = true
             floorHeightEditText.isEnabled = true
             floorHeightEditText.addTextChangedListener(heightTextWatcher)
-            floorHeightEditText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+            //floorHeightEditText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+            floorHeightEditText.inputType = (InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
             for (i in 0 until size){
-                floorHeights[i] = 0f
+                floorHeights[i] = 0.0
             }
             val spinner: Spinner = heightSpinner
             // Create an ArrayAdapter using the string array and a default spinner layout
@@ -175,9 +174,9 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         startActivityForResult(Intent.createChooser(intent, "Select the Building Image"), SELECT_PICTURE)
     }
 
-    private fun validateFloorHeights(map: MutableMap<Int, Float>): Boolean{
+    private fun validateFloorHeights(map: MutableMap<Int, Double>): Boolean{
         for(floor in map){
-            if(floor.value == 0f){
+            if(floor.value == 0.0){
                 return false
             }
         }

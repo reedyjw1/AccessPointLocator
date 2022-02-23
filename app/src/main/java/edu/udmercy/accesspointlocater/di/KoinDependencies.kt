@@ -7,6 +7,8 @@ import edu.udmercy.accesspointlocater.features.execute.repositories.WifiScansRep
 import edu.udmercy.accesspointlocater.features.home.repositories.*
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepositoryImpl
+import edu.udmercy.accesspointlocater.utils.sp.ISharedPrefsHelper
+import edu.udmercy.accesspointlocater.utils.sp.SharedPrefsHelper
 import org.koin.dsl.module
 
 val appDependencies = module {
@@ -16,5 +18,6 @@ val appDependencies = module {
     single<WifiScansRepository> { WifiScansRepositoryImpl(get()) }
     single<BuildingImageRepository> { BuildingImageRepositoryImpl(get()) }
     single<APLocationRepository> { APLocationRepositoryImpl(get()) }
+    single<ISharedPrefsHelper> { SharedPrefsHelper(get()) }
 
 }
