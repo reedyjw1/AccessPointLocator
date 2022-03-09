@@ -1,5 +1,6 @@
 package edu.udmercy.accesspointlocater.features.accessPointChooser.view
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,11 +16,12 @@ class AccessPointVH(itemView: View): RecyclerView.ViewHolder(itemView) {
     var itemClicked: OnAccessPointClicked? = null
 
     var entity: AccessPointUI? = null
+        @SuppressLint("SetTextI18n")
         set(value) {
             field = value
             value?.let { data ->
                 itemView.titleTextView.text = data.macAddress
-                itemView.descriptionTextView.text = data.rssi.toString()
+                itemView.descriptionTextView.text = "RSSI: ${data.rssi} Frequency: ${data.frequency}"
                 itemView.setOnClickListener { itemClicked?.invoke(data) }
             }
         }
