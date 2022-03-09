@@ -5,7 +5,8 @@ import androidx.recyclerview.widget.DiffUtil
 data class AccessPointUI(
     val macAddress: String,
     val rssi: Int,
-    val frequency: Int
+    val frequency: Int,
+    val selected: Boolean
 ){
     companion object{
         val DIFFER = object: DiffUtil.ItemCallback<AccessPointUI>(){

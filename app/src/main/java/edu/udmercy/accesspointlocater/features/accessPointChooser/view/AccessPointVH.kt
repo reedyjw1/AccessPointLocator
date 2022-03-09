@@ -23,6 +23,11 @@ class AccessPointVH(itemView: View): RecyclerView.ViewHolder(itemView) {
                 itemView.titleTextView.text = data.macAddress
                 itemView.descriptionTextView.text = "RSSI: ${data.rssi} Frequency: ${data.frequency}"
                 itemView.setOnClickListener { itemClicked?.invoke(data) }
+                if (data.selected) {
+                    itemView.checkmarkImageView.visibility = View.VISIBLE
+                } else {
+                    itemView.checkmarkImageView.visibility = View.INVISIBLE
+                }
             }
         }
 

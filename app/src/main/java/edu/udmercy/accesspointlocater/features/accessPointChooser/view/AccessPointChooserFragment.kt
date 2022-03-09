@@ -31,8 +31,7 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
     private val adapter by lazy {
         AccessPointRecyclerAdapter().apply {
             onAccessPointClicked = {
-                val uuid = arguments?.getString("uuid")
-
+                viewModel.accessPointClicked(it)
             }
         }
     }
@@ -54,7 +53,10 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
         val bundle = bundleOf("uuid" to arguments?.getString("uuid"))
         accessPointRecyclerView.adapter = adapter
         toExecuteSession.setOnClickListener {
-            findNavController().navigate(R.id.action_accessChooser_to_executeSession, bundle)
+            val uuid = arguments?.getString("uuid")
+            viewModel.saveReferenceAccessPointData(uuid) {
+                findNavController().navigate(R.id.action_accessChooser_to_executeSession, bundle)
+            }
         }
         startScan()
     }
