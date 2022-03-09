@@ -6,10 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.udmercy.accesspointlocater.features.accessPointChooser.model.AccessPointUI
+import edu.udmercy.accesspointlocater.features.accessPointChooser.repositories.AccessPointReferenceRepository
+import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 class AccessPointChooserViewModel: ViewModel(), KoinComponent {
 
@@ -18,10 +21,15 @@ class AccessPointChooserViewModel: ViewModel(), KoinComponent {
     }
 
     val accessPointList: MutableLiveData<MutableList<AccessPointUI>> = MutableLiveData(mutableListOf())
+    private val chooserRepo: AccessPointReferenceRepository by inject()
 
     fun saveReferenceAccessPointData(uuid: String?, completion: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Save Data
+            val selected = accessPointList.value?.first { it.selected } ?: return@launch
+            uuid ?: return@launch
+            
+            chooserRepo.saveAccessPointScan(selected, uuid)
+
             withContext(Dispatchers.Main) {
                 completion()
             }
