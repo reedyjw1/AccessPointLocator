@@ -54,8 +54,21 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
         accessPointRecyclerView.adapter = adapter
         toExecuteSession.setOnClickListener {
             val uuid = arguments?.getString("uuid")
-            viewModel.saveReferenceAccessPointData(uuid) {
-                findNavController().navigate(R.id.action_accessChooser_to_executeSession, bundle)
+            val distance = try {
+                accessPointKnownDistanceEditText.text.toString().toDouble()
+            } catch (e:Exception) {
+                Log.i(TAG, "onViewCreated: Not a number")
+                -1.0
+            }
+            if(distance > 10.0 || distance < 0.0) {
+                // Error
+            } else {
+                viewModel.saveReferenceAccessPointData(uuid, distance) {
+                    findNavController().navigate(
+                        R.id.action_accessChooser_to_executeSession,
+                        bundle
+                    )
+                }
             }
         }
         startScan()

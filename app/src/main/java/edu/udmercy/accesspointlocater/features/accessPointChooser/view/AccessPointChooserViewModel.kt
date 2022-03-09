@@ -23,12 +23,12 @@ class AccessPointChooserViewModel: ViewModel(), KoinComponent {
     val accessPointList: MutableLiveData<MutableList<AccessPointUI>> = MutableLiveData(mutableListOf())
     private val chooserRepo: AccessPointReferenceRepository by inject()
 
-    fun saveReferenceAccessPointData(uuid: String?, completion: () -> Unit) {
+    fun saveReferenceAccessPointData(uuid: String?, distance: Double, completion: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            val selected = accessPointList.value?.first { it.selected } ?: return@launch
+            val selected = accessPointList.value?.firstOrNull() { it.selected } ?: return@launch
             uuid ?: return@launch
-            
-            chooserRepo.saveAccessPointScan(selected, uuid)
+
+            chooserRepo.saveAccessPointScan(selected, uuid, distance)
 
             withContext(Dispatchers.Main) {
                 completion()

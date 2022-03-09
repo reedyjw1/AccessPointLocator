@@ -16,4 +16,6 @@ data class AccessPointChooser(
     val frequency: Int,
     @ColumnInfo
     val level: Int,
+    @ColumnInfo
+    val distance: Double,
 )

@@ -13,9 +13,9 @@ class AccessPointReferenceRepositoryImpl(private val appContext: Context): Acces
         AppDatabase::class.java, "FingerPrintingDb"
     ).fallbackToDestructiveMigration().build().accessPointChooserDao()
 
-    override fun saveAccessPointScan(ap: AccessPointUI, uuid: String) {
+    override fun saveAccessPointScan(ap: AccessPointUI, uuid: String, distance: Double) {
         accessPointChooserDao.insertAll(
-            AccessPointChooser(0, ap.macAddress, uuid, ap.rssi, ap.frequency)
+            AccessPointChooser(0, ap.macAddress, uuid, ap.rssi, ap.frequency, distance)
         )
     }
 }
