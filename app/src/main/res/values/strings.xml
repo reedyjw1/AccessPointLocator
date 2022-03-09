@@ -4,6 +4,7 @@
     <string name="fragmentCreateSessionLabel">Create New Session</string>
     <string name="fragmentViewSessionLabel">View Session</string>
     <string name="fragmentExecuteSessionLabel">Execute Session</string>
+    <string name="fragmentAccessChooserLabel">Access Point Chooser</string>
 
     <string name="sessionLabelHint">Session Name</string>
     <string name="buildingLabelHint">Building Name</string>

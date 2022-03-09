@@ -17,9 +17,8 @@
             android:id="@+id/action_sessionList_to_viewSession"
             app:destination="@id/viewSession"/>
         <action
-            android:id="@+id/action_sessionList_to_executeSession"
-            app:destination="@id/executeSession">
-        </action>
+            android:id="@+id/action_sessionList_to_accessChooser"
+            app:destination="@id/accessChooser"/>
     </fragment>
 
     <fragment
@@ -43,6 +42,20 @@
             app:popUpTo="@+id/session"
             app:popUpToInclusive="true"
             app:destination="@id/viewSession"/>
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/accessChooser"
+        android:name="edu.udmercy.accesspointlocater.features.accessPointChooser.view.AccessPointChooserFragment"
+        android:label="@string/fragmentAccessChooserLabel"
+        tools:layout="@layout/fragment_access_chooser">
+        <action
+            android:id="@+id/action_accessChooser_to_executeSession"
+            app:destination="@id/executeSession"/>
         <argument
             android:name="uuid"
             app:argType="string"

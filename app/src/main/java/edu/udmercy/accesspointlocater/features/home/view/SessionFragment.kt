@@ -26,7 +26,7 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
                 if(it.isFinished) {
                     findNavController().navigate(R.id.action_sessionList_to_viewSession, bundle)
                 } else {
-                    findNavController().navigate(R.id.action_sessionList_to_executeSession, bundle)
+                    findNavController().navigate(R.id.action_sessionList_to_accessChooser, bundle)
                 }
             }
         }

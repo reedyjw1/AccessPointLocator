@@ -1,10 +1,7 @@
 package edu.udmercy.accesspointlocater.utils
 
 import android.graphics.PointF
-import kotlin.math.abs
-import kotlin.math.log10
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object MathUtils {
     fun euclideanDistance(point1: PointF, point2: PointF): Float {
@@ -14,11 +11,21 @@ object MathUtils {
         return sqrt(res)
     }
 
-    fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {
+    fun calculateDistanceInMeters(rssi: Int, n: Int, freeSpacePathLoss: Double): Double {
+        val temp = freeSpacePathLoss - rssi.toDouble()
+        return 10.0.pow(temp / (10.0 * n.toDouble()))
+    }
+
+    fun calculateFreeSpacePathLosReference(frequency: Double, meters: Double = 1.0, n: Int): Double{
+        // 32.44 + 10𝑛 log (𝑑) + 10𝑛 log (𝑓)
+        return 32.44 + (10 * n * log(meters, 10.0)) + (10 * n * log(frequency, 10.0))
+    }
+
+    /*fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {
         val exp = (27.55 - 20 * log10(freqInMHz.toDouble()) + abs(signalLevelInDb)) / 20.0
         val dist = 10.0.pow(exp)
         return (dist *100.0 ) / 1000.0
-    }
+    }*/
 
     fun convertUnitToMeters(distance: Double, unit: Units): Double {
         return when (unit) {
