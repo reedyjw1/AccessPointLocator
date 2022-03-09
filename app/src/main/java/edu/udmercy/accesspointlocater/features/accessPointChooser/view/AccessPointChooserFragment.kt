@@ -63,6 +63,7 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
             if(distance > 10.0 || distance < 0.0) {
                 // Error
             } else {
+                // TODO - Handle Backstack to prevent broadcast receiver errors
                 viewModel.saveReferenceAccessPointData(uuid, distance) {
                     findNavController().navigate(
                         R.id.action_accessChooser_to_executeSession,
