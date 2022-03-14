@@ -38,8 +38,10 @@ class AccessPointChooserViewModel: ViewModel(), KoinComponent {
     }
 
     fun updateList(list: List<ScanResult>) {
+        val temp = list.map { AccessPointUI(it.BSSID, it.level, it.frequency, false) }.toMutableList()
+        temp.sortByDescending { it.rssi }
         accessPointList.postValue(
-            list.map { AccessPointUI(it.BSSID, it.level, it.frequency, false) }.toMutableList()
+            temp
         )
     }
 
