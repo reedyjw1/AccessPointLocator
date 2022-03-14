@@ -15,7 +15,7 @@ class AccessPointReferenceRepositoryImpl(private val appContext: Context): Acces
 
     override fun saveAccessPointScan(ap: AccessPointUI, uuid: String, distance: Double) {
         accessPointChooserDao.insertAll(
-            AccessPointChooser(0, ap.macAddress, uuid, ap.rssi, ap.frequency, distance)
+            AccessPointChooser(0, ap.macAddress, uuid, ap.frequency, ap.rssi, distance)
         )
     }
 }
