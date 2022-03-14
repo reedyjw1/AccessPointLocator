@@ -4,6 +4,8 @@ import android.graphics.PointF
 import kotlin.math.*
 
 object MathUtils {
+    private const val buildingType = 3
+
     fun euclideanDistance(point1: PointF, point2: PointF): Float {
         val x: Float = (abs(point1.x - point2.x)).pow(2)
         val y: Float = (abs(point1.y - point2.y)).pow(2)
@@ -11,14 +13,14 @@ object MathUtils {
         return sqrt(res)
     }
 
-    fun calculateDistanceInMeters(rssi: Int, n: Int, freeSpacePathLoss: Double): Double {
+    fun calculateDistanceInMeters(rssi: Int, n: Int, refDist: Double, freeSpacePathLoss: Double): Double {
         val temp = freeSpacePathLoss - rssi.toDouble()
-        return 10.0.pow(temp / (10.0 * n.toDouble()))
+        return 10.0.pow(temp / (10.0 * n)) * refDist
     }
 
-    fun calculateFreeSpacePathLosReference(frequency: Double, meters: Double = 1.0, n: Int): Double{
+    fun calculateFreeSpacePathLossReference(frequency: Double, meters: Double = 1.0): Double{
         // 32.44 + 10𝑛 log (𝑑) + 10𝑛 log (𝑓)
-        return 32.44 + (10 * n * log(meters, 10.0)) + (10 * n * log(frequency, 10.0))
+        return 32.44 + (10 * buildingType * log(meters, 10.0)) + (10 * buildingType * log(frequency, 10.0))
     }
 
     /*fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {

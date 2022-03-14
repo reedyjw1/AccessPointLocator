@@ -1,6 +1,7 @@
 package edu.udmercy.accesspointlocater.utils
 
 import Jama.Matrix
+import android.util.Log
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
 import com.lemmingapex.trilateration.TrilaterationFunction
 import edu.udmercy.accesspointlocater.features.execute.model.FloorZ
@@ -13,6 +14,7 @@ import kotlin.math.pow
 object Multilateration {
 
     private const val TAG = "Multilateration"
+    private const val buildingType = 3
 
     fun calculate(rps: List<ReferencePoint>): Matrix? {
         val aTemp2dArray: MutableList<DoubleArray> = mutableListOf()
@@ -48,17 +50,19 @@ object Multilateration {
      * Calculates position of unknown location using known
      * reference points with respect to 3d space
      */
-    fun calculateMultilateration(list: List<WifiScans>, uuid: String, refPoints: List<WifiScans>, pointDistance: Double, scaleValue: Double, scaleUnit: String): List<APLocation> {
+    fun calculateMultilateration(list: List<WifiScans>, uuid: String, refPoints: List<WifiScans>, pointDistance: Double, scaleValue: Double, scaleUnit: String, freeSpacePathLoss: Double, refDist: Double): List<APLocation> {
         val apLocationList = mutableListOf<APLocation>()
         val ssidList = list.map { it.ssid }.distinct()
         val scale = calculateScale(pointDistance, scaleValue, scaleUnit)
         for (ssid in ssidList) {
             val positions = mutableListOf<ReferencePoint>()
             for (item in list.filter { it.ssid == ssid }) {
-                // TODO - CHANGE
-                /*positions.add(
-                    ReferencePoint(item.currentLocationX / scale, item.currentLocationY / scale, item.currentLocationZ, MathUtils.calculateDistanceInMeters(item.level, 2, item.frequency.toDouble()), Units.METERS)
-                )*/
+                positions.add(
+                    ReferencePoint(item.currentLocationX / scale, item.currentLocationY / scale, item.currentLocationZ, MathUtils.calculateDistanceInMeters(item.level, buildingType, refDist, freeSpacePathLoss), Units.METERS)
+                )
+            }
+            for (item in positions){
+                Log.i(TAG, "calculateMultilateration: distance=${item.distance}")
             }
             val solution = calculate(positions)?.array
             if (solution != null) {

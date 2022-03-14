@@ -18,4 +18,8 @@ class AccessPointReferenceRepositoryImpl(private val appContext: Context): Acces
             AccessPointChooser(0, ap.macAddress, uuid, ap.frequency, ap.rssi, distance)
         )
     }
+
+    override fun getReferenceAccessPoint(uuid: String): AccessPointChooser {
+        return accessPointChooserDao.getReferenceAccessPoint(uuid)
+    }
 }
