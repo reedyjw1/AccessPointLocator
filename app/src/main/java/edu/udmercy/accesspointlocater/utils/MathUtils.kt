@@ -1,5 +1,6 @@
 package edu.udmercy.accesspointlocater.utils
 
+import Jama.Matrix
 import android.graphics.PointF
 import kotlin.math.*
 
@@ -13,14 +14,15 @@ object MathUtils {
         return sqrt(res)
     }
 
-    fun calculateDistanceInMeters(rssi: Int, n: Int, refDist: Double, freeSpacePathLoss: Double): Double {
+    fun calculateDistanceInMeters(rssi: Int, n: Double, refDist: Double, freeSpacePathLoss: Double): Double {
         val temp = freeSpacePathLoss - rssi.toDouble()
         return 10.0.pow(temp / (10.0 * n)) * refDist
     }
 
     fun calculateFreeSpacePathLossReference(frequency: Double, meters: Double = 1.0): Double{
         // 32.44 + 10𝑛 log (𝑑) + 10𝑛 log (𝑓)
-        return 32.44 + (10 * buildingType * log(meters, 10.0)) + (10 * buildingType * log(frequency, 10.0))
+        // return 32.44 + (10 * buildingType * log(meters, 10.0)) + (10 * buildingType * log(frequency, 10.0))
+        return (20 * log(meters, 10.0) * 20 * log(frequency * 1000000, 10.0) - 147.55)
     }
 
     /*fun calculateDistanceInMeters(signalLevelInDb: Int, freqInMHz: Int): Double {
@@ -55,4 +57,18 @@ object MathUtils {
         }
         return floorCounter+offset
     }
+}
+
+fun Double.roundTo(decimals: Int): Double {
+    val factor = 10.0.pow(decimals.toDouble())
+    return (this * factor).roundToInt() / factor
+}
+
+fun strung(m: Matrix): String {
+    val sb = StringBuffer()
+    for (r in 0 until m.rowDimension) {
+        for (c in 0 until m.columnDimension) sb.append(m.get(r, c)).append("\t")
+        sb.append("\n")
+    }
+    return sb.toString()
 }

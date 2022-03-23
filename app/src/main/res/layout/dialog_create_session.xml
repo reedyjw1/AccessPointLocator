@@ -164,7 +164,8 @@
                     <edu.udmercy.accesspointlocater.arch.ScaleCircleView
                         android:id="@+id/scaleImageView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        app:zoomEnabled="true"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

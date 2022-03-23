@@ -31,6 +31,7 @@ class ScaleCircleView(context: Context?, attr: AttributeSet? = null) :
 
     private fun initialise() {
         val density = resources.displayMetrics.densityDpi.toFloat()
+        setMinimumDpi(50)
         strokeWidth = (density / 60f).toInt()
         setOnTouchListener { subView, motionEvent ->
             subView.performClick()

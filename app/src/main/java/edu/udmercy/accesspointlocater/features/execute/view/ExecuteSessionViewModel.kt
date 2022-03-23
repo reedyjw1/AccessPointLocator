@@ -138,8 +138,6 @@ class ExecuteSessionViewModel(
             )
             val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
             val reference = apChooser.getReferenceAccessPoint(sessionTemp.uuid)
-            val pathLoss = MathUtils.calculateFreeSpacePathLossReference(reference.frequency.toDouble(), reference.distance)
-            Log.i(TAG, "calculateResults: freeSpacePathLoss=$pathLoss")
             val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans, pointDistance, scaleValue, scaleUnit, reference.level.toDouble(), reference.distance)
             apLocationRepo.saveAccessPointLocations(apLocations)
 
