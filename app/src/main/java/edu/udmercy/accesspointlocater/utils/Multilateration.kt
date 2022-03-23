@@ -58,7 +58,7 @@ object Multilateration {
             val positions = mutableListOf<ReferencePoint>()
             Log.i(TAG, "calculateMultilateration: scaleValue = ${scale}")
             for (item in list.filter { it.ssid == ssid }) {
-                if(item.level >= -80) {
+                if(item.level >= -70) {
                     val rp = ReferencePoint(
                         item.currentLocationX / scale,
                         item.currentLocationY / scale,

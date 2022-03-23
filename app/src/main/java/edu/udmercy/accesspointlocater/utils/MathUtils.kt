@@ -14,8 +14,8 @@ object MathUtils {
         return sqrt(res)
     }
 
-    fun calculateDistanceInMeters(rssi: Int, n: Double, refDist: Double, freeSpacePathLoss: Double): Double {
-        val temp = freeSpacePathLoss - rssi.toDouble()
+    fun calculateDistanceInMeters(rssi: Int, n: Double, refDist: Double, refApLevel: Double): Double {
+        val temp = refApLevel - rssi.toDouble()
         return 10.0.pow(temp / (10.0 * n)) * refDist
     }
 

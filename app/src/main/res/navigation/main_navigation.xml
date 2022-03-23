@@ -56,6 +56,23 @@
         <action
             android:id="@+id/action_accessChooser_to_executeSession"
             app:destination="@id/executeSession"/>
+
+        <action
+            android:id="@+id/action_accessChooser_to_distanceTest"
+            app:destination="@id/distanceTest"/>
+
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/distanceTest"
+        android:name="edu.udmercy.accesspointlocater.features.testDistance.view.DistanceTestFragment"
+        android:label="@string/fragmentDistanceTester"
+        tools:layout="@layout/fragment_distance_test">
+
         <argument
             android:name="uuid"
             app:argType="string"
