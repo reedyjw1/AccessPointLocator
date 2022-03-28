@@ -18,7 +18,7 @@ class AccessPointImageView(context: Context?, attr: AttributeSet? = null) :
 
     private var strokeWidth = 0
     private val paint = Paint()
-    var touchPoints: MutableList<PointF> = mutableListOf()
+    var touchPoints: MutableList<Pair<Int, PointF>> = mutableListOf()
     var maxPoints = 2
     var threshold = 50f
     var listener: CircleViewPointListener? = null
@@ -41,8 +41,8 @@ class AccessPointImageView(context: Context?, attr: AttributeSet? = null) :
         val strokeRadius = 32f
 
         // Previously clicked points
-        touchPoints.forEach {
-            sourceToViewCoord(it)?.let { source ->
+        touchPoints.forEach { pair ->
+            sourceToViewCoord(pair.second)?.let { source ->
                 paint.isAntiAlias = true
                 paint.style = Paint.Style.FILL_AND_STROKE
                 paint.strokeCap = Paint.Cap.ROUND
@@ -53,7 +53,7 @@ class AccessPointImageView(context: Context?, attr: AttributeSet? = null) :
                 canvas.drawCircle(source.x, source.y, radius, paint)
                 paint.color = Color.BLACK
                 paint.textSize = 30f
-                canvas.drawText(touchPoints.indexOf(it).toString(), source.x-(radius/4f), source.y+(radius/4f), paint)
+                canvas.drawText(pair.first.toString(), source.x-(radius/4f), source.y+(radius/4f), paint)
             }
         }
     }
