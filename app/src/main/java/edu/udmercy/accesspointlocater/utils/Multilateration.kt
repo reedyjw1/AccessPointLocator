@@ -1,6 +1,7 @@
 package edu.udmercy.accesspointlocater.utils
 
 import Jama.Matrix
+import android.util.Log
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
 import com.lemmingapex.trilateration.TrilaterationFunction
 import edu.udmercy.accesspointlocater.features.execute.model.FloorZ
@@ -13,6 +14,7 @@ import kotlin.math.pow
 object Multilateration {
 
     private const val TAG = "Multilateration"
+    private const val buildingType = 3
 
     fun calculate(rps: List<ReferencePoint>): Matrix? {
         val aTemp2dArray: MutableList<DoubleArray> = mutableListOf()
@@ -48,22 +50,58 @@ object Multilateration {
      * Calculates position of unknown location using known
      * reference points with respect to 3d space
      */
-    fun calculateMultilateration(list: List<WifiScans>, uuid: String, refPoints: List<WifiScans>, pointDistance: Double, scaleValue: Double, scaleUnit: String): List<APLocation> {
+    fun calculateMultilateration(list: List<WifiScans>, uuid: String, refPoints: List<WifiScans>, pointDistance: Double, scaleValue: Double, scaleUnit: String, freeSpacePathLoss: Double, refDist: Double): List<APLocation> {
         val apLocationList = mutableListOf<APLocation>()
         val ssidList = list.map { it.ssid }.distinct()
         val scale = calculateScale(pointDistance, scaleValue, scaleUnit)
         for (ssid in ssidList) {
             val positions = mutableListOf<ReferencePoint>()
+            Log.i(TAG, "calculateMultilateration: scaleValue = ${scale}")
             for (item in list.filter { it.ssid == ssid }) {
-                positions.add(
-                    ReferencePoint(item.currentLocationX / scale, item.currentLocationY / scale, item.currentLocationZ, MathUtils.calculateDistanceInMeters(item.level, item.frequency), Units.METERS)
-                )
+                if(item.level >= -70) {
+                    val rp = ReferencePoint(
+                        item.currentLocationX / scale,
+                        item.currentLocationY / scale,
+                        item.currentLocationZ,
+                        MathUtils.calculateDistanceInMeters(
+                            item.level,
+                            buildingType.toDouble(),
+                            refDist,
+                            freeSpacePathLoss
+                        ).roundTo(2),
+                        Units.METERS
+                    )
+                    positions.add(rp)
+                    Log.i(TAG, "calculateMultilateration: x=${rp.x},y=${rp.y},z=${rp.z}, distance=${rp.distance}")
+                }
             }
-            val solution = calculate(positions)?.array
-            if (solution != null) {
-                val floorZList = calculateFloorsFromZ(refPoints, .001)
-                val calculatedFloor = floorZList.firstOrNull { solution[3][0] >= it.lowerBound && solution[3][0] <= it.upperBound }
-                apLocationList.add(APLocation(0, uuid, solution[1][0] * scale, solution[2][0] * scale, solution[3][0], calculatedFloor?.floor ?: -1, ssid))
+            for (item in positions){
+                Log.i(TAG, "calculateMultilateration: distance=${item.distance}, x=${item.x}, y=${item.y}, z=${item.z},")
+            }
+            if(positions.isNotEmpty()) {
+                val data = calculate(positions)
+                val solution = data?.array
+                if (data != null) {
+                    Log.i(TAG, "calculateMultilateration: matrix=${strung(data)}")
+                }
+
+                if (solution != null) {
+                    Log.i(TAG, "calculateMultilateration: zHeight = ${solution[3][0]}")
+                    val floorZList = calculateFloorsFromZ(refPoints, .001)
+                    val calculatedFloor =
+                        floorZList.firstOrNull { solution[3][0] >= it.lowerBound && solution[3][0] <= it.upperBound }
+                    val ap = APLocation(
+                        0,
+                        uuid,
+                        solution[1][0] * scale,
+                        solution[2][0] * scale,
+                        solution[3][0],
+                        calculatedFloor?.floor ?: -1,
+                        ssid
+                    )
+                    apLocationList.add(ap)
+                    Log.i(TAG, "calculateMultilateration: APLocation (meters): x=${solution[1][0]},y=${solution[2][0]},z=${solution[3][0]}")
+                }
             }
         }
         return apLocationList
@@ -94,10 +132,10 @@ object Multilateration {
                 distance/scale
             }
             "Feet" -> {
-                distance / (scale * 0.3048)
+                distance / (scale / 3.281)
             }
             "Inches" -> {
-                distance / (scale * 0.0254)
+                distance / (scale / 39.37)
             }
             else -> {
                 -1.0
@@ -122,7 +160,7 @@ object Multilateration {
                     )
                 )
             }
-            val distances = list.filter{ it.ssid == ssid }.map { MathUtils.calculateDistanceInMeters(it.level, it.frequency) }.toDoubleArray()
+            /*val distances = list.filter{ it.ssid == ssid }.map { MathUtils.calculateDistanceInMeters(it.level, it.frequency) }.toDoubleArray()
 
             val solver = NonLinearLeastSquaresSolver(
                 TrilaterationFunction(
@@ -132,7 +170,7 @@ object Multilateration {
             )
             val optimum = solver.solve()
             val centroid = optimum.point.toArray().toList()
-            apLocationList.add(APLocation(0, uuid, centroid[0], centroid[1], 0.0,0, ssid))
+            apLocationList.add(APLocation(0, uuid, centroid[0], centroid[1], 0.0,0, ssid))*/
         }
         return apLocationList
     }

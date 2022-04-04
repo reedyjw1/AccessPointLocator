@@ -27,7 +27,7 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
     val sessionName: MutableLiveData<String> = MutableLiveData()
     val accessPointInfoList = MutableLiveData<MutableList<AccessPointInfo>>()
     private var _accessPointInfoList = mutableListOf<AccessPointInfo>()
-    val accessPointLocations = MutableLiveData<MutableList<PointF>>()
+    val accessPointLocations = MutableLiveData<MutableList<Pair<Int, PointF>>>()
     val currentFloor = MutableLiveData<Int>(0)
     private var floorCount: Int? = null
     private var image: BuildingImage?= null
@@ -73,7 +73,7 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
     private fun getAccessPoints(floor: Int) {
         val aps = _accessPointInfoList.filter { pred -> pred.floorNumber == floor }
         accessPointInfoList.postValue(aps.toMutableList())
-        val apPointFs = aps.map { PointF(it.xCoordinate.toFloat(), it.yCoordinate.toFloat()) }.toMutableList()
+        val apPointFs = aps.map { Pair(it.apNumber, PointF(it.xCoordinate.toFloat(), it.yCoordinate.toFloat())) }.toMutableList()
         Log.d(TAG, "getAccessPoints: apPoints: $apPointFs")
         accessPointLocations.postValue(apPointFs)
     }
