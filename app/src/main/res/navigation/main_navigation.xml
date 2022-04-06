@@ -19,7 +19,26 @@
         <action
             android:id="@+id/action_sessionList_to_accessChooser"
             app:destination="@id/accessChooser"/>
+        <action
+            android:id="@+id/action_sessionList_to_KnownAPLocationsPlacer"
+            app:destination="@id/knownAPLocationPlacer"
+            />
     </fragment>
+
+    <fragment
+        android:id="@+id/knownAPLocationPlacer"
+        android:name="edu.udmercy.accesspointlocater.features.placeAccessPoints.view.PlaceAccessPointsFragment"
+        android:label="Place Access Points"
+        tools:layout="@layout/fragment_place_access_points">
+
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
+
+    </fragment>
+
+
 
     <fragment
         android:id="@+id/viewSession"

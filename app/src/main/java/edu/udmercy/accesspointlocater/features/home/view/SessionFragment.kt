@@ -28,7 +28,7 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
                     findNavController().navigate(R.id.action_sessionList_to_viewSession, bundle)
                 } 
                 else if(it.apsAreKnown) {
-                    Log.d(TAG, "sessionAdapter: Ap Locations are Known")
+                    findNavController().navigate(R.id.action_sessionList_to_KnownAPLocationsPlacer, bundle)
                 }
                 else {
                     findNavController().navigate(R.id.action_sessionList_to_accessChooser, bundle)
