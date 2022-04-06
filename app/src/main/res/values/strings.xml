@@ -39,4 +39,6 @@
     <string name="floorHeightLabel">Height per Floor (Feet)</string>
 
     <string name="apLocationCheckboxText">I know the location of the access points</string>
+
+    <string name="floorNumber">Floor %1$d</string>
 </resources>
