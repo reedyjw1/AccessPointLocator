@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <edu.udmercy.accesspointlocater.arch.CircleView
+            <edu.udmercy.accesspointlocater.arch.PlaceAPImageView
                 android:id="@+id/apLocationPlacer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

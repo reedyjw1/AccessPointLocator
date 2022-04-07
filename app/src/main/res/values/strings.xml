@@ -41,4 +41,7 @@
     <string name="apLocationCheckboxText">I know the location of the access points</string>
 
     <string name="floorNumber">Floor %1$d</string>
+    <string name="macText">MAC Address</string>
+    <string name="saveText">Save</string>
+    <string name="dismissText">Cancel</string>
 </resources>

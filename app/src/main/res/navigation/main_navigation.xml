@@ -36,6 +36,11 @@
             app:argType="string"
             app:nullable="true" />
 
+        <action
+            android:id="@+id/knownAP_to_getMacAddress"
+            app:destination="@id/obtainMacAddress"
+            />
+
     </fragment>
 
 
@@ -103,5 +108,12 @@
         android:name="edu.udmercy.accesspointlocater.features.create.view.CreateSessionDialog"
         android:label="@string/fragmentCreateSessionLabel"
         tools:layout="@layout/dialog_create_session"/>
+
+    <dialog
+        android:id="@+id/obtainMacAddress"
+        android:name="edu.udmercy.accesspointlocater.features.placeAccessPoints.view.MACAddressDialog"
+        android:label="MAC Address"
+        tools:layout="@layout/dialog_get_mac"
+        />
 
 </navigation>

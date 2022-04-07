@@ -1,6 +1,7 @@
 package edu.udmercy.accesspointlocater.features.placeAccessPoints.view
 
 import android.graphics.Bitmap
+import android.graphics.PointF
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImage
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
+import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
@@ -20,6 +22,8 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
     private val accessPointRepo: APLocationRepository by inject()
     private var floorCount = 0
 
+
+    val apPoints: MutableList<Map<String, PointF>> = mutableListOf()
     val currentDisplayImage: MutableLiveData<BuildingImage> = MutableLiveData()
     val currentFloorNumber: MutableLiveData<Int> = MutableLiveData()
 
@@ -34,13 +38,15 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
     }
 
     fun changeFloor(uuid: String, changeValue: Int){
-        var tempCurrentFloor = currentFloorNumber.value ?: return
-        tempCurrentFloor += changeValue
+        // tempCurrentFloor is the index of the current floor, 0 index = 1st floor, index = 2nd floor....
+        val tempCurrentFloor = currentFloorNumber.value ?: return
+        val tempNextFloor = tempCurrentFloor + changeValue
 
-        if(tempCurrentFloor in 0 until floorCount) {
+        //check if requested floor is available
+        if(tempNextFloor in 0 until floorCount) {
             viewModelScope.launch(Dispatchers.IO) {
-                currentFloorNumber.postValue(tempCurrentFloor)
-                val floorImage = buildingImageRepo.getFloorImage(uuid, tempCurrentFloor)
+                currentFloorNumber.postValue(tempNextFloor)
+                val floorImage = buildingImageRepo.getFloorImage(uuid, tempNextFloor)
                 currentDisplayImage.postValue(floorImage)
             }
         }
