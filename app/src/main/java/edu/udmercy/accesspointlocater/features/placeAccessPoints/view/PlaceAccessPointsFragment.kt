@@ -2,6 +2,7 @@ package edu.udmercy.accesspointlocater.features.placeAccessPoints.view
 
 import android.graphics.PointF
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -10,10 +11,11 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.TouchPointListener
+import edu.udmercy.accesspointlocater.features.viewSession.view.ViewSessionFragment
 import kotlinx.android.synthetic.main.fragment_place_access_points.*
 import kotlinx.android.synthetic.main.fragment_view_session.*
-import kotlin.math.floor
 
 class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_points) {
 
@@ -40,6 +42,13 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
             }
         }
 
+    private val apLocationObserever =
+        Observer { points: MutableList<Pair<String, PointF>> ->
+            apLocationPlacer.touchPoints = points.map { it.second }.toMutableList()
+            apLocationPlacer.invalidate()
+
+        }
+
     private val floorTextObserver =
         Observer { floorNumber: Int ->
             placerfloorNumberBtn.text = resources.getString(R.string.floorNumber, floorNumber+1)
@@ -48,17 +57,35 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
     //listen for addition and removal of ap points on map
     private val touchPointListener = object: TouchPointListener {
         override fun onPointAdded(point: PointF) {
-            findNavController().navigate(R.id.knownAP_to_getMacAddress)
-            //pass through point as args to dialog
-            // save point and ssid to dialog view model
-            //Make dialog viewmodel hold points and update database instead of AP placer viewmodel
-
+            inflateMACDialog(point)
         }
 
         override fun onPointRemoved(point: PointF) {
-           viewModel.apPoints.removeIf { it.values.contains(point) }
+           viewModel.apPoints.value?.removeIf { it.second == point }
+            Log.d(TAG, "inflateMACDialog: Point Removed - List = ${viewModel.apPoints.value}")
         }
 
+    }
+
+    private fun inflateMACDialog(point: PointF){
+        var received = false
+        childFragmentManager.setFragmentResultListener("macAddress", viewLifecycleOwner, { requestKey, data ->
+           if(requestKey == "macAddress" && !received){
+               val item = data.getString("result")
+               item?.let {
+                   Log.d(TAG, "inflateMACDialog: Result: $it")
+                   val newPoint = Pair(it, point)
+                   val allPoints = viewModel.apPoints.value
+                   allPoints?.add(newPoint)
+                   Log.d(TAG, "inflateMACDialog: Point Added - List = $allPoints")
+                   allPoints?.let{ points ->
+                       viewModel.apPoints.postValue(points)
+                   }
+                   received = true
+               }
+           }
+        })
+        MACAddressDialog().show(childFragmentManager, "macAddress")
     }
 
 
@@ -79,10 +106,12 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
         super.onPause()
         viewModel.currentDisplayImage.removeObserver(imageObserver)
         viewModel.currentFloorNumber.removeObserver(floorTextObserver)
+        viewModel.apPoints.removeObserver(apLocationObserever)
     }
 
     override fun onResume() {
         super.onResume()
+        viewModel.apPoints.observe(this, apLocationObserever)
         viewModel.currentDisplayImage.observe(this, imageObserver)
         viewModel.currentFloorNumber.observe(this, floorTextObserver)
     }

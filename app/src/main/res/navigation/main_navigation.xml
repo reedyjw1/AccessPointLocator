@@ -111,9 +111,24 @@
 
     <dialog
         android:id="@+id/obtainMacAddress"
-        android:name="edu.udmercy.accesspointlocater.features.placeAccessPoints.view.MACAddressDialog"
+        android:name="edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog"
         android:label="MAC Address"
-        tools:layout="@layout/dialog_get_mac"
-        />
+        tools:layout="@layout/dialog_get_mac">
+
+        <argument
+            android:name="x"
+            app:argType="float"
+            app:nullable="false" />
+
+        <argument
+            android:name="y"
+            app:argType="float"
+            app:nullable="false" />
+
+    </dialog>
+
+
+
+
 
 </navigation>

@@ -94,7 +94,7 @@ class PlaceAPImageView(context: Context?, attr: AttributeSet? = null) :
                     }
                     // If there is no close point, add the new point
                     if (closestPoint.second == Float.MAX_VALUE) {
-                        touchPoints.add(coordinate)
+                        //touchPoints.add(coordinate)
                         listener?.onPointAdded(coordinate)
                         invalidate()
                     } else if(closestPoint.second != Float.MAX_VALUE){

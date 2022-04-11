@@ -23,7 +23,7 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
     private var floorCount = 0
 
 
-    val apPoints: MutableList<Map<String, PointF>> = mutableListOf()
+    val apPoints: MutableLiveData<MutableList<Pair<String, PointF>>> = MutableLiveData()
     val currentDisplayImage: MutableLiveData<BuildingImage> = MutableLiveData()
     val currentFloorNumber: MutableLiveData<Int> = MutableLiveData()
 
@@ -31,6 +31,7 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch(Dispatchers.IO) {
             val session = sessionRepo.getCurrentSession(uuid)
             val firstFloorImage = buildingImageRepo.getFloorImage(uuid, 0)
+            apPoints.postValue(mutableListOf())
             currentDisplayImage.postValue(firstFloorImage)
             currentFloorNumber.postValue(0)
             floorCount = buildingImageRepo.getFloorCount(uuid)
