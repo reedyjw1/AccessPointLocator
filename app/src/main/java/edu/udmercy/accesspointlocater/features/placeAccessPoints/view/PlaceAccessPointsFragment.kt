@@ -12,6 +12,7 @@ import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog
+import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.APPointLocation
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.TouchPointListener
 import edu.udmercy.accesspointlocater.features.viewSession.view.ViewSessionFragment
 import kotlinx.android.synthetic.main.fragment_place_access_points.*
@@ -21,10 +22,11 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
 
 
     // Things to do
-    // load in images for correct session
-    // hookup buttons to move between floor images
-    // after placing a point ask for its mac address
-    // save point to viewModel
+    // load in images for correct session - DONE
+    // hookup buttons to move between floor images - DONE
+    // after placing a point ask for its mac address - DONE
+    // save point to viewModel - DONE
+    // change points per floor
     // save point to database
     // if point is deleted, delete from database
 
@@ -43,10 +45,13 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
         }
 
     private val apLocationObserever =
-        Observer { points: MutableList<Pair<String, PointF>> ->
-            apLocationPlacer.touchPoints = points.map { it.second }.toMutableList()
-            apLocationPlacer.invalidate()
-
+        Observer { points: MutableList<APPointLocation> ->
+            val currentFloor = viewModel.currentFloorNumber.value
+            currentFloor?.let { floor ->
+                //filter the points to correct floor, then map only the points to the list of touch points
+                apLocationPlacer.touchPoints = points.filter { it.floor == floor }.map { it.point }.toMutableList()
+                apLocationPlacer.invalidate()
+            }
         }
 
     private val floorTextObserver =
@@ -61,8 +66,11 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
         }
 
         override fun onPointRemoved(point: PointF) {
-           viewModel.apPoints.value?.removeIf { it.second == point }
-            Log.d(TAG, "inflateMACDialog: Point Removed - List = ${viewModel.apPoints.value}")
+            val wasValueRemoved = viewModel.apPoints.value?.removeIf { it.point == point }
+            if (wasValueRemoved == true){
+                Log.d(TAG, "inflateMACDialog: Point Removed - $point")
+            }
+
         }
 
     }
@@ -72,16 +80,22 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
         childFragmentManager.setFragmentResultListener("macAddress", viewLifecycleOwner, { requestKey, data ->
            if(requestKey == "macAddress" && !received){
                val item = data.getString("result")
-               item?.let {
-                   Log.d(TAG, "inflateMACDialog: Result: $it")
-                   val newPoint = Pair(it, point)
-                   val allPoints = viewModel.apPoints.value
-                   allPoints?.add(newPoint)
-                   Log.d(TAG, "inflateMACDialog: Point Added - List = $allPoints")
-                   allPoints?.let{ points ->
-                       viewModel.apPoints.postValue(points)
+               item?.let { mac ->
+                   Log.d(TAG, "inflateMACDialog: Result: $mac")
+                   viewModel.currentFloorNumber.value?.let { floor ->
+                       val newPoint = APPointLocation(point, floor, mac)
+                       val allPoints = viewModel.apPoints.value
+                       allPoints?.add(newPoint)
+                       allPoints?.forEach {
+                           val values = it.logValues()
+                           Log.d(TAG, "inflateMACDialog: Point Added - List = $values}")
+                       }
+
+                       allPoints?.let{ points ->
+                           viewModel.apPoints.postValue(points)
+                       }
+                       received = true
                    }
-                   received = true
                }
            }
         })

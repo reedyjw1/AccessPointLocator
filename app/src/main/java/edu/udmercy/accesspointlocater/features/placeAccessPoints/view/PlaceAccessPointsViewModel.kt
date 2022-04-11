@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
+import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.APPointLocation
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +24,10 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
     private var floorCount = 0
 
 
-    val apPoints: MutableLiveData<MutableList<Pair<String, PointF>>> = MutableLiveData()
+    val apPoints: MutableLiveData<MutableList<APPointLocation>> = MutableLiveData()
     val currentDisplayImage: MutableLiveData<BuildingImage> = MutableLiveData()
     val currentFloorNumber: MutableLiveData<Int> = MutableLiveData()
+
 
     fun initializeImages(uuid: String){
         viewModelScope.launch(Dispatchers.IO) {
@@ -49,6 +51,17 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
                 currentFloorNumber.postValue(tempNextFloor)
                 val floorImage = buildingImageRepo.getFloorImage(uuid, tempNextFloor)
                 currentDisplayImage.postValue(floorImage)
+                apPoints.postValue(apPoints.value)
+            }
+        }
+    }
+
+    fun savePointsToDB(uuid: String){
+        //save points for floor
+        viewModelScope.launch(Dispatchers.IO) {
+            val locations = apPoints.value?.map { APLocation(floor = it.floor, uuid = uuid, xCoordinate = it.point.x.toDouble(), yCoordinate = it.point.y.toDouble(), zCoordinate = -1.0, ssid = it.macAddress) }
+            locations?.let {
+                accessPointRepo.saveAccessPointLocations(it)
             }
         }
     }
