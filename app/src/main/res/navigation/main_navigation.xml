@@ -41,6 +41,11 @@
             app:destination="@id/obtainMacAddress"
             />
 
+        <action
+            android:id="@+id/knownAP_to_viewSession"
+            app:destination="@+id/viewSession"
+            />
+
     </fragment>
 
 
@@ -115,15 +120,6 @@
         android:label="MAC Address"
         tools:layout="@layout/dialog_get_mac">
 
-        <argument
-            android:name="x"
-            app:argType="float"
-            app:nullable="false" />
-
-        <argument
-            android:name="y"
-            app:argType="float"
-            app:nullable="false" />
 
     </dialog>
 

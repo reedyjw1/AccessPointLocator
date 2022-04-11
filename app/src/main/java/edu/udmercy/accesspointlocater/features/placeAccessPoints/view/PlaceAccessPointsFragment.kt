@@ -3,7 +3,9 @@ package edu.udmercy.accesspointlocater.features.placeAccessPoints.view
 import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
-import android.view.View
+import android.view.*
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -26,9 +28,9 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
     // hookup buttons to move between floor images - DONE
     // after placing a point ask for its mac address - DONE
     // save point to viewModel - DONE
-    // change points per floor
+    // change points per floor - DONE
     // save point to database
-    // if point is deleted, delete from database
+
 
 
     companion object {
@@ -102,6 +104,14 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
         MACAddressDialog().show(childFragmentManager, "macAddress")
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        setHasOptionsMenu(true)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -114,6 +124,36 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
         placerNextFloorBtn.setOnClickListener {
             viewModel.changeFloor(uuid, 1)
         }
+    }
+
+    private fun savePoints(uuid:String){
+        viewModel.savePointsToDB(uuid)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.save_aps_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.save ->{
+                val uuid = arguments?.getString("uuid")
+                uuid?.let {
+                    savePoints(uuid)
+                    viewModel.markSessionComplete(uuid)
+
+                    val bundle = bundleOf("uuid" to uuid)
+                    findNavController().navigate(R.id.knownAP_to_viewSession, bundle)
+
+                }
+                if(uuid == null){
+                    Toast.makeText(this.requireContext(), "Error: UUID is null", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onPause() {

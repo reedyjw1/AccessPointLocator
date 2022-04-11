@@ -65,4 +65,8 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
             }
         }
     }
+
+    fun markSessionComplete(uuid:String){
+        
+    }
 }
