@@ -28,6 +28,7 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
 import edu.udmercy.accesspointlocater.features.accessPointChooser.repositories.AccessPointReferenceRepository
+import edu.udmercy.accesspointlocater.features.execute.room.estimateLocations
 import edu.udmercy.accesspointlocater.utils.MathUtils
 import java.io.File
 import java.io.FileOutputStream
@@ -133,12 +134,16 @@ class ExecuteSessionViewModel(
                     sessionLabel = sessionTemp.sessionLabel,
                     timestamp = sessionTemp.timestamp,
                     building = sessionTemp.building,
-                    true
+                    isFinished = true,
+                    scaleUnits = sessionTemp.scaleUnits,
+                    scaleNumber = sessionTemp.scaleNumber,
+                    pixelDistance = sessionTemp.pixelDistance
                 )
             )
             val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
             val reference = apChooser.getReferenceAccessPoint(sessionTemp.uuid)
-            val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans, pointDistance, scaleValue, scaleUnit, reference.level.toDouble(), reference.distance)
+            // val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans, pointDistance, scaleValue, scaleUnit, reference.level.toDouble(), reference.distance)
+            val apLocations = _savedPoints.estimateLocations(sessionTemp.uuid)
             apLocationRepo.saveAccessPointLocations(apLocations)
 
             withContext(Dispatchers.Main) {

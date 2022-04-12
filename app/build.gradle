@@ -57,6 +57,9 @@ dependencies {
     // Interactive Photo View
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
 
+    // Apache Math
+    implementation 'org.apache.commons:commons-math3:3.6.1'
+
     // GSON
     implementation 'com.google.code.gson:gson:2.8.7'
 
