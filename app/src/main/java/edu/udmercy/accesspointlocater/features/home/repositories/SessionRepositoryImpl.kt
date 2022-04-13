@@ -19,7 +19,8 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
         buildingName: String,
         scaleNumber: Double,
         scaleUnits: String,
-        pixelDistance: Double
+        pixelDistance: Double,
+        areApLocationsKnown: Boolean
     ) {
         sessionDb.insertAll(
             Session(
@@ -30,6 +31,7 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
                 scaleNumber = scaleNumber,
                 scaleUnits = scaleUnits,
                 pixelDistance = pixelDistance,
+                areApLocationsKnown = areApLocationsKnown
             )
         )
     }
@@ -44,5 +46,9 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
 
     override fun updateSession(session: Session) {
         sessionDb.insertAll(session)
+    }
+
+    override fun markSessionComplete(uuid: String) {
+        sessionDb.markAsFinished(uuid)
     }
 }

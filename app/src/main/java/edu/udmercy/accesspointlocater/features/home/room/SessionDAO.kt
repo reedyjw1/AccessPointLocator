@@ -19,4 +19,7 @@ interface SessionDAO {
 
     @Query("DELETE FROM Session where uuid==(:uuid)")
     fun deleteAllSessions(uuid: String)
+
+    @Query("UPDATE Session SET isFinished = 1 WHERE uuid=(:uuid)")
+    fun markAsFinished(uuid: String)
 }

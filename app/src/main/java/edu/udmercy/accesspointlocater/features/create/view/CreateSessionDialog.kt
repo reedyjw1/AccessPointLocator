@@ -14,16 +14,13 @@ import android.view.View
 import androidx.fragment.app.DialogFragment
 import edu.udmercy.accesspointlocater.R
 import android.view.WindowManager.LayoutParams
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.utils.Event
 import kotlinx.android.synthetic.main.dialog_create_session.*
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.*
 import edu.udmercy.accesspointlocater.utils.MathUtils
 
 
@@ -45,6 +42,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
                 }
             }
         }
+
 
     private val spinnerItemSelectListener = object: AdapterView.OnItemSelectedListener {
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
@@ -91,6 +89,12 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
 
     }
 
+    private val toggleCheckbox =
+        CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            viewModel.apKnownLocationsCheckbox = isChecked
+            Log.d(TAG, "toggleCheckbox: $isChecked")
+        }
+
     private val floorChanged =
         Observer { height: Pair<Int,Double> ->
             floorHeightEditText.setText(height.second.toString())
@@ -135,7 +139,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
 
         heightSpinner.isEnabled = false
         floorHeightEditText.isEnabled = false
-
+        apLocationCheckbox.setOnCheckedChangeListener(toggleCheckbox)
 
 
         doneBtn.setOnClickListener {

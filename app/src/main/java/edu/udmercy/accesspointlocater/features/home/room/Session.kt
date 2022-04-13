@@ -22,5 +22,7 @@ data class Session(
     @ColumnInfo
     var scaleUnits: String = "Meter",
     @ColumnInfo
-    var pixelDistance: Double = 0.0
+    var pixelDistance: Double = 0.0,
+    @ColumnInfo
+    val areApLocationsKnown: Boolean = false
 )
