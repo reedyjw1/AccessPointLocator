@@ -30,7 +30,7 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
         }
 
     private val apLocationObserever =
-        Observer { points: MutableList<PointF> ->
+        Observer { points: MutableList<Pair<Int, PointF>> ->
             Log.d(TAG, "Points: $points")
             accessPointImage.touchPoints = points
             accessPointImage.invalidate()

@@ -28,4 +28,6 @@ class MultilaterationTest {
             assertEquals(solution[3][0], expected[0][2], 0.1)
         }
     }
+
+
 }

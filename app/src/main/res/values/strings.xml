@@ -4,11 +4,14 @@
     <string name="fragmentCreateSessionLabel">Create New Session</string>
     <string name="fragmentViewSessionLabel">View Session</string>
     <string name="fragmentExecuteSessionLabel">Execute Session</string>
+    <string name="fragmentAccessChooserLabel">Access Point Chooser</string>
+    <string name="fragmentDistanceTester">Log Distance</string>
 
     <string name="sessionLabelHint">Session Name</string>
     <string name="buildingLabelHint">Building Name</string>
     <string name="imageLabelHint">Select Images</string>
     <string name="doneLabelHint">Done</string>
+    <string name="accessPointDistanceHint">Access Point Distance (1.0 - 10.0 m)</string>
 
     <string name="imageSaved">Images Added!</string>
     <string name="startScanLabel">Start Scan</string>
@@ -18,6 +21,8 @@
 
     <string name="menuDone">End Session</string>
     <string name="menuDelete">Delete a Scan</string>
+    <string name="menuExport">Export Session</string>
+    <string name="menuLoad">Load Session</string>
 
     <string name="scaleBtnLabel">Done</string>
     <string name="scaleTextLabel">Point Distance</string>
@@ -30,4 +35,6 @@
     </string-array>
 
     <string name="apTitleLabel">Access Point: %1$d</string>
+
+    <string name="floorHeightLabel">Height per Floor (Feet)</string>
 </resources>
