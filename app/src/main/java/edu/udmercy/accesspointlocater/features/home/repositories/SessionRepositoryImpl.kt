@@ -47,4 +47,8 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
     override fun updateSession(session: Session) {
         sessionDb.insertAll(session)
     }
+
+    override fun markSessionComplete(uuid: String) {
+        sessionDb.markAsFinished(uuid)
+    }
 }

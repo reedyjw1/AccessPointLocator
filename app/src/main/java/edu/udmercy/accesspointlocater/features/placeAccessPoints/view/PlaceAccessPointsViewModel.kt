@@ -67,6 +67,8 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
     }
 
     fun markSessionComplete(uuid:String){
-        
+        viewModelScope.launch(Dispatchers.IO) {
+            sessionRepo.markSessionComplete(uuid)
+        }
     }
 }
