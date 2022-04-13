@@ -143,7 +143,7 @@ class ExecuteSessionViewModel(
             val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
             val reference = apChooser.getReferenceAccessPoint(sessionTemp.uuid)
             // val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans, pointDistance, scaleValue, scaleUnit, reference.level.toDouble(), reference.distance)
-            val apLocations = _savedPoints.estimateLocations(sessionTemp.uuid)
+            val apLocations = _savedPoints.estimateLocations(sessionTemp.uuid, 5000)
             apLocationRepo.saveAccessPointLocations(apLocations)
 
             withContext(Dispatchers.Main) {
