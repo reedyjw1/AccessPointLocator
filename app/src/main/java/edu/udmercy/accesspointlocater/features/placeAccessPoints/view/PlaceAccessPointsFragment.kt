@@ -22,23 +22,13 @@ import kotlinx.android.synthetic.main.fragment_view_session.*
 
 class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_points) {
 
-
-    // Things to do
-    // load in images for correct session - DONE
-    // hookup buttons to move between floor images - DONE
-    // after placing a point ask for its mac address - DONE
-    // save point to viewModel - DONE
-    // change points per floor - DONE
-    // save point to database
-
-
-
     companion object {
         private const val TAG = "PlaceAccessPointsFragment"
     }
 
     private val viewModel by viewModels<PlaceAccessPointsViewModel>()
 
+    //update images inside of image view
     private val imageObserver =
         Observer { bitmap: BuildingImage? ->
             if(bitmap != null) {
@@ -46,6 +36,7 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
             }
         }
 
+    //when floor points are updated, this is ran
     private val apLocationObserever =
         Observer { points: MutableList<APPointLocation> ->
             val currentFloor = viewModel.currentFloorNumber.value
@@ -64,10 +55,12 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
     //listen for addition and removal of ap points on map
     private val touchPointListener = object: TouchPointListener {
         override fun onPointAdded(point: PointF) {
+            //asks for MAC
             inflateMACDialog(point)
         }
 
         override fun onPointRemoved(point: PointF) {
+            //remove point
             val wasValueRemoved = viewModel.apPoints.value?.removeIf { it.point == point }
             if (wasValueRemoved == true){
                 Log.d(TAG, "inflateMACDialog: Point Removed - $point")
@@ -77,6 +70,7 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
 
     }
 
+    //inflates MAC dialog and will return the value inputted inside of data variable
     private fun inflateMACDialog(point: PointF){
         var received = false
         childFragmentManager.setFragmentResultListener("macAddress", viewLifecycleOwner, { requestKey, data ->
@@ -116,8 +110,12 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val uuid = arguments?.getString("uuid") ?: return
+        //initialize images for the session
         viewModel.initializeImages(uuid)
+        //set up listener
         apLocationPlacer.listener = touchPointListener
+
+        //when next and previous floor buttons are clicked
         placerPreviousFloorBtn.setOnClickListener {
             viewModel.changeFloor(uuid, -1)
         }

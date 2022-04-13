@@ -66,6 +66,7 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
         }
     }
 
+    //once values are saved, marked the session as finished
     fun markSessionComplete(uuid:String){
         viewModelScope.launch(Dispatchers.IO) {
             sessionRepo.markSessionComplete(uuid)
