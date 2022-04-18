@@ -23,6 +23,10 @@
             android:id="@+id/action_sessionList_to_KnownAPLocationsPlacer"
             app:destination="@id/knownAPLocationPlacer"
             />
+        <action
+            android:id="@+id/action_sessionList_to_Execute"
+            app:destination="@id/executeSession"
+            />
     </fragment>
 
     <fragment
