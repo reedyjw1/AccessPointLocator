@@ -51,4 +51,8 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
     override fun markSessionComplete(uuid: String) {
         sessionDb.markAsFinished(uuid)
     }
+
+    override fun deleteSession(uuid: String) {
+        sessionDb.deleteAllSessions(uuid)
+    }
 }

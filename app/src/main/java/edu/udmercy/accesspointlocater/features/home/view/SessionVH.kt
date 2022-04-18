@@ -12,6 +12,7 @@ class SessionVH(itemView: View): RecyclerView.ViewHolder(itemView) {
 
     var itemClicked: OnItemClicked? = null
 
+
     var entity: SessionUI? = null
         set(value) {
             field = value

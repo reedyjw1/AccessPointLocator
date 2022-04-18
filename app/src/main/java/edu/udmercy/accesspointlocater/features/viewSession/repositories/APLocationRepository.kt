@@ -7,4 +7,5 @@ interface APLocationRepository {
     fun getAllAccessPoints(uuid: String): Flow<List<APLocation>>
     fun createNewLocation(apLocation: APLocation)
     fun saveAccessPointLocations(list: List<APLocation>)
+    fun deleteSession(uuid:String)
 }

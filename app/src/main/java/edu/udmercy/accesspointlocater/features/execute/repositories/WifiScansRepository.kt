@@ -7,4 +7,5 @@ interface WifiScansRepository {
     fun saveAccessPointScan(ap: WifiScans)
     fun getAllScans(uuid: String): Flow<List<WifiScans>>
     fun getScanList(uuid: String): List<WifiScans>
+    fun deleteSession(uuid:String)
 }

@@ -35,5 +35,9 @@ class BuildingImageRepositoryImpl(private val appContext: Context): BuildingImag
         return floorHeights
     }
 
+    override fun deleteSession(uuid: String) {
+        buildingImageRepo.deleteAllImages(uuid)
+    }
+
 
 }

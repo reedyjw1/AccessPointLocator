@@ -8,4 +8,5 @@ interface BuildingImageRepository {
     fun getFloorImage(uuid: String, floor: Int): BuildingImage
     fun getFloorCount(uuid: String): Int
     fun getFloorHeights(uuid: String, floorCounts: Int): List<Double>
+    fun deleteSession(uuid:String)
 }
