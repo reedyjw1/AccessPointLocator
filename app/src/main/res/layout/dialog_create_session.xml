@@ -202,9 +202,23 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/scaleTextView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/doneBtn"
+                app:layout_constraintBottom_toTopOf="@id/apLocationCheckbox"
                 android:entries="@array/scales"
                 android:backgroundTint="@color/primary"/>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:id="@+id/apLocationCheckbox"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/scaleSpinner"
+                app:layout_constraintBottom_toTopOf="@id/doneBtn"
+                android:textSize="18sp"
+                android:text="@string/apLocationCheckboxText"
+                />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/doneBtn"

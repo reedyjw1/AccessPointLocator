@@ -23,6 +23,8 @@
     <string name="menuDelete">Delete a Scan</string>
     <string name="menuExport">Export Session</string>
     <string name="menuLoad">Load Session</string>
+    <string name="menuSave">Save &amp; End Session</string>
+
 
     <string name="scaleBtnLabel">Done</string>
     <string name="scaleTextLabel">Point Distance</string>
@@ -37,4 +39,11 @@
     <string name="apTitleLabel">Access Point: %1$d</string>
 
     <string name="floorHeightLabel">Height per Floor (Feet)</string>
+
+    <string name="apLocationCheckboxText">I know the location of the access points</string>
+
+    <string name="floorNumber">Floor %1$d</string>
+    <string name="macText">MAC Address</string>
+    <string name="saveText">Save</string>
+    <string name="dismissText">Cancel</string>
 </resources>

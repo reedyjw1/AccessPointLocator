@@ -2,6 +2,7 @@ package edu.udmercy.accesspointlocater.features.home.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -25,8 +26,12 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
                 val bundle = bundleOf("uuid" to it.uid)
                 if(it.isFinished) {
                     findNavController().navigate(R.id.action_sessionList_to_viewSession, bundle)
-                } else {
-                    findNavController().navigate(R.id.action_sessionList_to_accessChooser, bundle)
+                } 
+                else if(it.apsAreKnown) {
+                    findNavController().navigate(R.id.action_sessionList_to_KnownAPLocationsPlacer, bundle)
+                }
+                else {
+                    findNavController().navigate(R.id.action_sessionList_to_Execute, bundle)
                 }
             }
         }

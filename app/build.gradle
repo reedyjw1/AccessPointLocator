@@ -43,6 +43,8 @@ dependencies {
     // Koin
     implementation "org.koin:koin-android:2.1.5"
     implementation files('libs/Jama-1.0.3.jar')
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
 
     // Room
     def room_version = "2.3.0"
