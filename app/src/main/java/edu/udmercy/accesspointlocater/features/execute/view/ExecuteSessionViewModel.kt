@@ -46,6 +46,7 @@ class ExecuteSessionViewModel(
 
     var _isScanning = false
     var isScanning = MutableLiveData<Event<Boolean>>()
+    var scanCount = 0
 
     private var floorHeights = listOf<Double>()
 

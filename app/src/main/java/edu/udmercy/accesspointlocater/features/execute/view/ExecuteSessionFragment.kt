@@ -50,6 +50,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         private const val TAG = "ExecuteSessionFragment"
         private const val CREATE_FILE = 5503
         private const val OPEN_FILE = 4403
+        private const val SCAN_LIMIT = 3
     }
 
     private lateinit var wifiManager: WifiManager
@@ -65,7 +66,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             } else {
                 scanFailure()
             }
-            showProgressBar(false)
         }
     }
 
@@ -184,21 +184,31 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         requireActivity().unregisterReceiver(wifiScanReceiver)
         val results = wifiManager.scanResults
 
-        if (results.isEmpty()) {
-            toast("Scan Failed!")
-        } else {
-            toast("Scan Complete!")
-        }
-
         val wifiName = wifiManager.connectionInfo.ssid.toString()
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
-        val uuid = arguments?.getString("uuid") ?: return
         Log.i(TAG, "scanSuccess: $filteredResults")
         viewModel.saveResults(filteredResults)
+        viewModel.scanCount+=1
+
+        if(viewModel.scanCount < SCAN_LIMIT) {
+            startScan()
+        } else {
+            viewModel.scanCount = 0
+            showProgressBar(false)
+            toast("Scan Complete!")
+        }
     }
 
     private fun scanFailure() {
         toast("Scan Failed!")
+        viewModel.scanCount+=1
+        if(viewModel.scanCount < SCAN_LIMIT) {
+            startScan()
+        } else {
+            viewModel.scanCount = 0
+            toast("Scan Failed!")
+            showProgressBar(false)
+        }
     }
 
     private fun exportSession() {
