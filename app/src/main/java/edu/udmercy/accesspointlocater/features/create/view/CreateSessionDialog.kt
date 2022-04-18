@@ -207,6 +207,7 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
                 Log.d(TAG, "onActivityResult: Image Count: $count")
                 viewModel.numberOfFloors.postValue(count)
                 selectImageBtn.text = requireContext().getText(R.string.imageSaved)
+                selectImageBtn?.isEnabled = false
                 selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
             } else {
                 viewModel.numberOfFloors.postValue(1)
@@ -215,15 +216,12 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
                     viewModel.buildingImages.add(BitmapFactory.decodeByteArray(it,0, it.size))
                     viewModel.presentedBitmap.postValue(BitmapFactory.decodeByteArray(it, 0, it.size))
                     selectImageBtn.text = requireContext().getText(R.string.imageSaved)
+                    selectImageBtn?.isEnabled = false
                     selectImageBtn.icon = requireContext().getDrawable(R.drawable.ic_baseline_image_24)
                 }
             }
         }
     }
-
-
-
-
 
     override fun onResume() {
         super.onResume()
