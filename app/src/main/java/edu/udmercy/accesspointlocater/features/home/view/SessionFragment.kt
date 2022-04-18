@@ -31,7 +31,7 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
                     findNavController().navigate(R.id.action_sessionList_to_KnownAPLocationsPlacer, bundle)
                 }
                 else {
-                    findNavController().navigate(R.id.action_sessionList_to_accessChooser, bundle)
+                    findNavController().navigate(R.id.action_sessionList_to_Execute, bundle)
                 }
             }
         }
