@@ -50,7 +50,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         private const val TAG = "ExecuteSessionFragment"
         private const val CREATE_FILE = 5503
         private const val OPEN_FILE = 4403
-        private const val SCAN_LIMIT = 3
     }
 
     private lateinit var wifiManager: WifiManager
@@ -190,7 +189,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         viewModel.saveResults(filteredResults)
         viewModel.scanCount+=1
 
-        if(viewModel.scanCount < SCAN_LIMIT) {
+        if(viewModel.scanCount < viewModel.SCAN_LIMIT) {
             startScan()
         } else {
             viewModel.scanCount = 0
@@ -202,7 +201,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     private fun scanFailure() {
         toast("Scan Failed!")
         viewModel.scanCount+=1
-        if(viewModel.scanCount < SCAN_LIMIT) {
+        if(viewModel.scanCount < viewModel.SCAN_LIMIT) {
             startScan()
         } else {
             viewModel.scanCount = 0

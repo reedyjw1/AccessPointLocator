@@ -29,6 +29,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
 import edu.udmercy.accesspointlocater.features.accessPointChooser.repositories.AccessPointReferenceRepository
 import edu.udmercy.accesspointlocater.features.execute.room.estimateLocations
+import edu.udmercy.accesspointlocater.utils.FingerPrintHelper
 import edu.udmercy.accesspointlocater.utils.MathUtils
 import java.io.File
 import java.io.FileOutputStream
@@ -47,6 +48,7 @@ class ExecuteSessionViewModel(
     var _isScanning = false
     var isScanning = MutableLiveData<Event<Boolean>>()
     var scanCount = 0
+    val SCAN_LIMIT = 3
 
     private var floorHeights = listOf<Double>()
 
@@ -144,7 +146,10 @@ class ExecuteSessionViewModel(
             val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
             val reference = apChooser.getReferenceAccessPoint(sessionTemp.uuid)
             // val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans, pointDistance, scaleValue, scaleUnit, reference.level.toDouble(), reference.distance)
-            val apLocations = _savedPoints.estimateLocations(sessionTemp.uuid, 5000)
+            // val apLocations = _savedPoints.estimateLocations(sessionTemp.uuid, 5000)
+            val fpHelper = FingerPrintHelper(_savedPoints, SCAN_LIMIT, sessionTemp.uuid)
+            val apLocations = fpHelper.estimateApLocations()
+            Log.i(TAG, "calculateResults: apLocations = $apLocations")
             apLocationRepo.saveAccessPointLocations(apLocations)
 
             withContext(Dispatchers.Main) {
