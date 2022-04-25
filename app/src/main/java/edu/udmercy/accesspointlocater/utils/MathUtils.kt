@@ -5,7 +5,6 @@ import android.graphics.PointF
 import kotlin.math.*
 
 object MathUtils {
-    private const val buildingType = 3
 
     fun euclideanDistance(point1: PointF, point2: PointF): Float {
         val x: Float = (abs(point1.x - point2.x)).pow(2)
