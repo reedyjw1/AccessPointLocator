@@ -27,17 +27,7 @@ class BuildingImageRepositoryImpl(private val appContext: Context): BuildingImag
         return buildingImageRepo.getFloorCount(uuid)
     }
 
-    override fun getFloorHeights(uuid: String, floorCounts: Int): List<Double> {
-        val floorHeights = mutableListOf<Double>()
-        for (i in 0 until floorCounts) {
-            floorHeights.add(buildingImageRepo.getFloorHeight(uuid, i))
-        }
-        return floorHeights
-    }
-
     override fun deleteSession(uuid: String) {
         buildingImageRepo.deleteAllImages(uuid)
     }
-
-
 }

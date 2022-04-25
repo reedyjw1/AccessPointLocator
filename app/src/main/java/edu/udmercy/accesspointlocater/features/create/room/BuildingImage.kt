@@ -15,7 +15,5 @@ data class BuildingImage(
     val image: Bitmap,
     @ColumnInfo
     val floor: Int,
-    @ColumnInfo
-    val floorHeight: Double
 
 )
