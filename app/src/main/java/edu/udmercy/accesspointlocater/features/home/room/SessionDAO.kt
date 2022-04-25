@@ -22,4 +22,5 @@ interface SessionDAO {
 
     @Query("UPDATE Session SET isFinished = 1 WHERE uuid=(:uuid)")
     fun markAsFinished(uuid: String)
+
 }

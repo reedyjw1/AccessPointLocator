@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.features.home.model.SessionUI
@@ -34,6 +35,10 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
                     findNavController().navigate(R.id.action_sessionList_to_Execute, bundle)
                 }
             }
+            onItemRemoved = {
+                viewModel.deleteSession(it.uid)
+                Log.d(TAG, "DeleteSession - UUID: ${it.uid}")
+            }
         }
     }
 
@@ -47,6 +52,8 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
+        val touchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
+        touchHelper.attachToRecyclerView(recyclerView)
         fab.setOnClickListener { findNavController().navigate(R.id.action_sessionList_to_createSession) }
     }
 

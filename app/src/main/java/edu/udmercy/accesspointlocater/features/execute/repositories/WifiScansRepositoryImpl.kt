@@ -23,4 +23,8 @@ class WifiScansRepositoryImpl(private val appContext: Context): WifiScansReposit
     override fun getScanList(uuid: String): List<WifiScans> {
         return accessPointRepo.getScansFromSession(uuid)
     }
+
+    override fun deleteSession(uuid: String) {
+        accessPointRepo.deleteAllFromSession(uuid)
+    }
 }

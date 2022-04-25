@@ -27,5 +27,7 @@ class BuildingImageRepositoryImpl(private val appContext: Context): BuildingImag
         return buildingImageRepo.getFloorCount(uuid)
     }
 
-
+    override fun deleteSession(uuid: String) {
+        buildingImageRepo.deleteAllImages(uuid)
+    }
 }

@@ -25,4 +25,8 @@ class APLocationRepositoryImpl(appContext: Context): APLocationRepository {
     override fun saveAccessPointLocations(list: List<APLocation>) {
         apLocationRepo.insertAll(*list.toTypedArray())
     }
+
+    override fun deleteSession(uuid: String) {
+        apLocationRepo.deleteAll(uuid)
+    }
 }

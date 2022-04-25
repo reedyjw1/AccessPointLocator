@@ -9,4 +9,5 @@ interface SessionRepository {
     fun getCurrentSession(uuid: String): Session
     fun updateSession(session: Session)
     fun markSessionComplete(uuid:String)
+    fun deleteSession(uuid:String)
 }
