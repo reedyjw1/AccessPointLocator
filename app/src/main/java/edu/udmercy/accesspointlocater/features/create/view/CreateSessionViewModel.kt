@@ -22,12 +22,9 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
     private val buildingImageRepo: BuildingImageRepository by inject()
     val saved = MutableLiveData<Event<Boolean>>()
     val buildingImages: MutableList<Bitmap> = mutableListOf()
-    val presentedBitmap: MutableLiveData<Bitmap> = MutableLiveData()
-    var numberOfFloors: MutableLiveData<Int> = MutableLiveData()
-    var selectedFloorHeight: MutableLiveData<Pair<Int,Double>> = MutableLiveData()
     var apKnownLocationsCheckbox: Boolean = false
 
-    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>, scaleNumber: Double, scaleUnit: String, pixelDistance: Double, floorHeights: List<Double>) {
+    fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>) {
         viewModelScope.launch(Dispatchers.IO) {
             val uuid = UUID.randomUUID().toString()
             sessionRepo.createNewSession(
@@ -35,14 +32,11 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
                 Calendar.getInstance().time.toString(),
                 sessionName,
                 buildingName,
-                scaleNumber,
-                scaleUnit,
-                pixelDistance,
                 apKnownLocationsCheckbox
             )
 
             buildingImageRepo.addImagesToSession(images.mapIndexed { index, bitmap ->
-                BuildingImage(uuid = uuid, image = bitmap, floor = index, floorHeight = MathUtils.convertUnitToMeters(floorHeights[index], Units.FEET))
+                BuildingImage(uuid = uuid, image = bitmap, floor = index)
             })
             saved.postValue(Event(true))
         }

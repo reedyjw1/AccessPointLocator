@@ -17,9 +17,6 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
         timestamp: String,
         sessionLabel: String,
         buildingName: String,
-        scaleNumber: Double,
-        scaleUnits: String,
-        pixelDistance: Double,
         areApLocationsKnown: Boolean
     ) {
         sessionDb.insertAll(
@@ -28,9 +25,6 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
                 sessionLabel = sessionLabel,
                 timestamp = timestamp,
                 building = buildingName,
-                scaleNumber = scaleNumber,
-                scaleUnits = scaleUnits,
-                pixelDistance = pixelDistance,
                 areApLocationsKnown = areApLocationsKnown
             )
         )
