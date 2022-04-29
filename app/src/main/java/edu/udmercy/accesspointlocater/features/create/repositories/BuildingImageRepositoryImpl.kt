@@ -5,6 +5,9 @@ import androidx.room.Room
 import edu.udmercy.accesspointlocater.AppDatabase
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 
+/**
+ * Implementation of the Interface
+ */
 class BuildingImageRepositoryImpl(private val appContext: Context): BuildingImageRepository {
     private val buildingImageRepo = Room.databaseBuilder(
         appContext,

@@ -9,6 +9,11 @@ import android.graphics.PointF
 import android.util.AttributeSet
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 
+/**
+ *  This image view is specifically used to allow users
+ *  to click on the image to place known access points
+ *
+ */
 class AccessPointImageView(context: Context?, attr: AttributeSet? = null) :
     SubsamplingScaleImageView(context, attr) {
 
@@ -16,6 +21,9 @@ class AccessPointImageView(context: Context?, attr: AttributeSet? = null) :
         private const val TAG = "CircleView"
     }
 
+    /**
+     * Settings used for drawing to the screen
+     */
     private var strokeWidth = 0
     private val paint = Paint()
     var touchPoints: MutableList<Pair<Int, PointF>> = mutableListOf()

@@ -60,6 +60,7 @@ class ExecuteSessionViewModel(
     }
 
     init {
+        // Gets the Session Data from the Database on fragment creation
         viewModelScope.launch(Dispatchers.IO) {
             savedStateHandle.getLiveData<String>("uuid").value?.let {
                 session = sessionRepo.getCurrentSession(it)
@@ -77,7 +78,7 @@ class ExecuteSessionViewModel(
             }
         }
     }
-
+    // Saves the wifi scan data to the database through the repository
     fun saveResults(list: List<ScanResult>) {
         viewModelScope.launch(Dispatchers.IO) {
             list.forEach {
@@ -108,6 +109,7 @@ class ExecuteSessionViewModel(
         }
     }
 
+    // Calls function to estimate the AP locations and saves them to DB
     fun calculateResults(completion: ()->Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val sessionTemp = session ?: return@launch
@@ -131,6 +133,7 @@ class ExecuteSessionViewModel(
 
     }
 
+    // Converts data to json, writes it to file, and saves to the user specified location
     fun saveFile(uri: Uri?) {
         viewModelScope.launch(Dispatchers.IO) {
             val sessionTemp = session ?: return@launch
@@ -172,6 +175,7 @@ class ExecuteSessionViewModel(
         }
     }
 
+    // Reads JSON file and saves data back into database with new session UUID
     fun loadFile(uri: Uri) {
         Log.i(TAG, "loadFile: $uri")
         try {

@@ -2,6 +2,9 @@ package edu.udmercy.accesspointlocater.features.create.repositories
 
 import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
 
+/**
+ * Interface to handle all functions that need to be implemented to show/delete the floor plans
+ */
 interface BuildingImageRepository {
     fun addImagesToSession(buildingImageList: List<BuildingImage>)
     fun getAllBitmapsFromSession(uuid: String): List<BuildingImage>

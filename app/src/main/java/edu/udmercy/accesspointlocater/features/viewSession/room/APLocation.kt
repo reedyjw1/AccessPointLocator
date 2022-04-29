@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * Data model in which fields are table columns used for saving AP estimated locations
+ */
 @Entity
 data class APLocation(
     @PrimaryKey(autoGenerate = true)

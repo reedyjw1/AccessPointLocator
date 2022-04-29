@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
+/**
+ * Model data that is the format of the table in the database related to sessions
+ */
 @Entity
 data class Session(
     @PrimaryKey

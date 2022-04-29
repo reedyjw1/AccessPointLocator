@@ -30,6 +30,8 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
 
 
     fun initializeImages(uuid: String){
+        // Retrieves information on the currently selected session so that any information
+        // (like floor plans) can be retrieved
         viewModelScope.launch(Dispatchers.IO) {
             val session = sessionRepo.getCurrentSession(uuid)
             val firstFloorImage = buildingImageRepo.getFloorImage(uuid, 0)

@@ -23,7 +23,9 @@ class AccessPointChooserViewModel: ViewModel(), KoinComponent {
     val accessPointList: MutableLiveData<MutableList<AccessPointUI>> = MutableLiveData(mutableListOf())
     private val chooserRepo: AccessPointReferenceRepository by inject()
 
+    // Saves the reference access point data into the database
     fun saveReferenceAccessPointData(uuid: String?, distance: Double, completion: () -> Unit) {
+        // Creates new thread to save to database since it cannot be done on the MainThread
         viewModelScope.launch(Dispatchers.IO) {
             val selected = accessPointList.value?.firstOrNull() { it.selected } ?: return@launch
             uuid ?: return@launch
@@ -37,6 +39,7 @@ class AccessPointChooserViewModel: ViewModel(), KoinComponent {
 
     }
 
+    // Update the list displayed with new wireless scans
     fun updateList(list: List<ScanResult>) {
         val temp = list.map { AccessPointUI(it.BSSID, it.level, it.frequency, false) }.toMutableList()
         temp.sortByDescending { it.rssi }
@@ -45,6 +48,7 @@ class AccessPointChooserViewModel: ViewModel(), KoinComponent {
         )
     }
 
+    // Mark AP as selected to present a visual indicator
     fun accessPointClicked(ap: AccessPointUI) {
         val temp = accessPointList.value?.map {
             if(ap.macAddress == it.macAddress){

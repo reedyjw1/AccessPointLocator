@@ -16,6 +16,7 @@ class AccessPointInfoVH(itemView: View): RecyclerView.ViewHolder(itemView) {
         set(value) {
             field = value
             value?.let { info ->
+                // Assigns data of cell in list to UI elements so that they can be displayed to user
                 itemView.accessPointNumber.text = itemView.resources.getString(R.string.apTitleLabel, info.apNumber)
                 itemView.accessPointSSID.text = info.ssid
             }

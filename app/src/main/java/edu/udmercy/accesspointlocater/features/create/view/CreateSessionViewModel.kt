@@ -24,6 +24,7 @@ class CreateSessionViewModel: ViewModel(), KoinComponent {
     val buildingImages: MutableList<Bitmap> = mutableListOf()
     var apKnownLocationsCheckbox: Boolean = false
 
+    // Calls the database functions to save the session
     fun addNewSession(sessionName: String, buildingName: String, images: List<Bitmap>) {
         viewModelScope.launch(Dispatchers.IO) {
             val uuid = UUID.randomUUID().toString()

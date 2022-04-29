@@ -27,15 +27,17 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
         private const val TAG = "AccessPointChooserFragm"
     }
 
-
+    // Adapter to the RecyclerView
     private val adapter by lazy {
         AccessPointRecyclerAdapter().apply {
             onAccessPointClicked = {
+                // Notify ViewModel that an Access Point was selected
                 viewModel.accessPointClicked(it)
             }
         }
     }
 
+    // Receives notification on the status of the wireless scans
     private val wifiScanReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
@@ -50,8 +52,10 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Gets session UUID from bundle
         val bundle = bundleOf("uuid" to arguments?.getString("uuid"))
         accessPointRecyclerView.adapter = adapter
+        // Actions to execute when done button is clicked
         toExecuteSession.setOnClickListener {
             val uuid = arguments?.getString("uuid")
             val distance = try {
@@ -72,11 +76,13 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
                 }
             }
         }
+        // Automatically start WifiScan when fragment is created
         startScan()
     }
 
     private fun startScan() {
         Log.i(TAG, "startScan: Starting scan...")
+        // Sets up necessary classes to execute a wireless scan
         wifiManager = requireActivity().getSystemService(Context.WIFI_SERVICE) as WifiManager
         val intentFilter = IntentFilter()
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
@@ -98,9 +104,10 @@ class AccessPointChooserFragment: BaseFragment(R.layout.fragment_access_chooser)
         } else {
             //toast("Scan Complete!")
         }
-
+        // Filter scan results to just results related to the phone currently connected network
         val wifiName = wifiManager.connectionInfo.ssid.toString()
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
+        // Save results
         viewModel.updateList(filteredResults)
     }
 

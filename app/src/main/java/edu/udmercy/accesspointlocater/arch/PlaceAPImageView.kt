@@ -18,7 +18,9 @@ import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
+/**
+ * This ImageView is specifically used to add the known access points to an image
+ */
 class PlaceAPImageView(context: Context?, attr: AttributeSet? = null) :
     SubsamplingScaleImageView(context, attr) {
 
@@ -36,6 +38,7 @@ class PlaceAPImageView(context: Context?, attr: AttributeSet? = null) :
         val density = resources.displayMetrics.densityDpi.toFloat()
         setMinimumDpi(50)
         strokeWidth = (density / 60f).toInt()
+        // Registers on click listener for notifying clicks on image
         setOnTouchListener { subView, motionEvent ->
             subView.performClick()
             return@setOnTouchListener gestureDetector.onTouchEvent(motionEvent)
@@ -80,14 +83,18 @@ class PlaceAPImageView(context: Context?, attr: AttributeSet? = null) :
         GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 if (isReady) {
+                    // If the image was clicked, get the SourceCoords (the actual pixel point on the image)
+                    // And the ViewCoords, which are the pixel coordinate from the entire phone screen
                     val coordinate: PointF = viewToSourceCoord(e.x, e.y) ?: return true
                     val source = sourceToViewCoord(coordinate) ?: return true
 
-                    // Use again when Touching Completed Points is implemented
+                    // Creates a closest point value adn inits a MAX distance value
                     var closestPoint: Pair<PointF, Float> = Pair(PointF(-1f,-1f), Float.MAX_VALUE)
                     touchPoints.forEach {
+                        // Checks how close each point already on the map is to the touched point
                         val tempSource = sourceToViewCoord(it) ?: return true
                         val distancePair = euclideanDistance(source, tempSource, threshold)
+                        // IF it is withing a threshold and closer than a previously checked point, update closest point variable
                         if (distancePair.first && distancePair.second < closestPoint.second) {
                             closestPoint = Pair(it, distancePair.second)
                         }

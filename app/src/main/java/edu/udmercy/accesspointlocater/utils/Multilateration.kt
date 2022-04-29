@@ -16,6 +16,7 @@ object Multilateration {
     private const val TAG = "Multilateration"
     private const val buildingType = 3
 
+    // Uses matrix library to execute multilateration (followed from paper)
     fun calculate(rps: List<ReferencePoint>): Matrix? {
         val aTemp2dArray: MutableList<DoubleArray> = mutableListOf()
         val bTemp2dArray: MutableList<DoubleArray> = mutableListOf()
@@ -54,9 +55,11 @@ object Multilateration {
         val apLocationList = mutableListOf<APLocation>()
         val ssidList = list.map { it.ssid }.distinct()
         val scale = calculateScale(pointDistance, scaleValue, scaleUnit)
+        // For each access poitn
         for (ssid in ssidList) {
             val positions = mutableListOf<ReferencePoint>()
             Log.i(TAG, "calculateMultilateration: scaleValue = ${scale}")
+            // Filter reference points by ssid and only use when RSSI > -70
             for (item in list.filter { it.ssid == ssid }) {
                 if(item.level >= -70) {
                     val rp = ReferencePoint(
@@ -75,10 +78,13 @@ object Multilateration {
                     Log.i(TAG, "calculateMultilateration: x=${rp.x},y=${rp.y},z=${rp.z}, distance=${rp.distance}")
                 }
             }
+
             for (item in positions){
                 Log.i(TAG, "calculateMultilateration: distance=${item.distance}, x=${item.x}, y=${item.y}, z=${item.z},")
             }
+
             if(positions.isNotEmpty()) {
+                // Calculate the AP location
                 val data = calculate(positions)
                 val solution = data?.array
                 if (data != null) {
@@ -87,13 +93,15 @@ object Multilateration {
 
                 if (solution != null) {
                     Log.i(TAG, "calculateMultilateration: zHeight = ${solution[3][0]}")
+                    // Calculate the floor from the estimated height of the AP
                     val floorZList = calculateFloorsFromZ(refPoints, .001)
                     val calculatedFloor =
                         floorZList.firstOrNull { solution[3][0] >= it.lowerBound && solution[3][0] <= it.upperBound }
+                    // Save the AP data to the list with other aps
                     val ap = APLocation(
                         0,
                         uuid,
-                        solution[1][0] * scale,
+                        solution[1][0] * scale, // Applies distance scale back so that it can be displayed on the map (meters -> pixels)
                         solution[2][0] * scale,
                         solution[3][0],
                         calculatedFloor?.floor ?: -1,

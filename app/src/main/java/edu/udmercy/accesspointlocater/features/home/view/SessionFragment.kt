@@ -23,6 +23,7 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
     private val viewModel by viewModels<SessionViewModel>()
     private val adapter by lazy {
         SessionRecyclerAdapter().apply {
+            // Depending on the current state of the session, go to the correct fragment
             onItemClicked = {
                 val bundle = bundleOf("uuid" to it.uid)
                 if(it.isFinished) {
@@ -50,6 +51,7 @@ class SessionFragment: BaseFragment(R.layout.fragment_session) {
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Sets up NavBar and button listeners
         super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
         val touchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))

@@ -6,6 +6,9 @@ import edu.udmercy.accesspointlocater.AppDatabase
 import edu.udmercy.accesspointlocater.features.home.room.Session
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Implementation of interface to access database about session data
+ */
 class SessionRepositoryImpl(private val appContext: Context): SessionRepository {
     private val sessionDb = Room.databaseBuilder(
         appContext,

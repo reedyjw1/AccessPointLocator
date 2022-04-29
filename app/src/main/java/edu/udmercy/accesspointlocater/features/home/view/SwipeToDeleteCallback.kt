@@ -6,6 +6,9 @@ import android.graphics.drawable.ColorDrawable
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
+/**
+ * Callback used to give swipe to delete animation on the Session List
+ */
 class SwipeToDeleteCallback(adapter: SessionRecyclerAdapter): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
     private var recyclerAdapter: SessionRecyclerAdapter? = null
     private val background = ColorDrawable()

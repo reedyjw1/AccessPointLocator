@@ -15,7 +15,11 @@ import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
+/**
+ * This ImageView was specifically used to allow the user to place only 2 points on the image,
+ * a line would then be drawn between them. This was used to specify the scale of the floor plans
+ * but is no longer used.
+ */
 class ScaleCircleView(context: Context?, attr: AttributeSet? = null) :
     SubsamplingScaleImageView(context, attr) {
 

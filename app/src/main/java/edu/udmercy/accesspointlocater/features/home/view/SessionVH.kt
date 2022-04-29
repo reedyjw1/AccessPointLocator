@@ -17,6 +17,7 @@ class SessionVH(itemView: View): RecyclerView.ViewHolder(itemView) {
         set(value) {
             field = value
             value?.let { session ->
+                // Assigns data to the correct UI elements in the cell of the list
                 itemView.titleTextView.text = session.name
                 itemView.descriptionTextView.text = session.desc
                 itemView.dateTextView.text = session.date

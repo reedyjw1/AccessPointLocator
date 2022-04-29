@@ -9,6 +9,10 @@ import androidx.fragment.app.viewModels
 import edu.udmercy.accesspointlocater.R
 import kotlinx.android.synthetic.main.dialog_get_mac.*
 
+/**
+ * This dialog box appears after the user places a known AP on the image for
+ * them to enter its corresponding MAC address
+ */
 class MACAddressDialog : DialogFragment(R.layout.dialog_get_mac) {
     companion object {
         private const val TAG = "MACAddressDialog"
@@ -19,6 +23,7 @@ class MACAddressDialog : DialogFragment(R.layout.dialog_get_mac) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Sets listeners and saves data when done button is clicked
         macSaveBtn.setOnClickListener {
             //return what ever is in the text box
             val text = macTextLayout.editText?.text.toString()

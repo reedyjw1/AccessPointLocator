@@ -6,6 +6,9 @@ import edu.udmercy.accesspointlocater.AppDatabase
 import edu.udmercy.accesspointlocater.features.accessPointChooser.model.AccessPointUI
 import edu.udmercy.accesspointlocater.features.accessPointChooser.room.AccessPointChooser
 
+/**
+ * Class that implements the corresponding interface, calls database DAO functions to insert or retrieve
+ */
 class AccessPointReferenceRepositoryImpl(private val appContext: Context): AccessPointReferenceRepository {
 
     private val accessPointChooserDao = Room.databaseBuilder(

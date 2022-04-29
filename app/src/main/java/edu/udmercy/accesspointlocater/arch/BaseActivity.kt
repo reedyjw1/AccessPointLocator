@@ -10,6 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import edu.udmercy.accesspointlocater.R
 
+/**
+ * This class is the BaseActivity class that should be used when creating an activity
+ * This ensures that permissions are always asked, if not already accepted, to ensure
+ * the application will work
+ */
 open class BaseActivity: AppCompatActivity() {
 
     companion object {

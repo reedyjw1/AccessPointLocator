@@ -6,6 +6,9 @@ import edu.udmercy.accesspointlocater.AppDatabase
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Implementation of the Interface to access WifiData in the database
+ */
 class WifiScansRepositoryImpl(private val appContext: Context): WifiScansRepository {
     private val accessPointRepo = Room.databaseBuilder(
         appContext,

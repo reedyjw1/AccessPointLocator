@@ -80,6 +80,11 @@ class CreateSessionDialog: DialogFragment(R.layout.dialog_create_session) {
         startActivityForResult(Intent.createChooser(intent, "Select the Building Image"), SELECT_PICTURE)
     }
 
+    /**
+     * This function uses the Storage Access Framework API to get the floor plan images from where the user
+     * saved them. This API is relatively new and must be used to get access to images
+     * Therefore, the old way for older phones must still be implemented
+     */
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

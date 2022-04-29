@@ -23,6 +23,7 @@ class SessionViewModel: ViewModel(), KoinComponent {
     val sessionList = MutableLiveData<MutableList<SessionUI>>()
 
     init {
+        // Displays all of the sessions in the DB right when they are added or deleted
         viewModelScope.launch(Dispatchers.IO) {
             sessionRepo.getAllSessions().collect { list ->
                 sessionList.postValue(list.map {
@@ -32,6 +33,7 @@ class SessionViewModel: ViewModel(), KoinComponent {
         }
     }
 
+    // Function to delete a session and its corresponding data in other tables from the DB
     fun deleteSession(uuid: String){
         viewModelScope.launch(Dispatchers.IO) {
             apLocationRepo.deleteSession(uuid)

@@ -5,6 +5,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * Model class that is to be the fields of the Table in the database related to the floor plans
+ */
 @Entity
 data class BuildingImage(
     @PrimaryKey(autoGenerate = true)
