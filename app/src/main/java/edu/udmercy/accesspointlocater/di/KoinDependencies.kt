@@ -13,6 +13,12 @@ import edu.udmercy.accesspointlocater.utils.sp.ISharedPrefsHelper
 import edu.udmercy.accesspointlocater.utils.sp.SharedPrefsHelper
 import org.koin.dsl.module
 
+/**
+ * Koin is a dependency injection framework. This allows repositories, which in our case accesses a local
+ * database, to be injected into any class that needs it. This way context to each repository does not
+ * need to be manually managed and prevents memory leaks/bugs
+ * This file maps all Koin interfaces to there respective implementation to create singletons
+ */
 val appDependencies = module {
 
     // Singleton (returns always the same unique instance of the object)

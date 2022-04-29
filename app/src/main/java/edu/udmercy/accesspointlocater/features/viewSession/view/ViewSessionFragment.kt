@@ -22,6 +22,7 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
     }
     private val viewModel by viewModels<ViewSessionViewModel>()
 
+    // These observers are used so that when the data is updated, the UI can automatically be updated
     private val imageObserver =
         Observer { bitmap: BuildingImage? ->
             if(bitmap != null) {
@@ -57,6 +58,7 @@ class ViewSessionFragment: BaseFragment(R.layout.fragment_view_session) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showUpNavigation()
+        // Sets up recycler view and button callbacks when fragment is first created
         val uuid = arguments?.getString("uuid") ?: return
         viewModel.getCurrentSession(uuid)
         accessPointInformationRecycler.adapter = adapter

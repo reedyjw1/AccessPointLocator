@@ -13,8 +13,12 @@ import edu.udmercy.accesspointlocater.features.execute.room.WifiScansDao
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocationDao
 
-@Database(entities = [Session::class, WifiScans::class, BuildingImage::class, APLocation::class, AccessPointChooser::class], version = 8)
+/**
+ * For Jetpack Room Database, specifies all tables and the class that constructs each table, and the DB version number
+ */
+@Database(entities = [Session::class, WifiScans::class, BuildingImage::class, APLocation::class, AccessPointChooser::class], version = 10)
 @TypeConverters(Converters::class)
+// All Data Access Objects (DAOs) (which have the functions to interact with DB) are specified here
 abstract class AppDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionDAO
     abstract fun accessPointDao(): WifiScansDao

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".features.placeAccessPoints.view.PlaceAccessPointsFragment">
+
+    <include
+        android:id="@+id/appbar"
+        layout="@layout/include_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/apMapContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:elevation="4dp"
+        app:cardCornerRadius="5dp"
+        app:layout_constraintTop_toBottomOf="@id/appbar"
+        app:layout_constraintBottom_toTopOf="@id/placerfloorNumberBtn">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <edu.udmercy.accesspointlocater.arch.PlaceAPImageView
+                android:id="@+id/apLocationPlacer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/placerfloorNumberBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toEndOf="@id/placerPreviousFloorBtn"
+        app:layout_constraintEnd_toStartOf="@id/placerNextFloorBtn"
+        tools:text="Floor 1"
+        android:fontFamily="@font/inter_semi_bold"
+        android:textSize="18sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:clickable="false"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/placerPreviousFloorBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="10dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:elevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:fontFamily="@font/inter_semi_bold"
+        android:textSize="18sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="@string/previousFloorLabel"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/placerNextFloorBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="10dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fontFamily="@font/inter_semi_bold"
+        android:textSize="18sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="@string/nextFloorLabel"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

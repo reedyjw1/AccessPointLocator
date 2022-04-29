@@ -6,6 +6,9 @@ import edu.udmercy.accesspointlocater.AppDatabase
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Implementation of the interface to access the database regarding APLocations
+ */
 class APLocationRepositoryImpl(appContext: Context): APLocationRepository {
     private val apLocationRepo = Room.databaseBuilder(
         appContext,
@@ -24,5 +27,9 @@ class APLocationRepositoryImpl(appContext: Context): APLocationRepository {
 
     override fun saveAccessPointLocations(list: List<APLocation>) {
         apLocationRepo.insertAll(*list.toTypedArray())
+    }
+
+    override fun deleteSession(uuid: String) {
+        apLocationRepo.deleteAll(uuid)
     }
 }

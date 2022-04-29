@@ -6,6 +6,10 @@ import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * This is a feature of Jetpack Room, a Google Library that allows functions to be directly correlated
+ * to SQL functions. These functions are used to insert, retrieve, and delete WiFi records per session
+ */
 @Dao
 interface WifiScansDao {
     @Query("SELECT * FROM WifiScans where uuid == (:uuid)")

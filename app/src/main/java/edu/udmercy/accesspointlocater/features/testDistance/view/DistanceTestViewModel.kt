@@ -23,6 +23,7 @@ class DistanceTestViewModel(
     val accessPointList: MutableLiveData<MutableList<DistanceUI>> = MutableLiveData(mutableListOf())
     var isRunning = false
 
+    // Refreshes the list displayed to the user with new access point data and distance calculation
     fun updateList(list: List<ScanResult>) {
         viewModelScope.launch(Dispatchers.IO) {
             val uuid = savedStateHandle.getLiveData<String>("uuid").value ?: return@launch

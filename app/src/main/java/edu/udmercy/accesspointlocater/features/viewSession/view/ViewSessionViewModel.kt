@@ -34,6 +34,7 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
 
 
     fun getCurrentSession(uuid: String) {
+        // Retrieves any necessary information about the session
         viewModelScope.launch(Dispatchers.IO) {
 
             val session =sessionRepo.getCurrentSession(uuid)
@@ -55,6 +56,7 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
         }
     }
 
+    // Displays new image on the ImageView
     fun moveImage(number: Int, uuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
             if (number == 1 || number == -1) {
@@ -70,6 +72,7 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
         }
     }
 
+    // Updates the Map with the access points only the floor they are looking at
     private fun getAccessPoints(floor: Int) {
         val aps = _accessPointInfoList.filter { pred -> pred.floorNumber == floor }
         accessPointInfoList.postValue(aps.toMutableList())
@@ -83,13 +86,4 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
     fun onPause() {
         currentBitmap.value?.image?.recycle()
     }
-
-    /*init {
-        viewModelScope.launch(Dispatchers.IO) {
-            accessPointRepo.createNewLocation(APLocation(0, "cd4fcd55-0305-466d-b482-c4fd59b614e8", 63.11575698852539f, 113.09776306152344f, 1, "44:48:c1:be:3c:c0"))
-            accessPointRepo.createNewLocation(APLocation(0, "cd4fcd55-0305-466d-b482-c4fd59b614e8", 63.11575698852539f, 113.09776306152344f, 1, "44:48:c1:be:45:80"))
-            accessPointRepo.createNewLocation(APLocation(0, "cd4fcd55-0305-466d-b482-c4fd59b614e8", 291.3034973144531f, 119.33998107910156f, 1, "44:48:c1:be:22:90"))
-        }
-
-    }*/
 }

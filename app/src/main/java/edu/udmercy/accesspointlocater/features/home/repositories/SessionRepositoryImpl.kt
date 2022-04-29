@@ -6,6 +6,9 @@ import edu.udmercy.accesspointlocater.AppDatabase
 import edu.udmercy.accesspointlocater.features.home.room.Session
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Implementation of interface to access database about session data
+ */
 class SessionRepositoryImpl(private val appContext: Context): SessionRepository {
     private val sessionDb = Room.databaseBuilder(
         appContext,
@@ -17,9 +20,7 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
         timestamp: String,
         sessionLabel: String,
         buildingName: String,
-        scaleNumber: Double,
-        scaleUnits: String,
-        pixelDistance: Double
+        areApLocationsKnown: Boolean
     ) {
         sessionDb.insertAll(
             Session(
@@ -27,9 +28,7 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
                 sessionLabel = sessionLabel,
                 timestamp = timestamp,
                 building = buildingName,
-                scaleNumber = scaleNumber,
-                scaleUnits = scaleUnits,
-                pixelDistance = pixelDistance,
+                areApLocationsKnown = areApLocationsKnown
             )
         )
     }
@@ -44,5 +43,13 @@ class SessionRepositoryImpl(private val appContext: Context): SessionRepository 
 
     override fun updateSession(session: Session) {
         sessionDb.insertAll(session)
+    }
+
+    override fun markSessionComplete(uuid: String) {
+        sessionDb.markAsFinished(uuid)
+    }
+
+    override fun deleteSession(uuid: String) {
+        sessionDb.deleteAllSessions(uuid)
     }
 }

@@ -5,8 +5,10 @@ import android.graphics.PointF
 import kotlin.math.*
 
 object MathUtils {
-    private const val buildingType = 3
 
+    /**
+     * Calculates euclidean distance
+     */
     fun euclideanDistance(point1: PointF, point2: PointF): Float {
         val x: Float = (abs(point1.x - point2.x)).pow(2)
         val y: Float = (abs(point1.y - point2.y)).pow(2)
@@ -14,11 +16,13 @@ object MathUtils {
         return sqrt(res)
     }
 
+    // Log distance path loss model
     fun calculateDistanceInMeters(rssi: Int, n: Double, refDist: Double, refApLevel: Double): Double {
         val temp = refApLevel - rssi.toDouble()
         return 10.0.pow(temp / (10.0 * n)) * refDist
     }
 
+    // Free space path loss model
     fun calculateFreeSpacePathLossReference(frequency: Double, meters: Double = 1.0): Double{
         // 32.44 + 10𝑛 log (𝑑) + 10𝑛 log (𝑓)
         // return 32.44 + (10 * buildingType * log(meters, 10.0)) + (10 * buildingType * log(frequency, 10.0))
@@ -31,6 +35,7 @@ object MathUtils {
         return (dist *100.0 ) / 1000.0
     }*/
 
+    // Converts inputted data to meters
     fun convertUnitToMeters(distance: Double, unit: Units): Double {
         return when (unit) {
             Units.METERS -> {
@@ -45,6 +50,7 @@ object MathUtils {
         }
     }
 
+    // Takes a list of floor heights and creates the bounds of them (ie., floor 1 is 0 m to 4 m, floor 2 is 4 m to 7 m, etc.)
     fun calculateHeightFromFloors(floorHeights: List<Double>, offset: Double, floor: Int): Double {
         // Converts the inputted floor heights to height calculations and converts them to meters
         var floorCounter = 0.0
@@ -59,11 +65,13 @@ object MathUtils {
     }
 }
 
+// Rounds decimal values to the specified decimal place
 fun Double.roundTo(decimals: Int): Double {
     val factor = 10.0.pow(decimals.toDouble())
     return (this * factor).roundToInt() / factor
 }
 
+// Used for printing a matrix in the correct format
 fun strung(m: Matrix): String {
     val sb = StringBuffer()
     for (r in 0 until m.rowDimension) {

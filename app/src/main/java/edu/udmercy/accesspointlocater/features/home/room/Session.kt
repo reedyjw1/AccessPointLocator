@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
+/**
+ * Model data that is the format of the table in the database related to sessions
+ */
 @Entity
 data class Session(
     @PrimaryKey
@@ -18,9 +21,5 @@ data class Session(
     @ColumnInfo
     var isFinished: Boolean = false,
     @ColumnInfo
-    var scaleNumber: Double = 0.0,
-    @ColumnInfo
-    var scaleUnits: String = "Meter",
-    @ColumnInfo
-    var pixelDistance: Double = 0.0
+    val areApLocationsKnown: Boolean = false
 )

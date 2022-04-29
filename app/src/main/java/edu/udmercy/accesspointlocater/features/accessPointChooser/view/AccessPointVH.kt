@@ -20,6 +20,7 @@ class AccessPointVH(itemView: View): RecyclerView.ViewHolder(itemView) {
         set(value) {
             field = value
             value?.let { data ->
+                // For the data in this list element, display it to the screen
                 itemView.titleTextView.text = data.macAddress
                 itemView.descriptionTextView.text = "RSSI: ${data.rssi} Frequency: ${data.frequency}"
                 itemView.setOnClickListener { itemClicked?.invoke(data) }

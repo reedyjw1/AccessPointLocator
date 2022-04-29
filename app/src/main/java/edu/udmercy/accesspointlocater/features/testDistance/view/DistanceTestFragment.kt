@@ -16,6 +16,11 @@ import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.features.testDistance.model.DistanceUI
 import kotlinx.android.synthetic.main.fragment_distance_test.*
 
+/**
+ * This fragment was designed as a test utility to evaluate the different
+ * path loss models by displaying the calculated distance on screen.
+ * The distance can then measured by the user in the room
+ */
 class DistanceTestFragment: BaseFragment(R.layout.fragment_distance_test) {
 
     private val viewModel by viewModels<DistanceTestViewModel>()

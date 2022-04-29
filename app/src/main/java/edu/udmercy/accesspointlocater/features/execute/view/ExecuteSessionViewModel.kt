@@ -16,7 +16,6 @@ import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
 import edu.udmercy.accesspointlocater.features.home.room.Session
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
 import edu.udmercy.accesspointlocater.utils.Event
-import edu.udmercy.accesspointlocater.utils.Multilateration.calculateMultilateration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -27,8 +26,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
-import edu.udmercy.accesspointlocater.features.accessPointChooser.repositories.AccessPointReferenceRepository
-import edu.udmercy.accesspointlocater.utils.MathUtils
+import edu.udmercy.accesspointlocater.features.execute.room.estimateLocations
 import java.io.File
 import java.io.FileOutputStream
 
@@ -37,19 +35,13 @@ class ExecuteSessionViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle
 ): AndroidViewModel(application), KoinComponent {
+
     private val sessionRepo: SessionRepository by inject()
     private val wifiScansRepo: WifiScansRepository by inject()
     private val buildingImageRepo: BuildingImageRepository by inject()
     private val apLocationRepo: APLocationRepository by inject()
-    private val apChooser: AccessPointReferenceRepository by inject()
-
     var _isScanning = false
     var isScanning = MutableLiveData<Event<Boolean>>()
-
-    private var floorHeights = listOf<Double>()
-
-    // 4 feet in meters
-    private val phoneHeight = 1.2192
 
     private var session: Session? = null
     private var image: BuildingImage?= null
@@ -61,10 +53,6 @@ class ExecuteSessionViewModel(
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     var currentPosition: PointF? = null
 
-    private var scaleValue = 0.0
-    private var scaleUnit = "Meters"
-    private var pointDistance = 0.0
-
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 
     companion object {
@@ -72,18 +60,14 @@ class ExecuteSessionViewModel(
     }
 
     init {
+        // Gets the Session Data from the Database on fragment creation
         viewModelScope.launch(Dispatchers.IO) {
             savedStateHandle.getLiveData<String>("uuid").value?.let {
                 session = sessionRepo.getCurrentSession(it)
 
-                scaleValue = session?.scaleNumber ?: 0.0
-                scaleUnit = session?.scaleUnits ?: "Meters"
-                pointDistance = session?.pixelDistance ?: 0.0
-
                 image = buildingImageRepo.getFloorImage(it, 0)
                 val tempCount = buildingImageRepo.getFloorCount(it)
                 floorCount = tempCount
-                floorHeights = buildingImageRepo.getFloorHeights(it, tempCount)
 
                 currentBitmap.postValue(null)
                 currentBitmap.postValue(image)
@@ -94,7 +78,7 @@ class ExecuteSessionViewModel(
             }
         }
     }
-
+    // Saves the wifi scan data to the database through the repository
     fun saveResults(list: List<ScanResult>) {
         viewModelScope.launch(Dispatchers.IO) {
             list.forEach {
@@ -107,7 +91,8 @@ class ExecuteSessionViewModel(
                         uuid = sessionSafe.uuid,
                         currentLocationX = position.x.toDouble(),
                         currentLocationY =  position.y.toDouble(),
-                        currentLocationZ = MathUtils.calculateHeightFromFloors(floorHeights, phoneHeight, floorVal),
+                        // currentLocationZ = MathUtils.calculateHeightFromFloors(floorHeights, phoneHeight, floorVal),
+                        currentLocationZ = 0.0,
                         floor = floorVal,
                         ssid = it.BSSID,
                         capabilities = it.capabilities,
@@ -124,6 +109,7 @@ class ExecuteSessionViewModel(
         }
     }
 
+    // Calls function to estimate the AP locations and saves them to DB
     fun calculateResults(completion: ()->Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val sessionTemp = session ?: return@launch
@@ -133,12 +119,10 @@ class ExecuteSessionViewModel(
                     sessionLabel = sessionTemp.sessionLabel,
                     timestamp = sessionTemp.timestamp,
                     building = sessionTemp.building,
-                    true
+                    isFinished = true,
                 )
             )
-            val scans = wifiScansRepo.getScanList(sessionTemp.uuid)
-            val reference = apChooser.getReferenceAccessPoint(sessionTemp.uuid)
-            val apLocations = calculateMultilateration(_savedPoints, sessionTemp.uuid, scans, pointDistance, scaleValue, scaleUnit, reference.level.toDouble(), reference.distance)
+            val apLocations = _savedPoints.estimateLocations(sessionTemp.uuid, 5000)
             apLocationRepo.saveAccessPointLocations(apLocations)
 
             withContext(Dispatchers.Main) {
@@ -149,6 +133,7 @@ class ExecuteSessionViewModel(
 
     }
 
+    // Converts data to json, writes it to file, and saves to the user specified location
     fun saveFile(uri: Uri?) {
         viewModelScope.launch(Dispatchers.IO) {
             val sessionTemp = session ?: return@launch
@@ -190,12 +175,12 @@ class ExecuteSessionViewModel(
         }
     }
 
+    // Reads JSON file and saves data back into database with new session UUID
     fun loadFile(uri: Uri) {
         Log.i(TAG, "loadFile: $uri")
         try {
             val bytes = getApplication<Application>().applicationContext.contentResolver.openInputStream(uri)?.readBytes()
                 ?: throw Exception("File was empty")
-            val sessionLabel = session?.sessionLabel ?: return
             val sessionUuid = session?.uuid ?: return
 
             val jsonString = String(bytes)
@@ -234,7 +219,6 @@ class ExecuteSessionViewModel(
                 val count = floorCount ?: return@launch
                 if ((floor.value == count-1 && number == 1) || (floor.value == 0 && number == -1)) return@launch
                 val floorVal = floor.value ?: return@launch
-                //currentBitmap.value?.image?.recycle()
                 floor.postValue(floorVal+number)
                 currentBitmap.postValue(null)
                 getAccessPoints(floorVal+number)

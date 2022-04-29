@@ -19,7 +19,40 @@
         <action
             android:id="@+id/action_sessionList_to_accessChooser"
             app:destination="@id/accessChooser"/>
+        <action
+            android:id="@+id/action_sessionList_to_KnownAPLocationsPlacer"
+            app:destination="@id/knownAPLocationPlacer"
+            />
+        <action
+            android:id="@+id/action_sessionList_to_Execute"
+            app:destination="@id/executeSession"
+            />
     </fragment>
+
+    <fragment
+        android:id="@+id/knownAPLocationPlacer"
+        android:name="edu.udmercy.accesspointlocater.features.placeAccessPoints.view.PlaceAccessPointsFragment"
+        android:label="Place Access Points"
+        tools:layout="@layout/fragment_place_access_points">
+
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
+
+        <action
+            android:id="@+id/knownAP_to_getMacAddress"
+            app:destination="@id/obtainMacAddress"
+            />
+
+        <action
+            android:id="@+id/knownAP_to_viewSession"
+            app:destination="@+id/viewSession"
+            />
+
+    </fragment>
+
+
 
     <fragment
         android:id="@+id/viewSession"
@@ -84,5 +117,18 @@
         android:name="edu.udmercy.accesspointlocater.features.create.view.CreateSessionDialog"
         android:label="@string/fragmentCreateSessionLabel"
         tools:layout="@layout/dialog_create_session"/>
+
+    <dialog
+        android:id="@+id/obtainMacAddress"
+        android:name="edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog"
+        android:label="MAC Address"
+        tools:layout="@layout/dialog_get_mac">
+
+
+    </dialog>
+
+
+
+
 
 </navigation>

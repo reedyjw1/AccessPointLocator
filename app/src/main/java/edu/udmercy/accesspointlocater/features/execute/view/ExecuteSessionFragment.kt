@@ -56,6 +56,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     private val sharedProvider: ISharedPrefsHelper by inject()
 
+    // Function that recieves the wifi scan data from the phone/os
     private val wifiScanReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
@@ -69,6 +70,8 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         }
     }
 
+    // Observer to automatically update the floor plan displayed if the user
+    // clicks the change floor button
     private val imageObserver =
         Observer { bitmap: BuildingImage? ->
             Log.i(TAG, "imageObserver: isRecycled:${bitmap?.image?.isRecycled}")
@@ -119,6 +122,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Sets everything up and the button on click listeners
         showUpNavigation()
         val uuid = arguments?.getString("uuid") ?: return
         executeImageView.listener = this
@@ -135,12 +139,15 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         inflater.inflate(R.menu.execute_menu, menu)
     }
 
+    // Top right options menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.finished -> {
                 if(viewModel._isScanning) {
                     toast("Please wait until scanning is complete.")
                 } else {
+                    // Starts calculating the estimated locations results and then
+                    // Navigates to the next fragment when complete
                     showProgressBar(true, "Saving...")
                     viewModel.calculateResults {
                         showProgressBar(false)
@@ -169,6 +176,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     private fun startScan() {
         showProgressBar(true, "Scanning...")
+        // Calls the Android APIs to stat the WifiScans
         wifiManager = requireActivity().getSystemService(Context.WIFI_SERVICE) as WifiManager
         val intentFilter = IntentFilter()
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
@@ -189,7 +197,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         } else {
             toast("Scan Complete!")
         }
-
+        // Filters wifi data by currently connected wifi name and saves to database
         val wifiName = wifiManager.connectionInfo.ssid.toString()
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
         val uuid = arguments?.getString("uuid") ?: return
@@ -201,6 +209,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         toast("Scan Failed!")
     }
 
+    // Saves the session data to the user specified directory
     private fun exportSession() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Checks if the directory has already been used
@@ -219,6 +228,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     }
 
+    // Loads the JSON file
     private fun loadSession() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Scoped Storage
@@ -233,6 +243,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         }
     }
 
+    // Checks validity of URI that was previously entered by the user at a different opening time
     private fun uriValid(uri: Uri): Boolean {
         requireActivity().contentResolver.persistedUriPermissions.forEach {
             if (it.uri == uri && it.isReadPermission && it.isWritePermission && it.persistedTime <= Date().time) {

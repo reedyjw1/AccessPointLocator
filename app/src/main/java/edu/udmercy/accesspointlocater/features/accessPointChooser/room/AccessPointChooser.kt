@@ -4,6 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * Table Structure for the Database, this class was used for selecting a reference access point
+ * per session, however, it is no longer used.
+ */
 @Entity
 data class AccessPointChooser(
     @PrimaryKey(autoGenerate = true)

@@ -7,6 +7,9 @@ import edu.udmercy.accesspointlocater.features.home.model.SessionUI
 
 typealias OnAccessPointClicked = (AccessPointUI) -> Unit
 
+/**
+ * Class is used to create a list of displayed information efficiently
+ */
 class AccessPointRecyclerAdapter: ListAdapter<AccessPointUI, AccessPointVH>(AccessPointUI.DIFFER) {
 
     var onAccessPointClicked: OnAccessPointClicked? = null
