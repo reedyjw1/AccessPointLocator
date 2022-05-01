@@ -35,6 +35,10 @@ import edu.udmercy.accesspointlocater.utils.Event
 
 import com.google.android.gms.location.*
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
+import edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog
+import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.APPointLocation
+import edu.udmercy.accesspointlocater.features.placeAccessPoints.view.PlaceAccessPointsFragment
+import edu.udmercy.accesspointlocater.features.roomInput.view.RoomInputDialog
 import edu.udmercy.accesspointlocater.utils.sp.ISharedPrefsHelper
 import edu.udmercy.accesspointlocater.utils.sp.SharedPrefsKeys
 import org.koin.core.KoinComponent
@@ -174,6 +178,21 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         return super.onOptionsItemSelected(item)
     }
 
+    //inflates MAC dialog and will return the value inputted inside of data variable
+    private fun inflateRoomDialog(scanUUID: String){
+        var received = false
+        childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner, { requestKey, data ->
+            if(requestKey == "roomNumber" && !received){
+                val item = data.getString("result")
+                item?.let { room ->
+                    Log.d(TAG, "inflateRoomDialog: Result: $room")
+                    received = true
+                }
+            }
+        })
+        RoomInputDialog().show(childFragmentManager, "roomNumber")
+    }
+
     private fun startScan() {
         showProgressBar(true, "Scanning...")
         // Calls the Android APIs to stat the WifiScans
@@ -201,6 +220,8 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         val wifiName = wifiManager.connectionInfo.ssid.toString()
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
         val uuid = arguments?.getString("uuid") ?: return
+       
+
         Log.i(TAG, "scanSuccess: $filteredResults")
         viewModel.saveResults(filteredResults)
     }

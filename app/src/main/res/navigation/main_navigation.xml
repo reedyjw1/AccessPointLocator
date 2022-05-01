@@ -27,6 +27,8 @@
             android:id="@+id/action_sessionList_to_Execute"
             app:destination="@id/executeSession"
             />
+
+
     </fragment>
 
     <fragment
@@ -79,6 +81,11 @@
             android:name="uuid"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_executeSession_to_roomInput"
+            app:destination="@id/obtainRoomNumber"
+            />
+
     </fragment>
 
     <fragment
@@ -127,6 +134,13 @@
 
     </dialog>
 
+    <dialog
+        android:id="@+id/obtainRoomNumber"
+        android:name="edu.udmercy.accesspointlocater.features.roomInput.view.RoomInputDialog"
+        android:label="Room Number"
+        tools:layout="@layout/dialog_room_number">
+
+    </dialog>
 
 
 
