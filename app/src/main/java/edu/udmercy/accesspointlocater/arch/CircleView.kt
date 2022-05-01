@@ -30,7 +30,9 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
         private const val TAG = "CircleView"
     }
     private var strokeWidth = 0
+    private var radius = 0f
     private val paint = Paint()
+    private var density = 0f
     var touchedPoint: PointF? = null
     var completedPointScans: List<WifiScans> = listOf()
     var threshold = 50f
@@ -38,7 +40,7 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
 
     private fun initialise() {
         // Initializes gesture detector for when the user clicks a point on the image
-        val density = resources.displayMetrics.densityDpi.toFloat()
+        density = resources.displayMetrics.densityDpi.toFloat()
         strokeWidth = (density / 60f).toInt()
         setOnTouchListener { subView, motionEvent ->
             subView.performClick()
@@ -54,8 +56,9 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
         if (!isReady) {
             return
         }
-        val radius = 25f
-        val strokeRadius = 32f
+        //radius will always look the same on all devices, 16.8f and 13.125 are values that make the icons look good
+        radius = density/16.8f
+        val strokeRadius = density/13.125f
 
         // Currently Selected Points
         touchedPoint?.let {
