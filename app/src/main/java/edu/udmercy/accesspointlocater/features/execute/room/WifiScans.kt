@@ -20,6 +20,8 @@ data class WifiScans(
     @ColumnInfo
     val uuid: String,
     @ColumnInfo
+    val scanUUID: String,
+    @ColumnInfo
     val currentLocationX: Double,
     @ColumnInfo
     val currentLocationY: Double,
@@ -43,6 +45,8 @@ data class WifiScans(
     val level: Int,
     @ColumnInfo
     val timestamp: Long,
+    @ColumnInfo
+    val roomNumber: Int,
 )
 
 fun List<WifiScans>.average(): Double {
