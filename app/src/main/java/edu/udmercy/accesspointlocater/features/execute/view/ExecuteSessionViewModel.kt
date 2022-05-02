@@ -29,6 +29,7 @@ import androidx.lifecycle.*
 import edu.udmercy.accesspointlocater.features.execute.room.estimateLocations
 import java.io.File
 import java.io.FileOutputStream
+import java.util.*
 
 
 class ExecuteSessionViewModel(
@@ -52,6 +53,8 @@ class ExecuteSessionViewModel(
 
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     var currentPosition: PointF? = null
+    var currentScanUUID: String? = null
+    var roomValue: String? = null
 
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -84,7 +87,9 @@ class ExecuteSessionViewModel(
             list.forEach {
                 val sessionSafe = session ?: return@launch
                 val position = currentPosition ?: return@launch
+                val scanUUID = currentScanUUID?: return@launch
                 val floorVal = floor.value ?: return@launch
+                val roomNumber = roomValue ?: return@launch
 
                 wifiScansRepo.saveAccessPointScan(
                     WifiScans(
@@ -102,6 +107,8 @@ class ExecuteSessionViewModel(
                         frequency = it.frequency,
                         level = it.level,
                         timestamp = it.timestamp,
+                        scanUUID = scanUUID,
+                        roomNumber = roomNumber
                     )
                 )
 
@@ -131,6 +138,12 @@ class ExecuteSessionViewModel(
 
         }
 
+    }
+
+    fun updateRoomValue(scanUUID: String, roomValue: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            wifiScansRepo.insertRoomNumber(scanUUID, roomValue)
+        }
     }
 
     // Converts data to json, writes it to file, and saves to the user specified location
@@ -202,7 +215,9 @@ class ExecuteSessionViewModel(
                             channelWidth = it.channelWidth,
                             frequency = it.frequency,
                             level = it.level,
-                            timestamp = it.timestamp
+                            timestamp = it.timestamp,
+                            scanUUID = it.scanUUID,
+                            roomNumber = it.roomNumber
                         )
                     )
                 }
