@@ -1,6 +1,7 @@
 package edu.udmercy.accesspointlocater.features.roomInput.view
 
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -50,16 +51,23 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
         roomAutoComplete.threshold = 1
         roomAutoComplete.setAdapter(arrayAdapter)
         roomSave.setOnClickListener {
+            viewModel.enteredRoomNumber = true
             val roomNumber = roomAutoComplete?.text.toString()
             sendRoomNumber(roomNumber)
             dismissAllowingStateLoss()
         }
         roomDismissBtn.setOnClickListener {
             //return negative one
-            sendRoomNumber("dismiss")
             dismissAllowingStateLoss()
         }
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if(!viewModel.enteredRoomNumber) {
+            sendRoomNumber("dismiss")
+        }
     }
 
     private fun sendRoomNumber(data: String){

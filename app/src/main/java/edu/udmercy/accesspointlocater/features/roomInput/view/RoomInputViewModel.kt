@@ -16,6 +16,7 @@ class RoomInputViewModel(application: Application, savedStateHandle: SavedStateH
 
     private val wifiScansRepo: WifiScansRepository by inject()
     val roomNumberList = MutableLiveData(listOf<String>())
+    var enteredRoomNumber = false
 
     companion object {
         private const val TAG = "RoomInputViewModel"
