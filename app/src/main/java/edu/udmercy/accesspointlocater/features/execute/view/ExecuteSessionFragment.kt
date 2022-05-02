@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
+import androidx.room.Room
 import com.google.android.material.snackbar.Snackbar
 import edu.udmercy.accesspointlocater.arch.BaseFragment
 import edu.udmercy.accesspointlocater.arch.CircleViewPointListener
@@ -185,41 +186,45 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     //inflates room input dialog and will return the value inputted inside of data variable
     private fun inflateRoomDialog(){
         var received = false
-        childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner, { requestKey, data ->
-            if(requestKey == "roomNumber" && !received){
+        childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner) { requestKey, data ->
+            if (requestKey == "roomNumber" && !received) {
                 val item = data.getString("result")
                 item?.let { room ->
                     Log.d(TAG, "inflateRoomDialog: Result: $room")
-                    if(room == "dismiss"){
+                    if (room == "dismiss") {
                         //remove last point if dialog was dismissed
                         Log.d(TAG, "inflateRoomDialog: dismissed")
                         executeImageView.touchedPoint = null
                         executeImageView.invalidate()
-                    }else{
+                    } else {
                         viewModel.roomValue = room
                     }
                     received = true
                 }
             }
-        })
-        RoomInputDialog().show(childFragmentManager, "roomNumber")
+        }
+        val uuid = arguments?.getString("uuid") ?: return
+        val bundle = bundleOf("uuid" to uuid)
+        val roomDialog = RoomInputDialog()
+        roomDialog.arguments = bundle
+        roomDialog.show(childFragmentManager, "roomNumber")
     }
 
     // called when a completed scan point is touched
     private fun pointTouchedInflateRoomDialog(scanUUID:String){
         var received = false
-        childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner, { requestKey, data ->
-            if(requestKey == "roomNumber" && !received){
+        childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner) { requestKey, data ->
+            if (requestKey == "roomNumber" && !received) {
                 val item = data.getString("result")
                 item?.let { room ->
                     Log.d(TAG, "inflateRoomDialog: Result: $room")
-                    if(room != "dismiss"){
+                    if (room != "dismiss") {
                         viewModel.updateRoomValue(scanUUID, room)
                     }
                     received = true
                 }
             }
-        })
+        }
         RoomInputDialog().show(childFragmentManager, "roomNumber")
     }
 

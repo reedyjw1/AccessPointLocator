@@ -140,6 +140,11 @@
         android:label="Room Number"
         tools:layout="@layout/dialog_room_number">
 
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
+
     </dialog>
 
 

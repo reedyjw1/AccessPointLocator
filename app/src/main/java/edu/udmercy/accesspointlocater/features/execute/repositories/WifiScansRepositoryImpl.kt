@@ -34,4 +34,8 @@ class WifiScansRepositoryImpl(private val appContext: Context): WifiScansReposit
     override fun insertRoomNumber(scanUUID: String, roomNumber:String){
         accessPointRepo.insertRoomNumber(scanUUID, roomNumber)
     }
+
+    override fun retrieveRoomNumbers(uuid: String): List<String> {
+        return accessPointRepo.getRoomNumbers(uuid)
+    }
 }

@@ -12,4 +12,5 @@ interface WifiScansRepository {
     fun getScanList(uuid: String): List<WifiScans>
     fun deleteSession(uuid:String)
     fun insertRoomNumber(scanUUID: String, roomNumber:String)
+    fun retrieveRoomNumbers(uuid: String): List<String>
 }

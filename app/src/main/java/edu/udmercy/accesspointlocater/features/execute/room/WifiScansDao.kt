@@ -29,4 +29,7 @@ interface WifiScansDao {
 
     @Query("UPDATE WifiScans SET roomNumber = (:roomNumber) WHERE scanUUID == (:scanUUID)")
     fun insertRoomNumber(scanUUID: String, roomNumber:String)
+
+    @Query("SELECT roomNumber from WifiScans where uuid == (:sessionUuid)")
+    fun getRoomNumbers(sessionUuid: String): List<String>
 }
