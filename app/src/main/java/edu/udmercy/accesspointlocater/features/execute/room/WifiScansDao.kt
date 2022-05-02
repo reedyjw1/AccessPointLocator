@@ -28,5 +28,5 @@ interface WifiScansDao {
     fun deleteAllFromSession(uuid: String)
 
     @Query("UPDATE WifiScans SET roomNumber = (:roomNumber) WHERE scanUUID == (:scanUUID)")
-    fun insertRoomNumber(scanUUID: String, roomNumber:Int)
+    fun insertRoomNumber(scanUUID: String, roomNumber:String)
 }

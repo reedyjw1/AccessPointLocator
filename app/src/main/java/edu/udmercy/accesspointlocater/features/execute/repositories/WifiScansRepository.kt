@@ -11,5 +11,5 @@ interface WifiScansRepository {
     fun getAllScans(uuid: String): Flow<List<WifiScans>>
     fun getScanList(uuid: String): List<WifiScans>
     fun deleteSession(uuid:String)
-    fun insertRoomNumber(scanUUID: String, roomNUmber:Int)
+    fun insertRoomNumber(scanUUID: String, roomNumber:String)
 }

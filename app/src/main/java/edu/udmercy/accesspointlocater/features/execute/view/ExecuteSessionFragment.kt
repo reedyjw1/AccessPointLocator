@@ -37,6 +37,7 @@ import com.google.android.gms.location.*
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
 import edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.APPointLocation
+import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.TouchPointListener
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.view.PlaceAccessPointsFragment
 import edu.udmercy.accesspointlocater.features.roomInput.view.RoomInputDialog
 import edu.udmercy.accesspointlocater.utils.sp.ISharedPrefsHelper
@@ -130,6 +131,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         showUpNavigation()
         val uuid = arguments?.getString("uuid") ?: return
         executeImageView.listener = this
+        executeImageView.addRemoveListener = pointAddRemoveListener
         startScanBtn.setOnClickListener {
             startScan()
         }
@@ -179,18 +181,38 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     //inflates MAC dialog and will return the value inputted inside of data variable
-    private fun inflateRoomDialog(scanUUID: String){
+    private fun inflateRoomDialog(){
         var received = false
         childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner, { requestKey, data ->
             if(requestKey == "roomNumber" && !received){
                 val item = data.getString("result")
                 item?.let { room ->
                     Log.d(TAG, "inflateRoomDialog: Result: $room")
+                    if(room == "dismiss"){
+                        //remove last point
+                        Log.d(TAG, "inflateRoomDialog: dismissed")
+                        executeImageView.touchedPoint = null
+                        executeImageView.invalidate()
+                    }else{
+                        viewModel.roomValue = room
+                    }
                     received = true
                 }
             }
         })
         RoomInputDialog().show(childFragmentManager, "roomNumber")
+    }
+
+    private val pointAddRemoveListener = object: TouchPointListener {
+        override fun onPointAdded(point: PointF) {
+            viewModel.currentScanUUID = UUID.randomUUID().toString()
+            inflateRoomDialog()
+        }
+
+        override fun onPointRemoved(point: PointF) {
+            //point remove is handled in onPointChanged
+        }
+
     }
 
     private fun startScan() {
@@ -329,7 +351,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     override fun onPointsChanged(currentPoint: PointF?) {
         viewModel.currentPosition = currentPoint
-        viewModel.currentScanUUID = UUID.randomUUID().toString()
+
     }
 
     override fun onNavigationClick() {

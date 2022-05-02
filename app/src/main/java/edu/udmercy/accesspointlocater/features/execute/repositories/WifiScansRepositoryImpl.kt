@@ -31,7 +31,7 @@ class WifiScansRepositoryImpl(private val appContext: Context): WifiScansReposit
         accessPointRepo.deleteAllFromSession(uuid)
     }
 
-    override fun insertRoomNumber(scanUUID: String, roomNUmber:Int){
-        accessPointRepo.insertRoomNumber(scanUUID, roomNUmber)
+    override fun insertRoomNumber(scanUUID: String, roomNumber:String){
+        accessPointRepo.insertRoomNumber(scanUUID, roomNumber)
     }
 }

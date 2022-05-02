@@ -54,7 +54,7 @@ class ExecuteSessionViewModel(
     val currentBitmap: MutableLiveData<BuildingImage> = MutableLiveData()
     var currentPosition: PointF? = null
     var currentScanUUID: String? = null
-    var roomValue: Int? = null
+    var roomValue: String? = null
 
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -210,7 +210,8 @@ class ExecuteSessionViewModel(
                             frequency = it.frequency,
                             level = it.level,
                             timestamp = it.timestamp,
-                            scanUUID = it.scanUUID
+                            scanUUID = it.scanUUID,
+                            roomNumber = it.roomNumber
                         )
                     )
                 }

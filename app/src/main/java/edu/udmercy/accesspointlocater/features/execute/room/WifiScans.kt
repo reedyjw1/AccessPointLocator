@@ -46,7 +46,7 @@ data class WifiScans(
     @ColumnInfo
     val timestamp: Long,
     @ColumnInfo
-    val roomNumber: Int,
+    val roomNumber: String,
 )
 
 fun List<WifiScans>.average(): Double {
