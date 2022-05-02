@@ -1,15 +1,12 @@
 package edu.udmercy.accesspointlocater.features.roomInput.view
 
 
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -34,6 +31,13 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
             arrayAdapter.notifyDataSetChanged()
         }
 
+    private val lastRoomNumber = Observer { roomNumber: String? ->
+        val safeRoomNumber = roomNumber ?: return@Observer
+        if (safeRoomNumber != "") {
+            roomAutoComplete.setText(safeRoomNumber)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         val params: WindowManager.LayoutParams? = dialog?.window?.attributes
@@ -41,11 +45,13 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
         params?.height = WindowManager.LayoutParams.WRAP_CONTENT
         dialog?.window?.attributes = params as WindowManager.LayoutParams
         viewModel.roomNumberList.observe(this, roomNumberList)
+        viewModel.lastRoomLiveData.observe(this, lastRoomNumber)
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.roomNumberList.removeObserver(roomNumberList)
+        viewModel.lastRoomLiveData.removeObserver(lastRoomNumber)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,8 +74,8 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
         roomAutoComplete.threshold = 1
         roomAutoComplete.setAdapter(arrayAdapter)
 
-        // Hides the Keyboard when clikcing the enter button
-        roomAutoComplete.setOnEditorActionListener { textView, i, keyEvent ->
+        // Hides the Keyboard when clicking the enter button
+        roomAutoComplete.setOnEditorActionListener { _, _, _ ->
             return@setOnEditorActionListener false
         }
 
@@ -79,7 +85,7 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
         }
 
         // Shows the drop down when the text box is clicked to enter information
-        roomAutoComplete.setOnFocusChangeListener { _,_ ->
+        roomAutoComplete.setOnFocusChangeListener { _, focus ->
             roomAutoComplete.showDropDown()
         }
     }

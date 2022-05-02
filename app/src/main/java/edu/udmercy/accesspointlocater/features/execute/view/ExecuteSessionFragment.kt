@@ -204,7 +204,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             }
         }
         val uuid = arguments?.getString("uuid") ?: return
-        val bundle = bundleOf("uuid" to uuid)
+        val bundle = bundleOf("uuid" to uuid, "lastRoom" to viewModel.roomValue)
         val roomDialog = RoomInputDialog()
         roomDialog.arguments = bundle
         roomDialog.show(childFragmentManager, "roomNumber")

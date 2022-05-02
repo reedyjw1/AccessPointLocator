@@ -55,6 +55,7 @@ class ExecuteSessionViewModel(
     var currentPosition: PointF? = null
     var currentScanUUID: String? = null
     var roomValue: String? = null
+    var lastSelectedRoom = ""
 
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 

@@ -16,6 +16,7 @@ class RoomInputViewModel(application: Application, savedStateHandle: SavedStateH
 
     private val wifiScansRepo: WifiScansRepository by inject()
     val roomNumberList = MutableLiveData(listOf<String>())
+    val lastRoomLiveData = MutableLiveData("")
     var enteredRoomNumber = false
 
     companion object {
@@ -25,6 +26,10 @@ class RoomInputViewModel(application: Application, savedStateHandle: SavedStateH
     init {
         savedStateHandle.getLiveData<String>("uuid").value?.let {
             retrieveRoomNumberList(it)
+        }
+        savedStateHandle.getLiveData<String>("lastRoom").value?.let {
+            Log.i(TAG, "posting: $it")
+            lastRoomLiveData.postValue(it)
         }
     }
 
