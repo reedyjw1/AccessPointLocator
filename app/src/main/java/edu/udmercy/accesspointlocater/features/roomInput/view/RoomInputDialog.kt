@@ -1,21 +1,23 @@
 package edu.udmercy.accesspointlocater.features.roomInput.view
 
 
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.ListAdapter
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import edu.udmercy.accesspointlocater.R
-import edu.udmercy.accesspointlocater.utils.Event
+import edu.udmercy.accesspointlocater.utils.hideSoftInput
 import kotlinx.android.synthetic.main.dialog_room_number.*
-import kotlinx.android.synthetic.main.fragment_execute_session.*
+
 
 class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
 
@@ -47,9 +49,7 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        arrayAdapter = ArrayAdapter(requireContext(), R.layout.list_simple_text)
-        roomAutoComplete.threshold = 1
-        roomAutoComplete.setAdapter(arrayAdapter)
+        setupAutoComplete(view)
         roomSave.setOnClickListener {
             viewModel.enteredRoomNumber = true
             val roomNumber = roomAutoComplete?.text.toString()
@@ -61,6 +61,27 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
             dismissAllowingStateLoss()
         }
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun setupAutoComplete(view: View) {
+        arrayAdapter = ArrayAdapter(requireContext(), R.layout.list_simple_text)
+        roomAutoComplete.threshold = 1
+        roomAutoComplete.setAdapter(arrayAdapter)
+
+        // Hides the Keyboard when clikcing the enter button
+        roomAutoComplete.setOnEditorActionListener { textView, i, keyEvent ->
+            return@setOnEditorActionListener false
+        }
+
+        // Clears keyboard when selecting element from drop down
+        roomAutoComplete.setOnItemClickListener { _, _, _, _ ->
+            view.hideSoftInput()
+        }
+
+        // Shows the drop down when the text box is clicked to enter information
+        roomAutoComplete.setOnFocusChangeListener { _,_ ->
+            roomAutoComplete.showDropDown()
+        }
     }
 
     override fun onDismiss(dialog: DialogInterface) {
