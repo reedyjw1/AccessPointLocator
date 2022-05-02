@@ -140,6 +140,12 @@ class ExecuteSessionViewModel(
 
     }
 
+    fun updateRoomValue(scanUUID: String, roomValue: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            wifiScansRepo.insertRoomNumber(scanUUID, roomValue)
+        }
+    }
+
     // Converts data to json, writes it to file, and saves to the user specified location
     fun saveFile(uri: Uri?) {
         viewModelScope.launch(Dispatchers.IO) {
