@@ -46,4 +46,7 @@
     <string name="macText">MAC Address</string>
     <string name="saveText">Save</string>
     <string name="dismissText">Cancel</string>
+
+    <string name="roomNumber">Room Number</string>
+
 </resources>

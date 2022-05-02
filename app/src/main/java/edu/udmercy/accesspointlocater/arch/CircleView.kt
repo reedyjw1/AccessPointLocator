@@ -12,7 +12,9 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import edu.udmercy.accesspointlocater.features.execute.interfaces.CompletedPointTouchedListener
 import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
+import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.TouchPointListener
 import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -37,6 +39,8 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
     var completedPointScans: List<WifiScans> = listOf()
     var threshold = 50f
     var listener: CircleViewPointListener? = null
+    var addRemoveListener: TouchPointListener? = null
+    var completedPointTouched: CompletedPointTouchedListener? = null
 
     private fun initialise() {
         // Initializes gesture detector for when the user clicks a point on the image
@@ -117,33 +121,31 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
                         listener?.onPointsChanged(null)
                         return true
                     }
+                    // Use again when Touching Completed Points is implemented
+                    Log.i(TAG, "onSingleTapConfirmed: isTouchedPointNull = $touchedPoint")
+                    var closestPoint: Triple<PointF, Float, String?> = Triple(PointF(-1f,-1f), Float.MAX_VALUE, null)
+                    completedPointScans.forEach {
+                        val point = PointF(it.currentLocationX.toFloat(), it.currentLocationY.toFloat())
+                        val tempSource = sourceToViewCoord(point) ?: return true
+                        val distancePair = euclideanDistance(source, tempSource, threshold)
+                        if (distancePair.first && distancePair.second < closestPoint.second) {
+                            closestPoint = Triple(point, distancePair.second, it.scanUUID)
+                        }
+                    }
+                    // Place you just touched is close to an existing point
+                    if (closestPoint.second != Float.MAX_VALUE) {
+                        closestPoint.third?.let { scanUUID ->
+                            completedPointTouched?.onPointTouched(scanUUID)
+                            return true
+                        }
+                    }
                     // Otherwise, set the touched point and enable it to be drawn on the image next frame
                     Log.i(TAG, "onSingleTapConfirmed: touched=$coordinate")
                     touchedPoint = coordinate
                     listener?.onPointsChanged(coordinate)
+                    addRemoveListener?.onPointAdded(coordinate)
                     invalidate()
 
-
-
-                    // Use again when Touching Completed Points is implemented
-                    /*var closestPoint: Pair<PointF, Float> = Pair(PointF(-1f,-1f), Float.MAX_VALUE)
-                    touchPoints.forEach {
-                        val tempSource = sourceToViewCoord(it) ?: return true
-                        val distancePair = euclideanDistance(source, tempSource, threshold)
-                        if (distancePair.first && distancePair.second < closestPoint.second && it == touchPoints.last()) {
-                            closestPoint = Pair(it, distancePair.second)
-                        }
-                    }
-                    // If there is no close point, add the new point
-                    if (closestPoint.second == Float.MAX_VALUE && touchPoints.size < numberOfPoints) {
-                        touchPoints.add(coordinate)
-                        invalidate()
-                    } else if(closestPoint.second != Float.MAX_VALUE){
-                        // Remove the closes point to the touch event
-                        touchPoints.remove(closestPoint.first)
-                        invalidate()
-                    }
-                    listener?.onPointsChanged(touchPoints)*/
                 }
                 return true
             }
