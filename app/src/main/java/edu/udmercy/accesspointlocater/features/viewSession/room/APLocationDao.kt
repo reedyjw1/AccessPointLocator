@@ -24,4 +24,7 @@ interface APLocationDao {
 
     @Query("DELETE FROM APLocation where uuid == (:uuid)")
     fun deleteAll(uuid: String)
+
+    @Query("SELECT roomNumber from APLocation where uuid == (:sessionUuid)")
+    fun getRoomNumbers(sessionUuid: String): List<String>
 }

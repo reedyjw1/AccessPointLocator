@@ -32,4 +32,8 @@ class APLocationRepositoryImpl(appContext: Context): APLocationRepository {
     override fun deleteSession(uuid: String) {
         apLocationRepo.deleteAll(uuid)
     }
+
+    override fun retrieveRoomNumbers(uuid: String): List<String> {
+        return apLocationRepo.getRoomNumbers(uuid)
+    }
 }

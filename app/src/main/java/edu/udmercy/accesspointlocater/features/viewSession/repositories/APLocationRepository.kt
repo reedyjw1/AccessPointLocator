@@ -11,4 +11,5 @@ interface APLocationRepository {
     fun createNewLocation(apLocation: APLocation)
     fun saveAccessPointLocations(list: List<APLocation>)
     fun deleteSession(uuid:String)
+    fun retrieveRoomNumbers(uuid: String): List<String>
 }

@@ -22,12 +22,12 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
     private val buildingImageRepo: BuildingImageRepository by inject()
     private val accessPointRepo: APLocationRepository by inject()
     private var floorCount = 0
+    var roomValue: String? = null
 
 
     val apPoints: MutableLiveData<MutableList<APPointLocation>> = MutableLiveData()
     val currentDisplayImage: MutableLiveData<BuildingImage> = MutableLiveData()
     val currentFloorNumber: MutableLiveData<Int> = MutableLiveData()
-
 
     fun initializeImages(uuid: String){
         // Retrieves information on the currently selected session so that any information
@@ -61,7 +61,7 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
     fun savePointsToDB(uuid: String){
         //save points for floor
         viewModelScope.launch(Dispatchers.IO) {
-            val locations = apPoints.value?.map { APLocation(floor = it.floor, uuid = uuid, xCoordinate = it.point.x.toDouble(), yCoordinate = it.point.y.toDouble(), zCoordinate = -1.0, ssid = it.macAddress) }
+            val locations = apPoints.value?.map { APLocation(floor = it.floor, uuid = uuid, xCoordinate = it.point.x.toDouble(), yCoordinate = it.point.y.toDouble(), zCoordinate = -1.0, ssid = it.macAddress, roomNumber = listOf(it.roomNumber)) }
             locations?.let {
                 accessPointRepo.saveAccessPointLocations(it)
             }
@@ -74,4 +74,5 @@ class PlaceAccessPointsViewModel : ViewModel(), KoinComponent {
             sessionRepo.markSessionComplete(uuid)
         }
     }
+
 }

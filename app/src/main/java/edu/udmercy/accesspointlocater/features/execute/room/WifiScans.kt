@@ -81,13 +81,23 @@ fun List<WifiScans>.estimateLocations(uuid: String, greaterThanFrequency: Int = 
         var sumY = 0.0
         var weightSum = 0.0
         // Get top 25% of wifi scans by RSSI and average their scan location to get estimation
-        wifiScansFiltered.filter { it.floor == suspectedFloor }.getTopPercentile(0.25f).forEach {
+        val top25Percentile =  wifiScansFiltered.filter { it.floor == suspectedFloor }.getTopPercentile(0.25f)
+       top25Percentile.forEach {
             // val weight = weibullDistribution.cumulativeProbability((it.level + 100).toDouble())
             // val weight = E.pow((it.level + 100).toDouble() / 18.0)
             val weight = it.level + 100
             sumX += (weight * it.currentLocationX)
             sumY += (weight * it.currentLocationY)
             weightSum += weight
+        }
+        // Estimate the room number
+        val roomList = mutableListOf<String>()
+        val roomCountHashMap = top25Percentile.groupingBy { it.roomNumber }.eachCount()
+        val highestCount = roomCountHashMap.maxOfOrNull { it.value } ?: continue
+        roomCountHashMap.forEach {
+            if(it.value == highestCount && !roomList.contains(it.key)) {
+                roomList.add(it.key)
+            }
         }
         // Adds the newly found estimated location to a list with the other estimated locations
         val xLocation = sumX / weightSum
@@ -99,7 +109,8 @@ fun List<WifiScans>.estimateLocations(uuid: String, greaterThanFrequency: Int = 
             yCoordinate = yLocation,
             zCoordinate = 0.0,
             floor = suspectedFloor,
-            ssid = ssid
+            ssid = ssid,
+            roomNumber = roomList
         )
         apLocationList.add(apEstimate)
 

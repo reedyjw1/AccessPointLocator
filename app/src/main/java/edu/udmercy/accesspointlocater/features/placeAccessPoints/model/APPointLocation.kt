@@ -9,7 +9,8 @@ import android.graphics.PointF
 class APPointLocation(
     val point: PointF,
     val floor: Int,
-    val macAddress: String
+    val macAddress: String,
+    val roomNumber: String,
 ) {
 
     fun logValues(): String{

@@ -105,7 +105,8 @@ object Multilateration {
                         solution[2][0] * scale,
                         solution[3][0],
                         calculatedFloor?.floor ?: -1,
-                        ssid
+                        ssid,
+                        listOf("")
                     )
                     apLocationList.add(ap)
                     Log.i(TAG, "calculateMultilateration: APLocation (meters): x=${solution[1][0]},y=${solution[2][0]},z=${solution[3][0]}")

@@ -16,7 +16,7 @@ import edu.udmercy.accesspointlocater.features.viewSession.room.APLocationDao
 /**
  * For Jetpack Room Database, specifies all tables and the class that constructs each table, and the DB version number
  */
-@Database(entities = [Session::class, WifiScans::class, BuildingImage::class, APLocation::class, AccessPointChooser::class], version = 12)
+@Database(entities = [Session::class, WifiScans::class, BuildingImage::class, APLocation::class, AccessPointChooser::class], version = 13)
 @TypeConverters(Converters::class)
 // All Data Access Objects (DAOs) (which have the functions to interact with DB) are specified here
 abstract class AppDatabase : RoomDatabase() {

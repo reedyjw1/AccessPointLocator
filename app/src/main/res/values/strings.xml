@@ -44,6 +44,7 @@
 
     <string name="floorNumber">Floor %1$d</string>
     <string name="macText">MAC Address</string>
+    <string name="apPicker"></string>
     <string name="saveText">Save</string>
     <string name="dismissText">Cancel</string>
 
