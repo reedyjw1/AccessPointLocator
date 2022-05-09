@@ -1,5 +1,5 @@
 package edu.udmercy.accesspointlocater.features.executeSession.interfaces
 
 interface CompletedPointTouchedListener {
-    abstract fun onPointTouched(scanUUID: String)
+    fun onPointTouched(scanUUID: String, roomNumber: String)
 }

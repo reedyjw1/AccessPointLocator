@@ -200,7 +200,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     // called when a completed scan point is touched
-    private fun pointTouchedInflateRoomDialog(scanUUID:String){
+    private fun pointTouchedInflateRoomDialog(scanUUID:String, roomNumber: String){
         var received = false
         childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner) { requestKey, data ->
             if (requestKey == "roomNumber" && !received) {
@@ -209,12 +209,17 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
                     Log.d(TAG, "inflateRoomDialog: Result: $room")
                     if (room != "dismiss") {
                         viewModel.updateRoomValue(scanUUID, room)
+                        viewModel.roomValue = room
                     }
                     received = true
                 }
             }
         }
-        RoomInputDialog().show(childFragmentManager, "roomNumber")
+        val uuid = arguments?.getString("uuid") ?: return
+        val bundle = bundleOf("uuid" to uuid, "lastRoom" to roomNumber)
+        val roomDialog = RoomInputDialog()
+        roomDialog.arguments = bundle
+        roomDialog.show(childFragmentManager, "roomNumber")
     }
 
 
@@ -232,8 +237,8 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
 
     //used when  a completed scan point is touched
     private val completedPointsListener = object: CompletedPointTouchedListener {
-        override fun onPointTouched(scanUUID: String) {
-            pointTouchedInflateRoomDialog(scanUUID)
+        override fun onPointTouched(scanUUID: String, roomNumber: String) {
+            pointTouchedInflateRoomDialog(scanUUID, roomNumber)
         }
     }
 

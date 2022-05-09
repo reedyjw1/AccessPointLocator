@@ -123,18 +123,20 @@ class CircleView(context: Context?, attr: AttributeSet? = null) :
                     // Use again when Touching Completed Points is implemented
                     Log.i(TAG, "onSingleTapConfirmed: isTouchedPointNull = $touchedPoint")
                     var closestPoint: Triple<PointF, Float, String?> = Triple(PointF(-1f,-1f), Float.MAX_VALUE, null)
+                    var closestRoomNumber = ""
                     completedPointScans.forEach {
                         val point = PointF(it.currentLocationX.toFloat(), it.currentLocationY.toFloat())
                         val tempSource = sourceToViewCoord(point) ?: return true
                         val distancePair = euclideanDistance(source, tempSource, threshold)
                         if (distancePair.first && distancePair.second < closestPoint.second) {
                             closestPoint = Triple(point, distancePair.second, it.scanUUID)
+                            closestRoomNumber = it.roomNumber
                         }
                     }
                     // Place you just touched is close to an existing point
                     if (closestPoint.second != Float.MAX_VALUE) {
                         closestPoint.third?.let { scanUUID ->
-                            completedPointTouched?.onPointTouched(scanUUID)
+                            completedPointTouched?.onPointTouched(scanUUID, closestRoomNumber)
                             return true
                         }
                     }
