@@ -1,10 +1,12 @@
 package edu.udmercy.accesspointlocater.features.viewSession.view
 
+import android.app.Application
 import android.graphics.PointF
+import android.net.Uri
+import android.os.Environment
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.*
 import edu.udmercy.accesspointlocater.features.createSession.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.createSession.room.BuildingImage
@@ -13,10 +15,15 @@ import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocati
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import java.io.File
+import java.io.FileOutputStream
+import java.util.*
+import kotlin.text.StringBuilder
 
-class ViewSessionViewModel: ViewModel(), KoinComponent {
+class ViewSessionViewModel(application: Application, private val savedStateHandle: SavedStateHandle): AndroidViewModel(application), KoinComponent {
 
     private val TAG = "ViewSessionViewModel"
 
@@ -81,7 +88,75 @@ class ViewSessionViewModel: ViewModel(), KoinComponent {
         accessPointLocations.postValue(apPointFs)
     }
 
+    fun saveFile(uri: Uri?, completion: (Boolean) -> (Unit)) {
+        Log.i(TAG, "saveFile: Saving File")
+        viewModelScope.launch(Dispatchers.IO) {
+            // Get Access points and their associated rooms
+            try {
+                val sessionUUID =  savedStateHandle.getLiveData<String>("uuid").value ?: throw NullPointerException("Could not retrieve UUID")
+                val accessPoints = accessPointRepo.retrieveAccessPoints(sessionUUID)
 
+                Log.i(TAG, "saveFile: Creating Lists")
+                // Construct DataStructure to Hold Room information
+                val rowsToWrite = mutableListOf<MutableList<String>>()
+                accessPoints.forEach {
+                    val apList = mutableListOf(it.ssid)
+                    apList.addAll(it.roomNumber)
+                    rowsToWrite.add(apList)
+                }
+
+                Log.i(TAG, "saveFile: Appending to StringBuilder")
+                // String Builder to Construct CSV
+                val csvStringBuilder = StringBuilder()
+                rowsToWrite.forEach {
+                    csvStringBuilder.append(it.toString().removePrefix("[").removeSuffix("]"))
+                    csvStringBuilder.append("\n")
+                }
+                csvStringBuilder.append("\r\n")
+                val export = csvStringBuilder.toString()
+
+                Log.i(TAG, "saveFile: Creating CSV Name")
+                // Create csv file name
+                val sbFileName = StringBuilder(sessionName.value ?: Calendar.getInstance().time.toString())
+                sbFileName.append("-zones.csv")
+                val fileName = sbFileName.toString()
+
+                Log.i(TAG, "saveFile: Saveing to FileSystem")
+                // Called if the SAF is not needed
+                if (uri == null) {
+                    val target = File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                        fileName
+                    )
+                    target.delete()
+                    target.createNewFile()
+                    target.writeText(export)
+
+                } else {
+                    val context = getApplication<Application>().applicationContext
+                    val dir = DocumentFile.fromTreeUri(context, uri)
+                    val file = dir?.createFile("text/csv", fileName)
+
+                    file?.let {
+                        context.contentResolver.openFileDescriptor(it.uri, "w")
+                            ?.use { parcelFileDescriptor ->
+                                FileOutputStream(parcelFileDescriptor.fileDescriptor).use { output ->
+                                    output.write(export.toByteArray())
+                                }
+                            }
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    completion(true)
+                }
+            } catch (e: Exception) {
+                Log.i(TAG, "saveFile: ${e.localizedMessage}")
+                withContext(Dispatchers.Main) {
+                    completion(false)
+                }
+            }
+        }
+    }
 
     fun onPause() {
         currentBitmap.value?.image?.recycle()

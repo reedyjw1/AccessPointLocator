@@ -22,6 +22,7 @@
     <string name="menuDone">End Session</string>
     <string name="menuDelete">Delete a Scan</string>
     <string name="menuExport">Export Session</string>
+    <string name="menuExportZone">Export Zones</string>
     <string name="menuLoad">Load Session</string>
     <string name="menuSave">Save &amp; End Session</string>
 

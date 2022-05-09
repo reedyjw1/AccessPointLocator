@@ -19,6 +19,10 @@ class APLocationRepositoryImpl(appContext: Context): APLocationRepository {
         return apLocationRepo.getAllLocations(uuid)
     }
 
+    override fun retrieveAccessPoints(uuid: String): List<APLocation> {
+        return apLocationRepo.getAllLocationsNonFlow(uuid)
+    }
+
     override fun createNewLocation(apLocation: APLocation) {
         apLocationRepo.insertAll(
             apLocation

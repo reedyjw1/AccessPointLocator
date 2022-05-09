@@ -173,7 +173,7 @@ class ExecuteSessionViewModel(
             } else {
                 val context = getApplication<Application>().applicationContext
                 val dir = DocumentFile.fromTreeUri(context, uri)
-                val file = dir?.createFile("test/json", fileName)
+                val file = dir?.createFile("text/json", fileName)
 
                 file?.let {
                     context.contentResolver.openFileDescriptor(it.uri, "w")
