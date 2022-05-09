@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
+import edu.udmercy.accesspointlocater.features.createSession.repositories.BuildingImageRepository
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
-import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.createSession.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
 import kotlinx.coroutines.Dispatchers

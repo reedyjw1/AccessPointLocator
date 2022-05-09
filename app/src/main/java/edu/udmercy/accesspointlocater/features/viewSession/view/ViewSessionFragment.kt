@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
-import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.createSession.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.viewSession.model.AccessPointInfo
 import kotlinx.android.synthetic.main.fragment_view_session.*
 

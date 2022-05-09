@@ -12,10 +12,9 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import edu.udmercy.accesspointlocater.features.execute.interfaces.CompletedPointTouchedListener
-import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
+import edu.udmercy.accesspointlocater.features.executeSession.interfaces.CompletedPointTouchedListener
+import edu.udmercy.accesspointlocater.features.executeSession.room.WifiScans
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.TouchPointListener
-import kotlinx.android.synthetic.main.fragment_execute_session.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 

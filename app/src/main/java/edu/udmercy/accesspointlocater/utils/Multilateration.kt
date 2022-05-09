@@ -2,13 +2,10 @@ package edu.udmercy.accesspointlocater.utils
 
 import Jama.Matrix
 import android.util.Log
-import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
-import com.lemmingapex.trilateration.TrilaterationFunction
-import edu.udmercy.accesspointlocater.features.execute.model.FloorZ
-import edu.udmercy.accesspointlocater.features.execute.room.WifiScans
-import edu.udmercy.accesspointlocater.features.execute.room.average
+import edu.udmercy.accesspointlocater.features.executeSession.model.FloorZ
+import edu.udmercy.accesspointlocater.features.executeSession.room.WifiScans
+import edu.udmercy.accesspointlocater.features.executeSession.room.average
 import edu.udmercy.accesspointlocater.features.viewSession.room.APLocation
-import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 import kotlin.math.pow
 
 object Multilateration {

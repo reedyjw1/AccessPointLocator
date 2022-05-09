@@ -1,12 +1,10 @@
 package edu.udmercy.accesspointlocater.features.placeAccessPoints.view
 
-import android.graphics.Bitmap
-import android.graphics.PointF
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
-import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.createSession.repositories.BuildingImageRepository
+import edu.udmercy.accesspointlocater.features.createSession.room.BuildingImage
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.APPointLocation
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
