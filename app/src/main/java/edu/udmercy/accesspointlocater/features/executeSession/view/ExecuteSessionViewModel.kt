@@ -55,6 +55,9 @@ class ExecuteSessionViewModel(
     var currentScanUUID: String? = null
     var roomValue: String? = null
     var lastSelectedRoom = ""
+    var scanCount = 0
+    var scanLimit = 1
+    var scanResultList = mutableListOf<List<ScanResult>>()
 
     var floor: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -81,10 +84,30 @@ class ExecuteSessionViewModel(
             }
         }
     }
-    // Saves the wifi scan data to the database through the repository
-    fun saveResults(list: List<ScanResult>) {
+
+
+    fun calculateAndSaveResults() {
         viewModelScope.launch(Dispatchers.IO) {
-            list.forEach {
+            val macs = mutableListOf<String>()
+            scanResultList.forEach { scanSession ->
+                val listOfMacs = scanSession.map { it.BSSID }
+                macs.addAll(listOfMacs)
+            }
+
+            // Gets all of the mac address from the seperate scan result lists
+            val distinctMacs = macs.distinctBy { it }
+
+            // For each mac address
+            distinctMacs.forEach { macAddr ->
+                // Contains all the ScanResults for the corresponding mac address from all the wireless scan attempts
+                val scanResultsNotProcessed = mutableListOf<ScanResult>()
+                // For each List<ScanResult>, find the ScanResult with the correct mac address
+                scanResultList.forEach { scanList ->
+                    scanList.find { it.BSSID == macAddr }?.let { scanResultsNotProcessed.add(it) }
+                }
+
+                // Gets the best ScanResult from all of the scans and saves it
+                val maxScanResult = scanResultsNotProcessed.maxByOrNull { it.level } ?: return@forEach
                 val sessionSafe = session ?: return@launch
                 val position = currentPosition ?: return@launch
                 val scanUUID = currentScanUUID?: return@launch
@@ -99,20 +122,21 @@ class ExecuteSessionViewModel(
                         // currentLocationZ = MathUtils.calculateHeightFromFloors(floorHeights, phoneHeight, floorVal),
                         currentLocationZ = 0.0,
                         floor = floorVal,
-                        ssid = it.BSSID,
-                        capabilities = it.capabilities,
-                        centerFreq0 = it.centerFreq0,
-                        centerFreq1 = it.centerFreq1,
-                        channelWidth = it.channelWidth,
-                        frequency = it.frequency,
-                        level = it.level,
-                        timestamp = it.timestamp,
+                        ssid = maxScanResult.BSSID,
+                        capabilities = maxScanResult.capabilities,
+                        centerFreq0 = maxScanResult.centerFreq0,
+                        centerFreq1 = maxScanResult.centerFreq1,
+                        channelWidth = maxScanResult.channelWidth,
+                        frequency = maxScanResult.frequency,
+                        level = maxScanResult.level,
+                        timestamp = maxScanResult.timestamp,
                         scanUUID = scanUUID,
                         roomNumber = roomNumber
                     )
                 )
-
             }
+            // Clear the list for the next use
+            scanResultList.clear()
         }
     }
 
