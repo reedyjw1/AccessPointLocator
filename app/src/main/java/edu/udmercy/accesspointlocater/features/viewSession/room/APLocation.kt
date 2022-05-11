@@ -23,4 +23,6 @@ data class APLocation(
     val floor: Int,
     @ColumnInfo
     val ssid: String,
+    @ColumnInfo
+    val roomNumber: List<String>
 )

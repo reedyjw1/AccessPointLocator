@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
  */
 interface APLocationRepository {
     fun getAllAccessPoints(uuid: String): Flow<List<APLocation>>
+    fun retrieveAccessPoints(uuid: String): List<APLocation>
     fun createNewLocation(apLocation: APLocation)
     fun saveAccessPointLocations(list: List<APLocation>)
     fun deleteSession(uuid:String)
+    fun retrieveRoomNumbers(uuid: String): List<String>
 }

@@ -12,13 +12,11 @@ import androidx.navigation.fragment.findNavController
 import com.davemorrissey.labs.subscaleview.ImageSource
 import edu.udmercy.accesspointlocater.R
 import edu.udmercy.accesspointlocater.arch.BaseFragment
-import edu.udmercy.accesspointlocater.features.create.room.BuildingImage
-import edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog
+import edu.udmercy.accesspointlocater.features.createSession.room.BuildingImage
+import edu.udmercy.accesspointlocater.features.placeAccessPoints.inputMACDialog.view.MACAddressDialog
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.APPointLocation
 import edu.udmercy.accesspointlocater.features.placeAccessPoints.model.TouchPointListener
-import edu.udmercy.accesspointlocater.features.viewSession.view.ViewSessionFragment
 import kotlinx.android.synthetic.main.fragment_place_access_points.*
-import kotlinx.android.synthetic.main.fragment_view_session.*
 
 class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_points) {
 
@@ -73,29 +71,33 @@ class PlaceAccessPointsFragment : BaseFragment(R.layout.fragment_place_access_po
     //inflates MAC dialog and will return the value inputted inside of data variable
     private fun inflateMACDialog(point: PointF){
         var received = false
-        childFragmentManager.setFragmentResultListener("macAddress", viewLifecycleOwner, { requestKey, data ->
-           if(requestKey == "macAddress" && !received){
-               val item = data.getString("result")
-               item?.let { mac ->
-                   Log.d(TAG, "inflateMACDialog: Result: $mac")
-                   viewModel.currentFloorNumber.value?.let { floor ->
-                       val newPoint = APPointLocation(point, floor, mac)
-                       val allPoints = viewModel.apPoints.value
-                       allPoints?.add(newPoint)
-                       allPoints?.forEach {
-                           val values = it.logValues()
-                           Log.d(TAG, "inflateMACDialog: Point Added - List = $values}")
-                       }
+        childFragmentManager.setFragmentResultListener("macAddress", viewLifecycleOwner) { requestKey, data ->
+            if (requestKey == "macAddress" && !received) {
+                val item = data.getString("result") ?: return@setFragmentResultListener
+                val roomNumberEntered = data.getString("roomNumber") ?: return@setFragmentResultListener
+                Log.d(TAG, "inflateMACDialog: Result: $item")
+                viewModel.currentFloorNumber.value?.let { floor ->
+                    val newPoint = APPointLocation(point, floor, item, roomNumberEntered)
+                    val allPoints = viewModel.apPoints.value
+                    allPoints?.add(newPoint)
+                    allPoints?.forEach {
+                        val values = it.logValues()
+                        Log.d(TAG, "inflateMACDialog: Point Added - List = $values}")
+                    }
 
-                       allPoints?.let{ points ->
-                           viewModel.apPoints.postValue(points)
-                       }
-                       received = true
-                   }
-               }
-           }
-        })
-        MACAddressDialog().show(childFragmentManager, "macAddress")
+                    allPoints?.let { points ->
+                        viewModel.apPoints.postValue(points)
+                    }
+                    viewModel.roomValue = roomNumberEntered
+                    received = true
+                }
+            }
+        }
+        val roomList = viewModel.apPoints.value?.map { it.roomNumber } ?: emptyList()
+        val bundle = bundleOf("roomList" to roomList, "lastRoom" to viewModel.roomValue)
+        val macDialog = MACAddressDialog()
+        macDialog.arguments = bundle
+        macDialog.show(childFragmentManager, "macAddress")
     }
 
     override fun onCreateView(

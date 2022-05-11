@@ -3,6 +3,7 @@ package edu.udmercy.accesspointlocater
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.TypeConverter
+import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
 
 /**
@@ -20,4 +21,10 @@ class Converters {
     fun toBitmap(byteArray: ByteArray): Bitmap {
         return BitmapFactory.decodeByteArray(byteArray,0, byteArray.size)
     }
+
+    @TypeConverter
+    fun listToJsonString(value: List<String>?): String = Gson().toJson(value)
+
+    @TypeConverter
+    fun jsonStringToList(value: String) = Gson().fromJson(value, Array<String>::class.java).toList()
  }

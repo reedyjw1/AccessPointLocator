@@ -3,8 +3,8 @@ package edu.udmercy.accesspointlocater.features.home.view
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
-import edu.udmercy.accesspointlocater.features.execute.repositories.WifiScansRepository
+import edu.udmercy.accesspointlocater.features.createSession.repositories.BuildingImageRepository
+import edu.udmercy.accesspointlocater.features.executeSession.repositories.WifiScansRepository
 import edu.udmercy.accesspointlocater.features.home.model.SessionUI
 import edu.udmercy.accesspointlocater.features.home.repositories.SessionRepository
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
