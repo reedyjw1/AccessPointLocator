@@ -1,11 +1,9 @@
 package edu.udmercy.accesspointlocater.di
 
-import edu.udmercy.accesspointlocater.features.accessPointChooser.repositories.AccessPointReferenceRepository
-import edu.udmercy.accesspointlocater.features.accessPointChooser.repositories.AccessPointReferenceRepositoryImpl
-import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepository
-import edu.udmercy.accesspointlocater.features.create.repositories.BuildingImageRepositoryImpl
-import edu.udmercy.accesspointlocater.features.execute.repositories.WifiScansRepository
-import edu.udmercy.accesspointlocater.features.execute.repositories.WifiScansRepositoryImpl
+import edu.udmercy.accesspointlocater.features.createSession.repositories.BuildingImageRepository
+import edu.udmercy.accesspointlocater.features.createSession.repositories.BuildingImageRepositoryImpl
+import edu.udmercy.accesspointlocater.features.executeSession.repositories.WifiScansRepository
+import edu.udmercy.accesspointlocater.features.executeSession.repositories.WifiScansRepositoryImpl
 import edu.udmercy.accesspointlocater.features.home.repositories.*
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepository
 import edu.udmercy.accesspointlocater.features.viewSession.repositories.APLocationRepositoryImpl
@@ -26,7 +24,6 @@ val appDependencies = module {
     single<WifiScansRepository> { WifiScansRepositoryImpl(get()) }
     single<BuildingImageRepository> { BuildingImageRepositoryImpl(get()) }
     single<APLocationRepository> { APLocationRepositoryImpl(get()) }
-    single<AccessPointReferenceRepository> { AccessPointReferenceRepositoryImpl(get()) }
     single<ISharedPrefsHelper> { SharedPrefsHelper(get()) }
 
 }

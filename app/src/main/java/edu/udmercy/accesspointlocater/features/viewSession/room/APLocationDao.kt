@@ -16,6 +16,9 @@ interface APLocationDao {
     @Query("SELECT * FROM APLocation where uuid == (:uuid)")
     fun getAllLocations(uuid: String): Flow<List<APLocation>>
 
+    @Query("SELECT * FROM APLocation where uuid == (:uuid)")
+    fun getAllLocationsNonFlow(uuid: String): List<APLocation>
+
     @Insert
     fun insertAll(vararg aps: APLocation)
 
@@ -24,4 +27,7 @@ interface APLocationDao {
 
     @Query("DELETE FROM APLocation where uuid == (:uuid)")
     fun deleteAll(uuid: String)
+
+    @Query("SELECT roomNumber from APLocation where uuid == (:sessionUuid)")
+    fun getRoomNumbers(sessionUuid: String): List<String>
 }

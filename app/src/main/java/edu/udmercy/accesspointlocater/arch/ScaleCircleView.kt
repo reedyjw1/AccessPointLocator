@@ -26,6 +26,7 @@ class ScaleCircleView(context: Context?, attr: AttributeSet? = null) :
     companion object {
         private const val TAG = "CircleView"
     }
+    private var density = 0f
     private var strokeWidth = 0
     private val paint = Paint()
     var touchPoints: MutableList<PointF> = mutableListOf()
@@ -34,7 +35,7 @@ class ScaleCircleView(context: Context?, attr: AttributeSet? = null) :
     var listener: CircleViewPointListener? = null
 
     private fun initialise() {
-        val density = resources.displayMetrics.densityDpi.toFloat()
+        density = resources.displayMetrics.densityDpi.toFloat()
         setMinimumDpi(50)
         strokeWidth = (density / 60f).toInt()
         setOnTouchListener { subView, motionEvent ->
@@ -51,8 +52,9 @@ class ScaleCircleView(context: Context?, attr: AttributeSet? = null) :
         if (!isReady) {
             return
         }
-        val radius = 25f
-        val strokeRadius = 32f
+        //radius will always look the same on all devices, 16.8f and 13.125 are values that make the icons look good
+        val radius = density/16.8f
+        val strokeRadius = density/13.125f
 
         paint.strokeCap = Cap.ROUND
         paint.color = Color.GREEN

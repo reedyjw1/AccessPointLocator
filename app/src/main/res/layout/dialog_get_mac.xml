@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/macText"
-        android:text="@string/macText"
-        android:layout_margin="10dp"
-        style="@style/TextAppearance.MaterialComponents.Headline6"
-        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/macText"
         app:layout_constraintWidth="1"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:hint="@string/macText"
         android:layout_margin="10dp"
         android:id="@+id/macTextLayout"
         >
@@ -35,15 +25,27 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/roomAutoCompleteKnown"
+        app:layout_constraintWidth="1"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/macTextLayout"
+        android:hint="Room Number"
+        android:backgroundTint="@color/primary"
+        android:inputType="text"
+        />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/macSaveBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/saveText"
-        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/macTextLayout"
-        android:backgroundTint="@color/green"
+        app:layout_constraintTop_toBottomOf="@id/roomAutoCompleteKnown"
         android:layout_margin="10dp"/>
 
     <com.google.android.material.button.MaterialButton
@@ -51,9 +53,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/dismissText"
-        android:backgroundTint="@color/red"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:layout_constraintEnd_toStartOf="@id/macSaveBtn"
-        app:layout_constraintTop_toBottomOf="@id/macTextLayout"
+        app:layout_constraintTop_toBottomOf="@id/roomAutoCompleteKnown"
         android:layout_margin="10dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

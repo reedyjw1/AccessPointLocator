@@ -27,6 +27,8 @@
             android:id="@+id/action_sessionList_to_Execute"
             app:destination="@id/executeSession"
             />
+
+
     </fragment>
 
     <fragment
@@ -67,7 +69,7 @@
 
     <fragment
         android:id="@+id/executeSession"
-        android:name="edu.udmercy.accesspointlocater.features.execute.view.ExecuteSessionFragment"
+        android:name="edu.udmercy.accesspointlocater.features.executeSession.view.ExecuteSessionFragment"
         android:label="@string/fragmentExecuteSessionLabel"
         tools:layout="@layout/fragment_execute_session">
         <action
@@ -79,6 +81,11 @@
             android:name="uuid"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_executeSession_to_roomInput"
+            app:destination="@id/obtainRoomNumber"
+            />
+
     </fragment>
 
     <fragment
@@ -114,19 +121,31 @@
 
     <dialog
         android:id="@+id/createSession"
-        android:name="edu.udmercy.accesspointlocater.features.create.view.CreateSessionDialog"
+        android:name="edu.udmercy.accesspointlocater.features.createSession.view.CreateSessionDialog"
         android:label="@string/fragmentCreateSessionLabel"
         tools:layout="@layout/dialog_create_session"/>
 
     <dialog
         android:id="@+id/obtainMacAddress"
-        android:name="edu.udmercy.accesspointlocater.features.inputMAC.view.MACAddressDialog"
+        android:name="edu.udmercy.accesspointlocater.features.placeAccessPoints.inputMACDialog.view.MACAddressDialog"
         android:label="MAC Address"
         tools:layout="@layout/dialog_get_mac">
 
 
     </dialog>
 
+    <dialog
+        android:id="@+id/obtainRoomNumber"
+        android:name="edu.udmercy.accesspointlocater.features.executeSession.roomInputDialog.view.RoomInputDialog"
+        android:label="Room Number"
+        tools:layout="@layout/dialog_room_number">
+
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true" />
+
+    </dialog>
 
 
 
