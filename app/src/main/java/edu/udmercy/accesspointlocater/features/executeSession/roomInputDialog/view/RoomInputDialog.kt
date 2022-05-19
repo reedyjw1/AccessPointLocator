@@ -2,10 +2,12 @@ package edu.udmercy.accesspointlocater.features.executeSession.roomInputDialog.v
 
 
 import android.content.DialogInterface
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -55,11 +57,26 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupAutoComplete(view)
+        val completedScan = arguments?.getBoolean("completed") ?: false
+        if (completedScan) {
+            scanCountInputLayout.visibility = View.GONE
+        }
+        scanCountEditText.transformationMethod = null
         roomSave.setOnClickListener {
             viewModel.enteredRoomNumber = true
             val roomNumber = roomAutoComplete?.text.toString()
-            sendRoomNumber(roomNumber)
-            dismissAllowingStateLoss()
+            val numberOfScans = scanCountEditText.text.toString()
+            if (roomNumber.isBlank() || (numberOfScans.isBlank() && !completedScan)) {
+                if(completedScan) {
+                    Toast.makeText(requireContext(), "Please enter a valid room number.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Please enter a valid room number and number of scans.", Toast.LENGTH_SHORT).show()
+                }
+
+            } else {
+                sendRoomNumber(roomNumber, numberOfScans)
+                dismissAllowingStateLoss()
+            }
         }
         roomDismissBtn.setOnClickListener {
             //return negative one
@@ -92,11 +109,11 @@ class RoomInputDialog: DialogFragment(R.layout.dialog_room_number) {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         if(!viewModel.enteredRoomNumber) {
-            sendRoomNumber("dismiss")
+            sendRoomNumber("dismiss", "")
         }
     }
 
-    private fun sendRoomNumber(data: String){
-        parentFragmentManager.setFragmentResult("roomNumber", bundleOf("result" to data))
+    private fun sendRoomNumber(data: String, numberOfScans: String){
+        parentFragmentManager.setFragmentResult("result", bundleOf("roomNumber" to data, "scanCount" to numberOfScans))
     }
 }

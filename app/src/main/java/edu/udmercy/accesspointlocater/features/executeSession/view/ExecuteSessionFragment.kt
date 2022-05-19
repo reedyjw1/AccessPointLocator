@@ -18,6 +18,7 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
@@ -62,7 +63,6 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             } else {
                 scanFailure()
             }
-            showProgressBar(false)
         }
     }
 
@@ -125,7 +125,11 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         executeImageView.addRemoveListener = pointAddRemoveListener
         executeImageView.completedPointTouched = completedPointsListener
         startScanBtn.setOnClickListener {
-            startScan()
+            if(executeImageView.touchedPoint != null) {
+                startScan()
+            } else {
+                toast("Please place a point on the image.")
+            }
         }
         previousFloorBtn.setOnClickListener { viewModel.moveImage(-1, uuid) }
         nextFloorBtn.setOnClickListener { viewModel.moveImage(1, uuid) }
@@ -175,9 +179,9 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     //inflates room input dialog and will return the value inputted inside of data variable
     private fun inflateRoomDialog(){
         var received = false
-        childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner) { requestKey, data ->
-            if (requestKey == "roomNumber" && !received) {
-                val item = data.getString("result")
+        childFragmentManager.setFragmentResultListener("result", viewLifecycleOwner) { requestKey, data ->
+            if (requestKey == "result" && !received) {
+                val item = data.getString("roomNumber")
                 item?.let { room ->
                     Log.d(TAG, "inflateRoomDialog: Result: $room")
                     if (room == "dismiss") {
@@ -186,25 +190,28 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
                         executeImageView.touchedPoint = null
                         executeImageView.invalidate()
                     } else {
+                        val scanCount = data.getString("scanCount")?.toInt() ?: 1
+                        Log.i(TAG, "inflateRoomDialog: scanCount = $scanCount")
                         viewModel.roomValue = room
+                        viewModel.scanLimit = scanCount
                     }
                     received = true
                 }
             }
         }
         val uuid = arguments?.getString("uuid") ?: return
-        val bundle = bundleOf("uuid" to uuid, "lastRoom" to viewModel.roomValue)
+        val bundle = bundleOf("uuid" to uuid, "lastRoom" to viewModel.roomValue, "completed" to false)
         val roomDialog = RoomInputDialog()
         roomDialog.arguments = bundle
-        roomDialog.show(childFragmentManager, "roomNumber")
+        roomDialog.show(childFragmentManager, "result")
     }
 
     // called when a completed scan point is touched
     private fun pointTouchedInflateRoomDialog(scanUUID:String, roomNumber: String){
         var received = false
-        childFragmentManager.setFragmentResultListener("roomNumber", viewLifecycleOwner) { requestKey, data ->
-            if (requestKey == "roomNumber" && !received) {
-                val item = data.getString("result")
+        childFragmentManager.setFragmentResultListener("result", viewLifecycleOwner) { requestKey, data ->
+            if (requestKey == "result" && !received) {
+                val item = data.getString("roomNumber")
                 item?.let { room ->
                     Log.d(TAG, "inflateRoomDialog: Result: $room")
                     if (room != "dismiss") {
@@ -216,10 +223,10 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
             }
         }
         val uuid = arguments?.getString("uuid") ?: return
-        val bundle = bundleOf("uuid" to uuid, "lastRoom" to roomNumber)
+        val bundle = bundleOf("uuid" to uuid, "lastRoom" to roomNumber, "completed" to true)
         val roomDialog = RoomInputDialog()
         roomDialog.arguments = bundle
-        roomDialog.show(childFragmentManager, "roomNumber")
+        roomDialog.show(childFragmentManager, "result")
     }
 
 
@@ -260,19 +267,24 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
         requireActivity().unregisterReceiver(wifiScanReceiver)
         val results = wifiManager.scanResults
 
-        if (results.isEmpty()) {
-            toast("Scan Failed!")
-        } else {
-            toast("Scan Complete!")
-        }
         // Filters wifi data by currently connected wifi name and saves to database
         val wifiName = wifiManager.connectionInfo.ssid.toString()
         val filteredResults = results.filter {"\"" +  it.SSID + "\""== wifiName}
-        val uuid = arguments?.getString("uuid") ?: return
+        viewModel.scanResultList.add(filteredResults)
+        viewModel.scanCount+=1
 
+        if(viewModel.scanCount < viewModel.scanLimit) {
+            // Continue scanning
+            Log.i(TAG, "scanSuccess: scanning Again")
+            startScan()
+        } else {
+            // Scanning done
+            viewModel.scanCount = 0
+            viewModel.calculateAndSaveResults()
+            showProgressBar(false)
+            toast("Scan Complete!")
+        }
 
-        Log.i(TAG, "scanSuccess: $filteredResults")
-        viewModel.saveResults(filteredResults)
     }
 
     private fun scanFailure() {
@@ -357,8 +369,7 @@ class ExecuteSessionFragment: BaseFragment(R.layout.fragment_execute_session), C
     }
 
     private fun toast(msg: String) {
-        val safeView = view ?: return
-        Snackbar.make(safeView, msg, Snackbar.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun showProgressBar(show: Boolean, text: String = "") {
